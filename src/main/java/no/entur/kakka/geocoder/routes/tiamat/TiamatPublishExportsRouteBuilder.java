@@ -22,15 +22,26 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
+import no.entur.kakka.routes.file.FileUtils;
+import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.activemq.ScheduledMessage;
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.entur.kakka.Constants.BLOBSTORE_MAKE_BLOB_PUBLIC;
+import static no.entur.kakka.Constants.WORKING_DIRECTORY;
 
 /**
  * Routes for triggering regular exports of different datasets for backup and publish.
@@ -40,6 +51,8 @@ import java.util.stream.Collectors;
 @Component
 public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
+
+    private static final String LOCAL_WORKING_DIRECTORY = "files/tiamat/publish";
 
     @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
     private String cronSchedule;
@@ -145,12 +158,24 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-publish-export-poll-status");
 
         from("direct:processTiamatPublishExportResults")
+
+
+                .setHeader(Exchange.FILE_PARENT, constant(LOCAL_WORKING_DIRECTORY))
+                .to("direct:cleanUpLocalDirectory")
+                .to("direct:tiamatExportDownloadFile")
+                // Rename xml files
+
+                .to("direct:renameTiamatExportXmlFiles")
+
                 // Upload versioned file and _latest
                 .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_${header." + Constants.JOB_ID + "}_${date:now:yyyyMMddHHmmss}.zip"))
-                .to("direct:tiamatExportMoveFileToBlobStore")
-                .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_latest.zip"))
-                .to("direct:tiamatExportMoveFileToBlobStore")
 
+                .to("direct:tiamatExportUploadFile")
+                .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_latest.zip"))
+                .process(e -> e.getIn().setBody(new File(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
+                .to("direct:tiamatExportUploadFile")
+
+                .to("direct:cleanUpLocalDirectory")
                 .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .log(LoggingLevel.INFO, "Finished Tiamat publish export: ${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}")
                 .routeId("tiamat-publish-export-results");
@@ -159,7 +184,18 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .removeHeader(Constants.LOOP_COUNTER)
                 .process(e -> e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).popNextTask())
                 .routeId("tiamat-publish-exports-clean-current-task");
+
+
+
+        from("direct:renameTiamatExportXmlFiles")
+
+                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(Exchange.FILE_PARENT, String.class) +"/content"))
+                .process(e -> FileUtils.renameFiles(e.getIn().getHeader(Exchange.FILE_PARENT, String.class)+"/content", "tiamat",e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).getCurrentTask().getName()))
+                .process(e -> e.getIn().setBody(ZipFileUtils.zipFilesInFolder(e.getIn().getHeader(Exchange.FILE_PARENT, String.class)+"/content", e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
+
+                .routeId("tiamat-publish-exports-rename-xml-files");
     }
+
 
 
 }

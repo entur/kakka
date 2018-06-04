@@ -60,11 +60,20 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-export");
 
         from("direct:tiamatExportMoveFileToBlobStore")
-                .log(LoggingLevel.DEBUG, getClass().getName(), "Fetching tiamat export file ...")
-                .toD(tiamatUrl + "/${header." + Constants.JOB_URL + "}/content")
-                .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(true))
+                .to("direct:tiamatExportDownloadFile")
                 .to("direct:uploadBlob")
                 .routeId("tiamat-export-move-file");
+
+        from("direct:tiamatExportDownloadFile")
+                .log(LoggingLevel.DEBUG, getClass().getName(), "Fetching tiamat export file ...")
+                .toD(tiamatUrl + "/${header." + Constants.JOB_URL + "}/content")
+                .routeId("tiamat-export-download-file");
+
+
+        from("direct:tiamatExportUploadFile")
+                .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(true))
+                .to("direct:uploadBlob")
+                .routeId("tiamat-export-upload-file");
 
     }
 

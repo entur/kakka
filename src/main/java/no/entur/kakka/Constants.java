@@ -18,6 +18,8 @@ package no.entur.kakka;
 
 public class Constants {
 
+    public static final String WORKING_DIRECTORY = "RutebankenWorkingDirectory";
+
     public static final String FILE_HANDLE = "RutebankenFileHandle";
     public static final String FILE_NAME = "RutebankenFileName";
 

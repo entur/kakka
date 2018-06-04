@@ -46,6 +46,7 @@ import java.util.function.Function;
 
 import static no.entur.kakka.Constants.CONTENT_CHANGED;
 import static no.entur.kakka.Constants.FILE_HANDLE;
+import static no.entur.kakka.Constants.WORKING_DIRECTORY;
 import static org.apache.camel.builder.Builder.exceptionStackTrace;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
@@ -79,7 +80,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
     private static final String FILE_EXTENSION = "RutebankenFileExtension";
     private static final String CONVERSION_ROUTE = "RutebankenConversionRoute";
-    private static final String WORKING_DIRECTORY = "RutebankenWorkingDirectory";
 
     @Override
     public void configure() throws Exception {

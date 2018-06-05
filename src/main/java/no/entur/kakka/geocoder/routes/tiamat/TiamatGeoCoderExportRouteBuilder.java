@@ -37,7 +37,7 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
     @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;
 
-    @Value("${tiamat.geocoder.export.query:?topographicPlaceExportMode=ALL}")
+    @Value("${tiamat.geocoder.export.query:?topographicPlaceExportMode=ALL&versionValidity=CURRENT_FUTURE}")
     private String tiamatExportQuery;
 
     public static String TIAMAT_EXPORT_LATEST_FILE_NAME = "tiamat_export_geocoder_latest.zip";

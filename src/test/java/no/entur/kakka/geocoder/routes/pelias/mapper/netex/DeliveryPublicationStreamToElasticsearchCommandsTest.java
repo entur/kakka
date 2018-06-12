@@ -42,7 +42,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Collection<ElasticsearchCommand> commands = mapper
                                                             .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assert.assertEquals(12, commands.size());
+        Assert.assertEquals(13, commands.size());
         commands.forEach(c -> assertCommand(c));
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));

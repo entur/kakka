@@ -82,7 +82,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         }
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
-            place.getAlternativeNames().getAlternativeName().stream().filter(an -> !NameTypeEnumeration.LABEL.equals(an.getNameType())).filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
+            place.getAlternativeNames().getAlternativeName().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
         }
 
         if (up) {

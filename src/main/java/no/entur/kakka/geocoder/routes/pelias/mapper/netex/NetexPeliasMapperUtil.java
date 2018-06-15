@@ -34,7 +34,7 @@ public class NetexPeliasMapperUtil {
         }
 
         if (alternativeNames != null && !CollectionUtils.isEmpty(alternativeNames.getAlternativeName())) {
-            alternativeNames.getAlternativeName().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
+            alternativeNames.getAlternativeName().stream().filter(an -> !NameTypeEnumeration.LABEL.equals(an.getNameType())).filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
         }
 
         return NetexPeliasMapperUtil.filterUnique(names);

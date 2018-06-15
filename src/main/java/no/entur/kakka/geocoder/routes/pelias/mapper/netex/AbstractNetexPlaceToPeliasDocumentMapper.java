@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_VersionStructure> {
 
-    private static final String DEFAULT_LANGUAGE = "nor";
+    protected static final String DEFAULT_LANGUAGE = "nor";
 
     /**
      * Map single place hierarchy to (potentially) multiple pelias documents, one per alias/alternative name.

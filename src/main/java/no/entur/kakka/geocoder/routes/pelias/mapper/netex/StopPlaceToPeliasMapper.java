@@ -22,6 +22,7 @@ import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostCo
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.rutebanken.netex.model.AlternativeName;
 import org.rutebanken.netex.model.BusSubmodeEnumeration;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.NameTypeEnumeration;
@@ -31,6 +32,8 @@ import org.rutebanken.netex.model.VehicleModeEnumeration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentMapper<StopPlace> {
@@ -82,7 +85,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         }
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
-            place.getAlternativeNames().getAlternativeName().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
+            place.getAlternativeNames().getAlternativeName().stream().filter(an -> an.getName() != null && (NameTypeEnumeration.LABEL.equals(an.getNameType()) || an.getName().getLang() != null)).forEach(n -> names.add(n.getName()));
         }
 
         if (up) {
@@ -108,6 +111,13 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
+            place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
+
+            if (document.getDefaultAlias() == null && !document.getAliasMap().isEmpty()) {
+                String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
+                document.getAliasMap().put("default", defaultAlias);
+            }
+
         }
 
         // Make stop place rank highest in autocomplete by setting popularity

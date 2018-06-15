@@ -42,7 +42,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Collection<ElasticsearchCommand> commands = mapper
                                                             .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assert.assertEquals(12, commands.size());
+        Assert.assertEquals(13, commands.size());
         commands.forEach(c -> assertCommand(c));
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));
@@ -95,6 +95,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals(defaultName, known.getDefaultName());
         Assert.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("nor"));
         Assert.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("display"));
+        Assert.assertEquals("Evenes", known.getAliasMap().get("nor"));
         Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
         Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
         Assert.assertEquals(Arrays.asList("airport"), known.getCategory());

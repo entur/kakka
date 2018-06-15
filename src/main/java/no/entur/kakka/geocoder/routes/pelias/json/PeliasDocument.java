@@ -54,7 +54,7 @@ public class PeliasDocument {
     @JsonProperty("description")
     private Map<String, String> descriptionMap;
 
-    @JsonProperty("alias")
+    @JsonProperty("alias_name")
     private Map<String, String> aliasMap;
 
     @JsonProperty("center_point")

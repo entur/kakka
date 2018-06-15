@@ -193,10 +193,6 @@
                             <NameType>alias</NameType>
                             <Name lang="nor">AliasName</Name>
                         </AlternativeName>
-                        <AlternativeName modification="new" version="1" id="NSR:AlternativeName:778">
-                            <NameType>label</NameType>
-                            <Name lang="nor">Evenes</Name>
-                        </AlternativeName>
                     </alternativeNames>
                     <TopographicPlaceRef ref="92"/>
                     <OtherTransportModes></OtherTransportModes>

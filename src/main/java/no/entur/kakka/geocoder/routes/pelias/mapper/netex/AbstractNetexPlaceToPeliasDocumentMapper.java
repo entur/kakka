@@ -97,6 +97,20 @@ public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_V
         return document;
     }
 
+    /**
+     * Get name from current place or, if not set, on closest parent with name set.
+     */
+    protected MultilingualString getDisplayName(PlaceHierarchy<T> placeHierarchy) {
+        if (placeHierarchy.getPlace().getName() != null) {
+            return placeHierarchy.getPlace().getName();
+        }
+        if (placeHierarchy.getParent() != null) {
+            return getDisplayName(placeHierarchy.getParent());
+        }
+        return null;
+    }
+
+
     protected abstract List<MultilingualString> getNames(PlaceHierarchy<T> placeHierarchy);
 
     protected boolean isValid(T place) {
@@ -119,10 +133,6 @@ public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_V
         document.getAddressParts().setStreet("NOT_AN_ADDRESS-" + place.getId());
     }
 
-    /**
-     * Get name from current place or, if not set, on closest parent with name set.
-     */
-    protected abstract MultilingualString getDisplayName(PlaceHierarchy<T> placeHierarchy);
 
 
     protected abstract void populateDocument(PlaceHierarchy<T> placeHierarchy, PeliasDocument document);

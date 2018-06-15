@@ -3,6 +3,7 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.LocationStructure;
@@ -36,7 +37,7 @@ public class GroupOfStopPlacesToPeliasMapper {
         }
         AtomicInteger cnt = new AtomicInteger();
 
-        return NetexPeliasMapperUtil.getAllNames(groupOfStopPlaces.getName(),groupOfStopPlaces.getAlternativeNames()).stream().map(name -> toPeliasDocument(groupOfStopPlaces, name, popularity, cnt.getAndAdd(1))).collect(Collectors.toList());
+        return getNames(groupOfStopPlaces).stream().map(name -> toPeliasDocument(groupOfStopPlaces, name, popularity, cnt.getAndAdd(1))).collect(Collectors.toList());
     }
 
     private PeliasDocument toPeliasDocument(GroupOfStopPlaces groupOfStopPlaces, MultilingualString name, long popularity, int idx) {
@@ -47,9 +48,8 @@ public class GroupOfStopPlacesToPeliasMapper {
             document.setDefaultNameAndPhrase(name.getValue());
         }
 
-
-        MultilingualString displayName = NetexPeliasMapperUtil.getDisplayName(groupOfStopPlaces.getName(), groupOfStopPlaces.getAlternativeNames());
         // Add official name as display name. Not a part of standard pelias model, will be copied to name.default before deduping and labelling in Entur-pelias API.
+        MultilingualString displayName = groupOfStopPlaces.getName();
         if (displayName != null) {
             document.getNameMap().put("display", displayName.getValue());
             if (displayName.getLang() != null) {
@@ -95,4 +95,16 @@ public class GroupOfStopPlacesToPeliasMapper {
         document.getAddressParts().setStreet("NOT_AN_ADDRESS-" + groupOfStopPlaces.getId());
     }
 
+    private List<MultilingualString> getNames(GroupOfStopPlaces groupOfStopPlaces) {
+        List<MultilingualString> names = new ArrayList<>();
+        if (groupOfStopPlaces.getName() != null) {
+            names.add(groupOfStopPlaces.getName());
+        }
+
+        if (groupOfStopPlaces.getAlternativeNames() != null && !CollectionUtils.isEmpty(groupOfStopPlaces.getAlternativeNames().getAlternativeName())) {
+            groupOfStopPlaces.getAlternativeNames().getAlternativeName().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
+        }
+
+        return NetexPeliasMapperUtil.filterUnique(names);
+    }
 }

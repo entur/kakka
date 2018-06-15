@@ -82,7 +82,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         }
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
-            place.getAlternativeNames().getAlternativeName().stream().filter(an -> !NameTypeEnumeration.LABEL.equals(an.getNameType())).filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
+            place.getAlternativeNames().getAlternativeName().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> names.add(n.getName()));
         }
 
         if (up) {
@@ -94,19 +94,6 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
                 placeHierarchy.getChildren().forEach(child -> collectNames(child, names, up));
             }
         }
-    }
-
-    /**
-     * Get name from current place or, if not set, on closest parent with name set.
-     */
-    protected MultilingualString getDisplayName(PlaceHierarchy<StopPlace> placeHierarchy) {
-        if (placeHierarchy.getPlace().getName() != null) {
-            return NetexPeliasMapperUtil.getDisplayName(placeHierarchy.getPlace().getName(), placeHierarchy.getPlace().getAlternativeNames());
-        }
-        if (placeHierarchy.getParent() != null) {
-            return getDisplayName(placeHierarchy.getParent());
-        }
-        return null;
     }
 
 

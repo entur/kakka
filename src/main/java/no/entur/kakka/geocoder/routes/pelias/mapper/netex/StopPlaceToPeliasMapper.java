@@ -20,9 +20,9 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.rutebanken.netex.model.AlternativeName;
 import org.rutebanken.netex.model.BusSubmodeEnumeration;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.NameTypeEnumeration;
@@ -32,7 +32,6 @@ import org.rutebanken.netex.model.VehicleModeEnumeration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,7 +112,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
 
-            if (document.getDefaultAlias() == null && !document.getAliasMap().isEmpty()) {
+            if (document.getDefaultAlias() == null && !MapUtils.isEmpty(document.getAliasMap())) {
                 String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
                 document.getAliasMap().put("default", defaultAlias);
             }

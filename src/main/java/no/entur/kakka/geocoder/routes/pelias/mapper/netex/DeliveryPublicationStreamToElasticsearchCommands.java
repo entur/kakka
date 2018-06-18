@@ -141,8 +141,12 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         if (groupOfStopPlaces.getMembers()==null) {
             return null;
         }
-        double popularity = gosBoostFactor * groupOfStopPlaces.getMembers().getStopPlaceRef().stream().map(sp -> popularityPerStopPlaceId.get(sp.getRef())).filter(Objects::nonNull).reduce(1l, Math::multiplyExact);
-        return (long) popularity;
+        try {
+            double popularity = gosBoostFactor * groupOfStopPlaces.getMembers().getStopPlaceRef().stream().map(sp -> popularityPerStopPlaceId.get(sp.getRef())).filter(Objects::nonNull).reduce(1l, Math::multiplyExact);
+            return (long) popularity;
+        } catch (ArithmeticException ae) {
+            return Long.MAX_VALUE;
+        }
     }
 
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {

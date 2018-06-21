@@ -110,13 +110,11 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
-            place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
-
-            if (document.getDefaultAlias() == null && !MapUtils.isEmpty(document.getAliasMap())) {
-                String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
-                document.getAliasMap().put("default", defaultAlias);
-            }
-
+        }
+        addAlternativeNameLabels(document, placeHierarchy);
+        if (document.getDefaultAlias() == null && !MapUtils.isEmpty(document.getAliasMap())) {
+            String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
+            document.getAliasMap().put("default", defaultAlias);
         }
 
         // Make stop place rank highest in autocomplete by setting popularity
@@ -125,6 +123,19 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         if (place.getTariffZones() != null && place.getTariffZones().getTariffZoneRef() != null) {
             document.setTariffZones(place.getTariffZones().getTariffZoneRef().stream().map(zoneRef -> zoneRef.getRef()).collect(Collectors.toList()));
+        }
+    }
+
+    /**
+     * Add alternative names with type 'label' to alias map. Use parents values if not set on stop place.
+     */
+    private void addAlternativeNameLabels(PeliasDocument document, PlaceHierarchy<StopPlace> placeHierarchy) {
+        StopPlace place = placeHierarchy.getPlace();
+        if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
+            place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
+        }
+        if (MapUtils.isEmpty(document.getAliasMap()) && placeHierarchy.getParent() != null) {
+            addAlternativeNameLabels(document, placeHierarchy.getParent());
         }
     }
 

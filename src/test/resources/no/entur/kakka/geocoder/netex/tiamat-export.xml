@@ -254,7 +254,12 @@
                     <AccessModes></AccessModes>
                     <TopographicPlaceRef ref="92"/>
                     <OtherTransportModes></OtherTransportModes>
-
+                    <alternativeNames>
+                        <AlternativeName modification="new" version="1" id="NSR:AlternativeName:1000">
+                            <NameType>label</NameType>
+                            <Name lang="nor">Parent label</Name>
+                        </AlternativeName>
+                    </alternativeNames>
                 </StopPlace>
 
 

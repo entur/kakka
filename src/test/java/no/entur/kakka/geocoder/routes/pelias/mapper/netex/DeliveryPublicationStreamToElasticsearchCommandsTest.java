@@ -42,7 +42,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Collection<ElasticsearchCommand> commands = mapper
                                                             .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assert.assertEquals(13, commands.size());
+        Assert.assertEquals(16, commands.size());
         commands.forEach(c -> assertCommand(c));
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));
@@ -86,6 +86,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals("Child stop - airport", known.getDefaultName());
         Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
         Assert.assertEquals(StopPlaceToPeliasMapper.SOURCE_CHILD_STOP_PLACE, known.getSource());
+        Assert.assertEquals("Parent label", known.getAliasMap().get("nor"));
         Assert.assertEquals(known.getCategory().size(), 1);
         Assert.assertTrue(known.getCategory().containsAll(Arrays.asList("airport")));
         Assert.assertEquals("Expected popularity to be default (1000) boosted by stop type boosts (airport=3)", 3000, known.getPopularity().longValue());

@@ -29,6 +29,7 @@ import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = KartverketFileRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
 public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
@@ -104,7 +105,12 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 
 
 	private void startUpdate(String blobFolder, boolean shouldChangeContent) {
-		Exchange exchange = uploadUpdatedFilesTemplate.request("direct:uploadUpdatedFiles", e -> e.getIn().setHeader(Constants.FOLDER_NAME, blobFolder));
+		Exchange exchange = uploadUpdatedFilesTemplate.request("direct:uploadUpdatedFiles", e -> {
+			e.getIn().setHeader(Constants.FOLDER_NAME, blobFolder);
+			e.getIn().setHeader(Constants.KARTVERKET_DATASETID, "testID");
+			e.getIn().setHeader(Constants.KARTVERKET_FORMAT, "testFormat");
+		});
+
 		Assert.assertEquals(shouldChangeContent, Boolean.TRUE.equals(exchange.getIn().getHeader(Constants.CONTENT_CHANGED)));
 	}
 

@@ -58,9 +58,9 @@ public class BlobStoreService {
 	}
 
 	public void uploadBlob(@Header(value = Constants.FILE_HANDLE) String name,
-			                      @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream, Exchange exchange) {
+			                      @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, byte[] content, Exchange exchange) {
 		ExchangeUtils.addHeadersAndAttachments(exchange);
-		repository.uploadBlob(name, inputStream, makePublic);
+		repository.uploadBlob(name, content, makePublic);
 	}
 
 	public boolean deleteBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {

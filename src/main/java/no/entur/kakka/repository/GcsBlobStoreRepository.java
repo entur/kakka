@@ -97,24 +97,16 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
-    public void uploadBlob(String name, InputStream inputStream, boolean makePublic) {
-        BlobStoreHelper.uploadBlob(storage, containerName, name, inputStream, makePublic);
+    public void uploadBlob(String name, byte[] content, boolean makePublic) {
+        BlobStoreHelper.uploadBlob(storage, containerName, name, content, makePublic);
     }
 
-    @Override
-    public void uploadBlob(String name, InputStream inputStream, boolean makePublic, String contentType) {
-        BlobStoreHelper.uploadBlob(storage, containerName, name, inputStream, makePublic, contentType);
-    }
 
     @Override
     public boolean delete(String objectName) {
         return BlobStoreHelper.delete(storage, BlobId.of(containerName, objectName));
     }
 
-    @Override
-    public boolean deleteAllFilesInFolder(String folder) {
-        return BlobStoreHelper.deleteBlobsByPrefix(storage, containerName, folder);
-    }
 
 
     private BlobStoreFiles.File toBlobStoreFile(Blob blob, String fileName) {

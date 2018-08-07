@@ -16,7 +16,6 @@
 
 package no.entur.kakka.geocoder.routes.kartverket;
 
-import com.amazonaws.util.StringInputStream;
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.geocoder.services.KartverketService;
@@ -29,7 +28,6 @@ import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = KartverketFileRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
 public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
@@ -90,9 +88,9 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 	@Test
 	public void testNoLongerActiveFilesAreDeletedFromBlobStore() throws Exception {
 		idempotentDownloadRepository.clear();
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", new StringInputStream("1"), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", new StringInputStream("2"), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", new StringInputStream("3"), false);
+		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", "1".getBytes(), false);
+		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", "2".getBytes(), false);
+		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", "3".getBytes(), false);
 		when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files("1"));
 
 		context.start();

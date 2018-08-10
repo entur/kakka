@@ -32,12 +32,16 @@ public interface BlobStoreRepository {
 
     InputStream getBlob(String objectName);
 
-    void uploadBlob(String objectName, byte[] content, boolean makePublic);
+    void uploadBlob(String objectName, InputStream inputStream, boolean makePublic);
+
+    void uploadBlob(String objectName, InputStream inputStream, boolean makePublic, String contentType);
 
     void setStorage(Storage storage);
 
     void setContainerName(String containerName);
 
     boolean delete(String objectName);
+
+    boolean deleteAllFilesInFolder(String folder);
 
 }

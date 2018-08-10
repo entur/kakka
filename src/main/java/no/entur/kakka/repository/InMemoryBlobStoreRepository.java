@@ -77,11 +77,22 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
         return (data == null) ? null : new ByteArrayInputStream(data);
     }
 
+    @Override
+    public void uploadBlob(String objectName, InputStream inputStream, boolean makePublic, String contentType) {
+        uploadBlob(objectName, inputStream, makePublic);
+    }
 
     @Override
-    public void uploadBlob(String objectName, byte[] content, boolean makePublic) {
-        logger.debug("upload blob called in in-memory blob store");
-        blobs.put(objectName, content);
+    public void uploadBlob(String objectName, InputStream inputStream, boolean makePublic) {
+        try {
+            logger.debug("upload blob called in in-memory blob store");
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            IOUtils.copy(inputStream, byteArrayOutputStream);
+            byte[] data = byteArrayOutputStream.toByteArray();
+            blobs.put(objectName, data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -100,4 +111,9 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
     }
 
+    @Override
+    public boolean deleteAllFilesInFolder(String folder) {
+        listBlobs(folder).getFiles().forEach(file -> delete(file.getName()));
+        return true;
+    }
 }

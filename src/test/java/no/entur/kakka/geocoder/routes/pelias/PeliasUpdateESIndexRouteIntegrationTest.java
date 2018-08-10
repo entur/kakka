@@ -26,7 +26,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,13 +91,13 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 		});
 
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/administrativeUnits/SosiTest.sos",
-				FileUtils.readFileToByteArray(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")), false);
+				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")), false);
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
-				FileUtils.readFileToByteArray(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
+				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/addresses/addresses.csv",
-				FileUtils.readFileToByteArray(new File("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv")), false);
+				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv")), false);
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat/tiamat-export-latest.xml",
-				FileUtils.readFileToByteArray(new File("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml")), false);
+				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml")), false);
 
 
 		esScratchAdminIndexMock.expectedMessageCount(2);

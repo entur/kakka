@@ -2438,7 +2438,7 @@
           "type": "string",
           "analyzer": "keyword",
           "store": "yes"
-        }
+        },
         "tariff_zone_authorities": {
           "type": "string",
           "analyzer": "keyword",

@@ -103,6 +103,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals(68.490412, known.getCenterPoint().getLat(), 0.0001);
         Assert.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
         Assert.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
+        Assert.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
         Assert.assertEquals("Expected popularity to be default (1000) boosted by stop type (airport)", 3000, known.getPopularity().longValue());
         Assert.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
     }

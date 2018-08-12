@@ -1843,6 +1843,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -2136,6 +2141,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -2425,6 +2435,11 @@
           "store": "yes"
         },
         "tariff_zones": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        }
+        "tariff_zone_authorities": {
           "type": "string",
           "analyzer": "keyword",
           "store": "yes"
@@ -2722,6 +2737,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -3011,6 +3031,11 @@
           "store": "yes"
         },
         "tariff_zones": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
+        "tariff_zone_authorities": {
           "type": "string",
           "analyzer": "keyword",
           "store": "yes"
@@ -3308,6 +3333,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -3597,6 +3627,11 @@
           "store": "yes"
         },
         "tariff_zones": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
+        "tariff_zone_authorities": {
           "type": "string",
           "analyzer": "keyword",
           "store": "yes"
@@ -3894,6 +3929,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -4187,6 +4227,11 @@
           "analyzer": "keyword",
           "store": "yes"
         },
+        "tariff_zone_authorities": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
         "population": {
           "type": "long",
           "null_value": 0
@@ -4476,6 +4521,11 @@
           "store": "yes"
         },
         "tariff_zones": {
+          "type": "string",
+          "analyzer": "keyword",
+          "store": "yes"
+        },
+        "tariff_zone_authorities": {
           "type": "string",
           "analyzer": "keyword",
           "store": "yes"

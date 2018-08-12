@@ -84,6 +84,9 @@ public class PeliasDocument {
     @JsonProperty("tariff_zones")
     private List<String> tariffZones;
 
+    @JsonProperty("tariff_zone_authorities")
+    private List<String> tariffZoneAuthorities;
+
     private PeliasDocument() {
     }
 
@@ -276,6 +279,14 @@ public class PeliasDocument {
 
     public void setTariffZones(List<String> tariffZones) {
         this.tariffZones = tariffZones;
+    }
+
+    public List<String> getTariffZoneAuthorities() {
+        return tariffZoneAuthorities;
+    }
+
+    public void setTariffZoneAuthorities(List<String> tariffZoneAuthorities) {
+        this.tariffZoneAuthorities = tariffZoneAuthorities;
     }
 
     public GeoPoint getCenterPoint() {

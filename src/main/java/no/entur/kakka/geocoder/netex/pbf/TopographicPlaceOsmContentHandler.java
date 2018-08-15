@@ -40,6 +40,7 @@ import org.rutebanken.netex.model.SimplePoint_VersionStructure;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.rutebanken.netex.model.TopographicPlaceDescriptor_VersionedChildStructure;
 import org.rutebanken.netex.model.TopographicPlaceTypeEnumeration;
+import org.rutebanken.netex.model.TopographicPlace_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -166,11 +167,25 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                        .withVersion("any")
                        .withModification(ModificationEnumeration.NEW)
                        .withName(multilingualString(entity.getAssumedName().toString()))
+                       .withAlternativeDescriptors(mapAlternativeDescriptors(entity))
                        .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(entity.getAssumedName().toString())))
                        .withTopographicPlaceType(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST)
                        .withCountryRef(new CountryRef().withRef(countryRef))
                        .withId(prefix(entity.getId()))
                        .withKeyList(new KeyListStructure().withKeyValue(mapKeyValues(entity)));
+    }
+
+    TopographicPlace_VersionStructure.AlternativeDescriptors mapAlternativeDescriptors(OSMWithTags entity) {
+
+        List<TopographicPlaceDescriptor_VersionedChildStructure> descriptors = entity.getTags().entrySet().stream().filter(e -> !e.getKey().equals("name") && e.getKey().startsWith("name:") && e.getValue() != null)
+                                                                                       .map(e -> new TopographicPlaceDescriptor_VersionedChildStructure()
+                                                                                                         .withName(new MultilingualString().withValue(e.getValue()).withLang(e.getKey().replaceFirst("name:", "")))).collect(Collectors.toList());
+
+        if (descriptors.size() == 0) {
+            return null;
+        }
+
+        return new TopographicPlace_VersionStructure.AlternativeDescriptors().withTopographicPlaceDescriptor(descriptors);
     }
 
     List<KeyValueStructure> mapKeyValues(OSMWithTags entity) {

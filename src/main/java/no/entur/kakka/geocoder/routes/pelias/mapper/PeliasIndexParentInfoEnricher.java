@@ -83,6 +83,7 @@ public class PeliasIndexParentInfoEnricher {
 				}
 				parent.setLocalityId(locality.getId());
 				parent.setCountyId(locality.getParentId());
+				parent.setCountryId(locality.getCountryRef());
 			}
 		}
 		return parent;

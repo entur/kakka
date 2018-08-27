@@ -22,13 +22,24 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import net.opengis.gml._3.PolygonType;
-import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.CountryRef;
+import org.rutebanken.netex.model.IanaCountryTldEnumeration;
+import org.rutebanken.netex.model.ModificationEnumeration;
+import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.TopographicPlace;
+import org.rutebanken.netex.model.TopographicPlaceDescriptor_VersionedChildStructure;
+import org.rutebanken.netex.model.TopographicPlaceRefStructure;
+import org.rutebanken.netex.model.TopographicPlaceTypeEnumeration;
+import org.rutebanken.netex.model.TopographicPlace_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class TopographicPlaceMapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,9 +48,12 @@ public class TopographicPlaceMapper {
 
     private TopographicPlaceAdapter feature;
 
+    private Map<String, Locale> localeMap;
+
     public TopographicPlaceMapper(TopographicPlaceAdapter adapter, String participantRef) {
         this.feature = adapter;
         this.participantRef = participantRef;
+        initCountryCodeMapping();
     }
 
 
@@ -120,7 +134,29 @@ public class TopographicPlaceMapper {
         if (countryRef == null) {
             return null;
         }
-        return IanaCountryTldEnumeration.fromValue(countryRef.toLowerCase());
+        String alpha2CountryRef = null;
+        if (countryRef.length() == 3) {
+            alpha2CountryRef = iso3CountryCodeToIso2CountryCode(countryRef.toUpperCase());
+        }
+
+        if (alpha2CountryRef == null) {
+            alpha2CountryRef = countryRef.toLowerCase();
+        }
+
+        return IanaCountryTldEnumeration.fromValue(alpha2CountryRef.toLowerCase());
+    }
+
+    private void initCountryCodeMapping() {
+        String[] countries = Locale.getISOCountries();
+        localeMap = new HashMap<>(countries.length);
+        for (String country : countries) {
+            Locale locale = new Locale("", country);
+            localeMap.put(locale.getISO3Country().toUpperCase(), locale);
+        }
+    }
+
+    private String iso3CountryCodeToIso2CountryCode(String iso3CountryCode) {
+        return localeMap.get(iso3CountryCode).getCountry();
     }
 
 

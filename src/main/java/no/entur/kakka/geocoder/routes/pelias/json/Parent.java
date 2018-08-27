@@ -39,7 +39,7 @@ public class Parent {
 	@JsonProperty("borough")
 	private List<String> boroughList;
 
-	@JsonProperty("country_id")
+	@JsonProperty("country_a")
 	private List<String> countryIdList;
 	@JsonProperty("county_id")
 	private List<String> countyIdList;

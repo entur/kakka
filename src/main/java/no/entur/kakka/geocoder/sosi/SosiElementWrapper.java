@@ -173,7 +173,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
 
     @Override
     public String getCountryRef() {
-        return "no";
+        return "NOR";
     }
 
     protected String pad(String val, int length) {

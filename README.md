@@ -67,3 +67,4 @@ In production, kakka can be probed with:
 - http://<host>:<port>/health/live
 - http://<host>:<port>/health/ready
 to check liveness and readiness, accordingly
+

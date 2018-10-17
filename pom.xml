@@ -395,12 +395,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.junrar</groupId>
-            <artifactId>junrar</artifactId>
-            <version>0.7</version>
-        </dependency>
-
-        <dependency>
             <groupId>crosby.binary</groupId>
             <artifactId>osmpbf</artifactId>
             <version>1.3.4</version>

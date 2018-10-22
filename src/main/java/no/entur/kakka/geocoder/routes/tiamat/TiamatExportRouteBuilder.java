@@ -50,7 +50,8 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.DEBUG, "Start Tiamat export")
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
                 .setBody(constant(null))
-                .toD(tiamatUrl + tiamatPublicationDeliveryPath + "/export/initiate/${header." + Constants.QUERY_STRING + "}")
+                .setHeader(Exchange.HTTP_QUERY,header(Constants.QUERY_STRING))
+                .to(tiamatUrl + tiamatPublicationDeliveryPath + "/export/initiate/")
                 .convertBodyTo(ExportJob.class)
                 .setHeader(Constants.JOB_ID, simple("${body.id}"))
                 .setHeader(Constants.JOB_URL, simple(tiamatPublicationDeliveryPath + "/${body.jobUrl}"))
@@ -66,6 +67,7 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
 
         from("direct:tiamatExportDownloadFile")
                 .log(LoggingLevel.DEBUG, getClass().getName(), "Fetching tiamat export file ...")
+
                 .toD(tiamatUrl + "/${header." + Constants.JOB_URL + "}/content")
                 .routeId("tiamat-export-download-file");
 

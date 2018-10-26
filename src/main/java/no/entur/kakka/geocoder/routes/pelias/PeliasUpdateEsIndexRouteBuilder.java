@@ -27,6 +27,7 @@ import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.component.http4.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
@@ -62,6 +63,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${kartverket.blobstore.subdirectory:kartverket}")
     private String blobStoreSubdirectoryForKartverket;
 
+    @Value("${goecoder.gtfs.blobstore.subdirectory:geocoder/gtfs}")
+    private String blobStoreSubdirectoryForGtfsStopPlaces;
 
     @Value("${pelias.download.directory:files/pelias}")
     private String localWorkingDirectory;
@@ -78,6 +81,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Autowired
     private SosiFileFilter sosiFileFilter;
 
+    private static final String HEADER_EXPAND_ZIP = "EXPAND_ZIP";
     private static final String FILE_EXTENSION = "RutebankenFileExtension";
     private static final String CONVERSION_ROUTE = "RutebankenConversionRoute";
 
@@ -98,7 +102,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertAdministrativeUnits", "direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData")
+                .to("direct:insertAdministrativeUnits", "direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)
@@ -182,6 +186,17 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.DEBUG, "Finished inserting administrative units to ES")
                 .routeId("pelias-insert-admin-units");
 
+        from("direct:insertGtfsStopPlaceData")
+                .filter(simple("{{pelias.gtfs.stop.place.enabled:false}}"))
+                .log(LoggingLevel.DEBUG, "Start inserting GTFS stop place data to ES")
+                .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForGtfsStopPlaces))
+                .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/gtfs"))
+                .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromGtfsStopPlaces"))
+                .setHeader(HEADER_EXPAND_ZIP, constant(Boolean.FALSE))
+                .to("direct:haltIfContentIsMissing")
+                .log(LoggingLevel.DEBUG, "Finished inserting GTFS stop place data to ES")
+                .routeId("pelias-insert-gtfs-stopplace-data");
+
 
         from("direct:haltIfContentIsMissing")
                 .doTry()
@@ -198,6 +213,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .end()
                 .routeId("pelias-insert-halt-if-content-missing");
 
+
         from("direct:insertToPeliasFromFilesInFolder")
                 .bean("blobStoreService", "listBlobsInFolder")
                 .split(simple("${body.files}")).stopOnException()
@@ -205,8 +221,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .to("direct:haltIfAborted")
                 .setHeader(FILE_HANDLE, simple("${body.name}"))
                 .to("direct:getBlob")
+
                 .choice()
-                .when(header(FILE_HANDLE).endsWith(".zip"))
+                .when(PredicateBuilder.and(header(FILE_HANDLE).endsWith(".zip"), header(HEADER_EXPAND_ZIP).isNotEqualTo(Boolean.FALSE)))
                 .to("direct:insertToPeliasFromZipArchive")
                 .otherwise()
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${header." + FILE_HANDLE + "}")
@@ -236,6 +253,11 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .process(e -> filterSosiFile(e))
                 .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
                 .routeId("pelias-convert-commands-place_names");
+
+
+        from("direct:convertToPeliasCommandsFromGtfsStopPlaces")
+                .bean("gtfsStopPlaceStreamToElasticsearchCommands", "transform")
+                .routeId("pelias-convert-commands-gtfs-stop-places");
 
 
         from("direct:convertToPeliasCommandsFromAddresses")

@@ -16,7 +16,13 @@
 
 package no.entur.kakka.geocoder.netex;
 
-import org.rutebanken.netex.model.*;
+import org.rutebanken.netex.model.LocaleStructure;
+import org.rutebanken.netex.model.ModificationEnumeration;
+import org.rutebanken.netex.model.ObjectFactory;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.SiteFrame;
+import org.rutebanken.netex.model.TopographicPlace;
+import org.rutebanken.netex.model.VersionFrameDefaultsStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,19 +55,21 @@ public class TopographicPlaceConverter {
 
             File target = new File(targetPath);
             TopographicPlaceNetexWriter netexWriter = new TopographicPlaceNetexWriter();
-            netexWriter.stream(createPublicationDeliveryStructure(input), topographicPlaceQueue, new FileOutputStream(target));
+            String siteFrameId = input.getParticipantRef() + ":SiteFrame:" + System.currentTimeMillis();
+            netexWriter.stream(createPublicationDeliveryStructure(input, siteFrameId), topographicPlaceQueue, new FileOutputStream(target));
 
             reader.verify();
+            logger.info("Wrote TopographicPlace NeTEx file with SiteFrame id=" + siteFrameId);
         } catch (Exception e) {
             throw new RuntimeException("Conversion to Netex failed with exception: " + e.getMessage(), e);
         }
 
     }
 
-    private PublicationDeliveryStructure createPublicationDeliveryStructure(TopographicPlaceReader input) {
+    private PublicationDeliveryStructure createPublicationDeliveryStructure(TopographicPlaceReader input, String siteFrameId) {
         VersionFrameDefaultsStructure frameDefaultsStructure = new VersionFrameDefaultsStructure().withDefaultLocale(new LocaleStructure().withTimeZone(defaultTimeZone));
         SiteFrame siteFrame = new SiteFrame()
-                                      .withCreated(LocalDateTime.now()).withId(input.getParticipantRef() + ":SiteFrame:1")
+                                      .withCreated(LocalDateTime.now()).withId(siteFrameId)
                                       .withModification(ModificationEnumeration.NEW).withVersion("any").withFrameDefaults(frameDefaultsStructure);
 
         return new PublicationDeliveryStructure()

@@ -22,12 +22,7 @@
         <developerConnection>scm:git:ssh://git@github.com:entur/kakka.git</developerConnection>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>kantega</id>
-            <url>https://opensource.kantega.no/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

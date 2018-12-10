@@ -17,9 +17,9 @@
 package no.entur.kakka.geocoder.netex.pbf;
 
 
+import no.entur.kakka.openstreetmap.model.OSMNode;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opentripplanner.openstreetmap.model.OSMNode;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.TopographicPlace;
 

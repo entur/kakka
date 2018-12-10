@@ -16,19 +16,18 @@
 
 package no.entur.kakka.geocoder.netex.pbf;
 
+import net.opengis.gml._3.PolygonType;
+import no.entur.kakka.geocoder.netex.NetexGeoUtil;
+import no.entur.kakka.geocoder.netex.TopographicPlaceNetexWriter;
+import no.entur.kakka.openstreetmap.OpenStreetMapContentHandler;
+import no.entur.kakka.openstreetmap.model.OSMNode;
+import no.entur.kakka.openstreetmap.model.OSMWay;
+import no.entur.kakka.openstreetmap.model.OSMWithTags;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import net.opengis.gml._3.PolygonType;
-import no.entur.kakka.geocoder.netex.NetexGeoUtil;
-import no.entur.kakka.geocoder.netex.TopographicPlaceNetexWriter;
-import org.apache.commons.lang3.StringUtils;
-import org.opentripplanner.openstreetmap.model.OSMNode;
-import org.opentripplanner.openstreetmap.model.OSMRelation;
-import org.opentripplanner.openstreetmap.model.OSMWay;
-import org.opentripplanner.openstreetmap.model.OSMWithTags;
-import org.opentripplanner.openstreetmap.services.OpenStreetMapContentHandler;
 import org.rutebanken.netex.model.CountryRef;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.KeyListStructure;
@@ -166,9 +165,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         return new TopographicPlace()
                        .withVersion("any")
                        .withModification(ModificationEnumeration.NEW)
-                       .withName(multilingualString(entity.getAssumedName().toString()))
+                       .withName(multilingualString(entity.getAssumedName()))
                        .withAlternativeDescriptors(mapAlternativeDescriptors(entity))
-                       .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(entity.getAssumedName().toString())))
+                       .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(entity.getAssumedName())))
                        .withTopographicPlaceType(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST)
                        .withCountryRef(new CountryRef().withRef(countryRef))
                        .withId(prefix(entity.getId()))
@@ -234,22 +233,6 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         return new SimplePoint_VersionStructure().withLocation(
                 new LocationStructure().withLatitude(new BigDecimal(latitude))
                         .withLongitude(new BigDecimal(longitude)));
-    }
-
-    @Override
-    public void addRelation(OSMRelation osmRelation) {
-        // Ignore
-    }
-
-    @Override
-    public void doneFirstPhaseRelations() {
-        // Ignore
-    }
-
-
-    @Override
-    public void doneThirdPhaseNodes() {
-        // Ignore
     }
 
 

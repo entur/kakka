@@ -18,8 +18,8 @@ package no.entur.kakka.geocoder.netex.pbf;
 
 import crosby.binary.file.BlockInputStream;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
-import org.opentripplanner.openstreetmap.impl.BinaryOpenStreetMapParser;
-import org.opentripplanner.openstreetmap.services.OpenStreetMapContentHandler;
+import no.entur.kakka.openstreetmap.BinaryOpenStreetMapParser;
+import no.entur.kakka.openstreetmap.OpenStreetMapContentHandler;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.TopographicPlace;
@@ -62,11 +62,10 @@ public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 	}
 
 	@Override
-	public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException, InterruptedException {
+	public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException {
 		for (File file : files) {
 			OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, filter, PARTICIPANT_REF, countryRef);
 			BinaryOpenStreetMapParser parser = new BinaryOpenStreetMapParser(contentHandler);
-			parser.setParseRelations(false);
 
 			// Parse ways to collect nodes first
 			parser.setParseNodes(false);

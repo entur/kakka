@@ -16,8 +16,6 @@
 
 package no.entur.kakka;
 
-import org.opentripplanner.common.MavenVersion;
-
 public class Utils {
 
     public static String getHttp4(String url) {
@@ -38,7 +36,5 @@ public class Utils {
         return Long.valueOf(url.substring(url.lastIndexOf('/') + 1, url.length()));
     }
 
-    public static String getOtpVersion() {
-        return MavenVersion.VERSION.version;
-    }
+
 }

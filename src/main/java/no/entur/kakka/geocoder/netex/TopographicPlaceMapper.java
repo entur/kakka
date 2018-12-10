@@ -17,10 +17,10 @@
 package no.entur.kakka.geocoder.netex;
 
 
-import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import net.opengis.gml._3.PolygonType;
 import org.rutebanken.netex.model.CountryRef;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;

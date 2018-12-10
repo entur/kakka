@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.netex;
 
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 import net.opengis.gml._3.*;
 
 import java.math.BigInteger;

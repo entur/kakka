@@ -16,7 +16,7 @@
 
 package no.entur.kakka.geocoder.sosi;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketCoordinatSystemMapper;
 import no.vegvesen.nvdb.sosi.document.SosiElement;

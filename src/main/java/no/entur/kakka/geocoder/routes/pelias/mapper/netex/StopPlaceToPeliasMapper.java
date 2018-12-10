@@ -19,8 +19,6 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.rutebanken.netex.model.BusSubmodeEnumeration;
@@ -29,6 +27,7 @@ import org.rutebanken.netex.model.NameTypeEnumeration;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopTypeEnumeration;
 import org.rutebanken.netex.model.VehicleModeEnumeration;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +111,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
         }
         addAlternativeNameLabels(document, placeHierarchy);
-        if (document.getDefaultAlias() == null && !MapUtils.isEmpty(document.getAliasMap())) {
+        if (document.getDefaultAlias() == null && document.getAliasMap()!=null && !document.getAliasMap().isEmpty()) {
             String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
             document.getAliasMap().put("default", defaultAlias);
         }
@@ -137,13 +136,13 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
         }
-        if (MapUtils.isEmpty(document.getAliasMap()) && placeHierarchy.getParent() != null) {
+        if ((document.getAliasMap()==null || document.getAliasMap().isEmpty()) && placeHierarchy.getParent() != null) {
             addAlternativeNameLabels(document, placeHierarchy.getParent());
         }
     }
 
     /**
-     * Categorize multimodal stops with separate sources in ordre to be able to filter in queries.
+     * Categorize multimodal stops with separate sources in order to be able to filter in queries.
      * <p>
      * Multimodal parents with one source
      * Multimodal children with another source

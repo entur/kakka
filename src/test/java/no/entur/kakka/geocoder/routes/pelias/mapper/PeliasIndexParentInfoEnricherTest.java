@@ -16,7 +16,7 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.geojson.KartverketLocality;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;

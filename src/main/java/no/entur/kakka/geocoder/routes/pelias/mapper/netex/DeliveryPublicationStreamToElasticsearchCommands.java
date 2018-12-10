@@ -20,7 +20,6 @@ import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
-import org.apache.commons.collections.CollectionUtils;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -30,6 +29,7 @@ import org.rutebanken.netex.model.TopographicPlace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.xml.bind.JAXBContext;

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.6</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -27,34 +27,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <gcp-storage.version>0.0.4-SNAPSHOT</gcp-storage.version>
-
+        <geotools.version>20.1</geotools.version>
         <docker.maven.plugin.version>0.21.0</docker.maven.plugin.version>
-        <spring-boot-plugin.version>2.0.3.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
+        <spring-boot-plugin.version>2.1.0.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <httpcomponents.version>4.5.1</httpcomponents.version>
         <otp.version>1.2.0</otp.version>
         <assertj-core.version>3.3.0</assertj-core.version>
-        <camel-version>2.22.0</camel-version>
+        <camel-version>2.22.2</camel-version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <keycloak.version>4.1.0.Final</keycloak.version>
-        <spring.security.version>4.2.3.RELEASE</spring.security.version>
+        <spring.security.version>5.1.1.RELEASE</spring.security.version>
         <!-- Docker & Fabric8 Configs -->
-        <docker.from>eu.gcr.io/carbon-1287/java-base-image</docker.from>
+        <docker.from>eu.gcr.io/carbon-1287/openjdk11-base-image</docker.from>
         <fabric8.dockerUser>carbon-1287/</fabric8.dockerUser>
         <docker.image>eu.gcr.io/${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
         <docker.cleanup>none</docker.cleanup>
 
-        <!-- fabric8.env.AB_JOLOKIA_AUTH_OPENSHIFT>true</fabric8.env.AB_JOLOKIA_AUTH_OPENSHIFT -->
-        <fabric8.label.component>${project.artifactId}</fabric8.label.component>
-        <fabric8.label.container>spring-boot</fabric8.label.container>
-        <fabric8.label.group>quickstarts</fabric8.label.group>
-        <fabric8.iconRef>camel</fabric8.iconRef>
-
-        <!-- Holding back activemq version as newest version no long support spring wired broker config-->
-        <activemq.version>5.13.4</activemq.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
-        <fabric8.version>2.3.4</fabric8.version>
         <guava.version>26.0-jre</guava.version>
     </properties>
 
@@ -66,13 +57,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>fabric8-project</artifactId>
-                <version>${fabric8.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -92,6 +76,31 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-referencing</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-api</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+
+
+        <!--  Using de.grundid.opendatalab geojson for legacy reasons. would be better to swtich to org.wololo-->
+        <dependency>
+            <groupId>de.grundid.opendatalab</groupId>
+            <artifactId>geojson-jackson</artifactId>
+            <version>1.8.1</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.onebusaway</groupId>
             <artifactId>onebusaway-gtfs</artifactId>
@@ -269,7 +278,6 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-camel</artifactId>
-            <version>${activemq.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -430,19 +438,10 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemq.version}</version>
             <scope>test</scope>
         </dependency>
 
 
-        <!-- <dependency> <groupId>org.jboss.arquillian.junit</groupId> <artifactId>arquillian-junit-container</artifactId> <scope>test</scope>
-            </dependency> -->
-
-        <dependency>
-            <groupId>io.fabric8</groupId>
-            <artifactId>fabric8-arquillian</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>net.javacrumbs.json-unit</groupId>
             <artifactId>json-unit</artifactId>
@@ -492,7 +491,7 @@
         <dependency>
             <groupId>org.wololo</groupId>
             <artifactId>jts2geojson</artifactId>
-            <version>0.10.0</version>
+            <version>0.13.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -518,10 +517,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <argLine>-Xmx1024m</argLine>
+                    <argLine>-Xmx2048m</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -549,22 +547,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <!-- Default sample commands: mvn -Pf8-build ... build Docker images and create OpenShift deployment configs mvn -Pf8-deploy
-        ... f8-build + push to Docker registry + applying deployment config to OpenShift mvn -Pf8-local-deploy ... deployment for
-        a single node setup without pushing to a registry For individual goal usage please consult the fabric8 documentation -->
-    <profiles>
-        <profile>
-            <id>rutebanken</id>
-            <properties>
-                <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
-                <fabric8.recreate>true</fabric8.recreate>
-            </properties>
-            <build>
-                <!-- Missing fabric8:apply, as this crashed (probably due to missing fabric8) -->
-                <defaultGoal>clean install docker:build docker:push</defaultGoal>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

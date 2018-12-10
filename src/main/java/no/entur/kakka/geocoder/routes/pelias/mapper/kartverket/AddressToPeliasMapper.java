@@ -17,18 +17,17 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
-import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
-import no.entur.kakka.geocoder.routes.pelias.json.*;
 import no.entur.kakka.geocoder.routes.pelias.kartverket.KartverketAddress;
+import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

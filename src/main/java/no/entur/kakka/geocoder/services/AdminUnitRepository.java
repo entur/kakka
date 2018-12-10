@@ -17,7 +17,7 @@
 package no.entur.kakka.geocoder.services;
 
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 
 public interface AdminUnitRepository {

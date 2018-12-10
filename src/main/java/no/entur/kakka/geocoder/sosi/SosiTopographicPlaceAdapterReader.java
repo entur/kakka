@@ -16,7 +16,7 @@
 
 package no.entur.kakka.geocoder.sosi;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.vegvesen.nvdb.sosi.Sosi;
 import no.vegvesen.nvdb.sosi.document.SosiDocument;

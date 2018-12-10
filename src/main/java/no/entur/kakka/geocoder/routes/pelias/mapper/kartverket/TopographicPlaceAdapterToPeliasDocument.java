@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
@@ -95,8 +95,8 @@ public abstract class TopographicPlaceAdapterToPeliasDocument {
     protected Polygon mapShape() {
         Geometry geometry = feature.getDefaultGeometry();
 
-        if (geometry instanceof com.vividsolutions.jts.geom.Polygon) {
-            com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) geometry;
+        if (geometry instanceof org.locationtech.jts.geom.Polygon) {
+            org.locationtech.jts.geom.Polygon jtsPolygon = (org.locationtech.jts.geom.Polygon) geometry;
 
             if (jtsPolygon.isValid()) {
 

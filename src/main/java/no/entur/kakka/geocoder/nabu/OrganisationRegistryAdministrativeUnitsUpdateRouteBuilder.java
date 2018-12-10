@@ -16,7 +16,7 @@
 
 package no.entur.kakka.geocoder.nabu;
 
-import com.vividsolutions.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;
 import no.entur.kakka.Utils;
 import no.entur.kakka.domain.BlobStoreFiles;
@@ -185,9 +185,9 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
 
     private AdministrativeZone toAdministrativeZone(TopographicPlaceAdapter topographicPlaceAdapter, String source) {
 
-        com.vividsolutions.jts.geom.Geometry geometry = topographicPlaceAdapter.getDefaultGeometry();
+        org.locationtech.jts.geom.Geometry geometry = topographicPlaceAdapter.getDefaultGeometry();
 
-        if (geometry instanceof com.vividsolutions.jts.geom.MultiPolygon) {
+        if (geometry instanceof org.locationtech.jts.geom.MultiPolygon) {
             CoordinateList coordinateList = new CoordinateList(geometry.getBoundary().getCoordinates());
             coordinateList.closeRing();
             geometry = geometry.getFactory().createPolygon(coordinateList.toCoordinateArray());

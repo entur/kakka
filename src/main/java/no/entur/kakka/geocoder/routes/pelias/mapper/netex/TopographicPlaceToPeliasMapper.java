@@ -18,14 +18,14 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
 
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
-import org.apache.commons.collections.CollectionUtils;
+
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.TopographicPlace;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.rutebanken.netex.model.TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST;
 

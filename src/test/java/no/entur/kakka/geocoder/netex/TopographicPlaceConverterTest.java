@@ -24,7 +24,7 @@ import no.entur.kakka.geocoder.featurejson.FeatureJSONFilter;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
-import org.apache.commons.collections.CollectionUtils;
+import org.springframework.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;

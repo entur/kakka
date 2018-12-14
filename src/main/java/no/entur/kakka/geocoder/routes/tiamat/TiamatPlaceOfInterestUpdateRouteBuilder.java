@@ -109,7 +109,7 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:mapPlaceOfInterestToNetex")
                 .to("direct:updatePlaceOfInterestInTiamat")
                 .to("direct:processTiamatPlaceOfInterestUpdateCompleted")
-                .log(LoggingLevel.INFO, "Started job updating POI information in Tiamat")
+                .log(LoggingLevel.INFO, "Completed job updating POI information in Tiamat")
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
                 .endChoice()

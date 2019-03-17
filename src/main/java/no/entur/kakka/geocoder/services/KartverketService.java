@@ -21,7 +21,6 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.jskdata.DefaultReceiver;
 import no.jskdata.Downloader;
 import no.jskdata.GeoNorgeDownloadAPI;
-import no.jskdata.KartverketDownload;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 import org.apache.commons.io.FileUtils;
@@ -95,8 +94,7 @@ public class KartverketService {
                 kd.setFileNameFilter(n -> n.contains(format));
             }
         } else {
-            kd = new KartverketDownload(username, password);
-
+            throw new IllegalArgumentException("Invalid dataSetId" + dataSetId);
         }
         return kd;
     }

@@ -46,6 +46,13 @@
         <guava.version>26.0-jre</guava.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>ECC</id>
+            <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
+        </repository>
+    </repositories>
+
 
     <dependencyManagement>
         <dependencies>
@@ -468,7 +475,7 @@
         <dependency>
             <groupId>no.jskdata</groupId>
             <artifactId>jskdata</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.14</version>
         </dependency>
         <dependency>
             <groupId>no.vegvesen.nvdb</groupId>

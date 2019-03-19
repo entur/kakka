@@ -39,8 +39,10 @@ public class AddressDownloadRouteBuilder extends BaseRouteBuilder {
 	@Value("${kartverket.blobstore.subdirectory:kartverket}")
 	private String blobStoreSubdirectoryForKartverket;
 
-	@Value("${kartverket.addresses.dataSetId:58cad8d3-b09a-44e7-9d38-f67fb5c9eaae}")
+	@Value("${kartverket.addresses.dataSetId:f7df7a18-b30f-4745-bd64-d0863812350c}")
 	private String addressesDataSetId;
+
+	private static final String FORMAT_CSV = "CSV";
 
 	@Override
 	public void configure() throws Exception {
@@ -59,6 +61,7 @@ public class AddressDownloadRouteBuilder extends BaseRouteBuilder {
 				.process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.ADDRESS_DOWNLOAD).build()).to("direct:updateStatus")
 				.setHeader(Constants.KARTVERKET_DATASETID, constant(addressesDataSetId))
 				.setHeader(Constants.FOLDER_NAME, constant(blobStoreSubdirectoryForKartverket + "/addresses"))
+                .setHeader(Constants.KARTVERKET_FORMAT, constant(FORMAT_CSV))
 				.to("direct:uploadUpdatedFiles")
 				.choice()
 				.when(simple("${header." + Constants.CONTENT_CHANGED + "}"))

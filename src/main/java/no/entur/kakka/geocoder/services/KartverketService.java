@@ -91,7 +91,7 @@ public class KartverketService {
             // UUIDs are used in the API
             kd = new GeoNorgeDownloadAPI();
             if (format != null) {
-                kd.setFileNameFilter(n -> n.contains(format));
+                kd.setFormatNameFilter(n -> n.contains(format));
             }
         } else {
             throw new IllegalArgumentException("Invalid dataSetId" + dataSetId);

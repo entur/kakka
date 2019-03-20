@@ -234,7 +234,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:insertToPeliasFromZipArchive")
-                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(WORKING_DIRECTORY, String.class)))
+                .process(e -> ZipFileUtils.unzipAddressFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(WORKING_DIRECTORY, String.class)))
                 .split().exchange(e -> listFiles(e)).stopOnException()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .to("direct:haltIfAborted")

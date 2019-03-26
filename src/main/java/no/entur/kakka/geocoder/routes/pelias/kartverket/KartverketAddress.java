@@ -25,46 +25,45 @@ public class KartverketAddress {
 	@Field(at = 0)
 	private String addresseId;
 	@Field(at = 1)
-	private String type;
-	@Field(at = 2)
 	private String kommunenr;
-
 	@Field(at = 3)
-	private String addressekode;
+	private String type;
+
 	@Field(at = 4)
-	private String addressenavn;
-
-	@Field(at = 5)
-	private String kortAddressenavn;
-
-	@Field(at = 6)
-	private String nr;
-
-	@Field(at = 7)
-	private String bokstav;
-
-	@Field(at = 8)
-	private String gardsnr;
-
-	@Field(at = 9)
-	private String bruksnr;
-
-	@Field(at = 10)
-	private String festenr;
-
-	@Field(at = 11)
-	private String seksjonsnr;
-	@Field(at = 12)
-	private String undernr;
-
-	@Field(at = 13)
-	private String kortAddresseTilleggsnavn;
-
-	@Field(at = 14)
 	private String tilleggsnavnKildekode;
 
-	@Field(at = 15)
+	@Field(at = 5)
 	private String tilleggsnavnKildenavn;
+	@Field(at = 6)
+	private String addressekode;
+	@Field(at = 7)
+	private String addressenavn;
+
+	@Field(at = 8)
+	private String nr;
+
+	@Field(at = 9)
+	private String bokstav;
+
+	@Field(at = 10)
+	private String gardsnr;
+
+	@Field(at = 11)
+	private String bruksnr;
+
+	@Field(at = 12)
+	private String festenr;
+
+	@Field(at = 12)
+	private String seksjonsnr;
+	@Field(at = 13)
+	private String undernr;
+
+	@Field(at = 14)
+	private String kortAddressenavn;
+
+	@Field(at = 15)
+	private String kortAddresseTilleggsnavn;
 
 	@Field(at = 16)
 	private String koordinatsystemKode;
@@ -76,35 +75,34 @@ public class KartverketAddress {
 	private Double ost;
 
 	@Field(at = 19)
-	private String grunnkretsnr;
-
-	@Field(at = 20)
-	private String grunnkretsnavn;
-
-	@Field(at = 21)
-	private String kirkesognnr;
-
-	@Field(at = 22)
-	private String kirkesognnavn;
-
-	@Field(at = 23)
-	private String tettstednr;
-
-	@Field(at = 24)
-	private String tettstednavn;
-
-	@Field(at = 25)
-	private String valgkretsnr;
-
-	@Field(at = 26)
-	private String valgkretsnavn;
-
-	@Field(at = 27)
 	private String postnrn;
 
-	@Field(at = 28)
+	@Field(at = 20)
 	private String postnummerområde;
 
+	@Field(at = 21)
+	private String grunnkretsnr;
+
+	@Field(at = 22)
+	private String grunnkretsnavn;
+
+	@Field(at = 23)
+	private String kirkesognnr;
+
+	@Field(at = 24)
+	private String kirkesognnavn;
+
+	@Field(at = 26)
+	private String tettstednr;
+
+	@Field(at = 27)
+	private String tettstednavn;
+
+	@Field(at = 28)
+	private String valgkretsnr;
+
+	@Field(at = 29)
+	private String valgkretsnavn;
 
 	protected String pad(String val, int length) {
 		if (val == null) {

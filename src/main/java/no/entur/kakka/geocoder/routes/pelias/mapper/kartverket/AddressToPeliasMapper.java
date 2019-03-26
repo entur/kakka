@@ -92,7 +92,7 @@ public class AddressToPeliasMapper {
 				       .withCountryId("NOR")
 				       .withCountyId( address.getFylkesNo())
 				       .withLocalityId( address.getFullKommuneNo())
-				       .withBoroughId(address.getFullGrunnkretsNo())
+				       .withBoroughId(address.getGrunnkretsnr())
 				       .withBorough(formatName(address.getGrunnkretsnavn()))
 				       .build();
 	}

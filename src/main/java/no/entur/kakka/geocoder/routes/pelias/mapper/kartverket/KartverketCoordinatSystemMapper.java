@@ -64,6 +64,16 @@ public class KartverketCoordinatSystemMapper {
 		COORDSYS_MAPPING.put("25", "35");
 		COORDSYS_MAPPING.put("26", "36");
 
+		// EPSG to utm maping since new dataset form kartverket uses epsg kodes
+		// https://register.geonorge.no/epsg-koder?register=SOSI+kodelister&text=
+
+		COORDSYS_MAPPING.put("25831", "31");
+		COORDSYS_MAPPING.put("25832", "32");
+		COORDSYS_MAPPING.put("25833", "33");
+		COORDSYS_MAPPING.put("25834", "34");
+		COORDSYS_MAPPING.put("25835", "35");
+		COORDSYS_MAPPING.put("25836", "36");
+
 	}
 
 	public static String toUTMZone(String kartverketCoordinateSystemCode) {

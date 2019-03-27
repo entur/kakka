@@ -70,6 +70,39 @@ public class ZipFileUtils {
     }
 
 
+    public static void unzipAddressFile(InputStream inputStream, String targetFolder) {
+        try {
+            byte[] buffer = new byte[1024];
+            ZipInputStream zis = new ZipInputStream(inputStream);
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                String fileName = zipEntry.getName();
+
+                File newFile = new File(targetFolder + File.separator + fileName);
+                logger.info("unzipping file: {}", newFile.getAbsoluteFile());
+
+                //create all non exists folders
+                //else you will hit FileNotFoundException for compressed folder
+                new File(newFile.getParent()).mkdirs();
+
+                if (!zipEntry.isDirectory()) {
+                    var fileOutputStream = new FileOutputStream(newFile);
+
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fileOutputStream.write(buffer,0,len);
+                    }
+                    fileOutputStream.close();
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ioE) {
+            throw new RuntimeException("Unzipping archive failed: " + ioE.getMessage(), ioE);
+        }
+    }
+
     public static File zipFilesInFolder(String folder, String targetFilePath) {
         try {
 

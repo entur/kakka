@@ -20,6 +20,7 @@ import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
+import no.entur.kakka.services.CustomConfigurationService;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -38,6 +39,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -54,25 +56,23 @@ import static javax.xml.bind.JAXBContext.newInstance;
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
 
-    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
-
     private final long poiBoost;
-
     private final double gosBoostFactor;
-
+    private final List<String> poiFilter;
+    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
     private boolean gosInclude;
 
-    private final List<String> poiFilter;
-
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
-                                                                   @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                                   @Value("${pelias.gos.include:true}") boolean gosInclude) {
+                                                            @Autowired CustomConfigurationService customConfigurationService, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
-        if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+        final List<String> poiFilters = Arrays.asList(customConfigurationService.getCustomConfigurationByKey("poiFilter")
+                .getConfig_value().split(","));
+        if (!poiFilters.isEmpty()) {
+            this.poiFilter = poiFilters.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
         } else {
             this.poiFilter = new ArrayList<>();
         }
@@ -138,7 +138,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     }
 
     private Long getPopularityForGroupOfStopPlaces(GroupOfStopPlaces groupOfStopPlaces, Map<String, Long> popularityPerStopPlaceId) {
-        if (groupOfStopPlaces.getMembers()==null) {
+        if (groupOfStopPlaces.getMembers() == null) {
             return null;
         }
         try {

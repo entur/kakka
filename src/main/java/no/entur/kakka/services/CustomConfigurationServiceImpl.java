@@ -18,7 +18,7 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
 
     @Override
     public CustomConfiguration getCustomConfigurationByKey(String key) {
-        return customConfigurationRepository.findByKey(key).orElseThrow(() -> new NoSuchElementException("No configuration found for : " + key));
+        return customConfigurationRepository.findByKey(key).orElse(null);
     }
 
     @Override

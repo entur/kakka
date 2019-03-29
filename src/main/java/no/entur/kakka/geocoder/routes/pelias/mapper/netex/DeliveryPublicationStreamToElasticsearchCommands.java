@@ -16,6 +16,7 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
+import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
@@ -69,8 +70,12 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
-        final List<String> poiFilters = Arrays.asList(customConfigurationService.getCustomConfigurationByKey("poiFilter")
-                .getConfig_value().split(","));
+
+        final CustomConfiguration poiFilter = customConfigurationService.getCustomConfigurationByKey("poiFilter");
+        final List<String> poiFilters = new ArrayList<>();
+        if (poiFilter != null) {
+            poiFilters.addAll(Arrays.asList(poiFilter.getConfig_value().split(",")));
+        }
         if (!poiFilters.isEmpty()) {
             this.poiFilter = poiFilters.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
         } else {

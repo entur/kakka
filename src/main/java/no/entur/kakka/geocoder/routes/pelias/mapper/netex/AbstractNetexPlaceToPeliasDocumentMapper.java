@@ -51,7 +51,9 @@ public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_V
         }
         AtomicInteger cnt = new AtomicInteger();
 
-        return getNames(placeHierarchy).stream().map(name -> toPeliasDocument(placeHierarchy, name, cnt.getAndAdd(1))).collect(Collectors.toList());
+        return getNames(placeHierarchy).stream()
+                .map(name -> toPeliasDocument(placeHierarchy, name, cnt.getAndAdd(1)))
+                .collect(Collectors.toList());
     }
 
     private PeliasDocument toPeliasDocument(PlaceHierarchy<T> placeHierarchy, MultilingualString name, int idx) {

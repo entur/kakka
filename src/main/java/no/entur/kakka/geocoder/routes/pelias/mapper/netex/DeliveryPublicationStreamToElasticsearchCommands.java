@@ -152,7 +152,14 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
             TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter);
-            return places.stream().map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<TopographicPlace>(p))).flatMap(documents -> documents.stream()).sorted(new PeliasDocumentPopularityComparator()).filter(d -> d != null).map(p -> ElasticsearchCommand.peliasIndexCommand(p)).collect(Collectors.toList());
+            final List<ElasticsearchCommand> collect = places.stream()
+                    .map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<>(p)))
+                    .flatMap(documents -> documents.stream())
+                    .sorted(new PeliasDocumentPopularityComparator())
+                    .filter(d -> d != null)
+                    .map(p -> ElasticsearchCommand.peliasIndexCommand(p))
+                    .collect(Collectors.toList());
+            return collect;
         }
         return new ArrayList<>();
     }

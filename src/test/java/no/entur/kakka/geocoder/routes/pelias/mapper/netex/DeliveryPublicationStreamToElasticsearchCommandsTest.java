@@ -43,7 +43,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
                 final CustomConfiguration customConfiguration = new CustomConfiguration();
                 customConfiguration.setId(100l);
                 customConfiguration.setConfig_key("poiFilter");
-                customConfiguration.setConfig_value("leisure=stadium, building=church");
+                customConfiguration.setConfig_value("leisure=stadium,building=church");
                 return customConfiguration;
             }
 

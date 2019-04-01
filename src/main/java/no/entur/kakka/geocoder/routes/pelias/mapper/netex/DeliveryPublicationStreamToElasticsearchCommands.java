@@ -28,6 +28,8 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,7 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
+    private static final Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
 
     private final long poiBoost;
     private final double gosBoostFactor;
@@ -74,11 +77,13 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         final CustomConfiguration poiFilter = customConfigurationService.getCustomConfigurationByKey("poiFilter");
         final List<String> poiFilters = new ArrayList<>();
         if (poiFilter != null) {
-            poiFilters.addAll(Arrays.asList(poiFilter.getConfig_value().split(",")));
+            logger.info("Kakka found poiFilter from db: " + poiFilter.getValue());
+            poiFilters.addAll(Arrays.asList(poiFilter.getValue().split(",")));
         }
         if (!poiFilters.isEmpty()) {
             this.poiFilter = poiFilters.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
         } else {
+            logger.warn("No poiFilter values exist in database");
             this.poiFilter = new ArrayList<>();
         }
     }

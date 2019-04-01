@@ -26,7 +26,7 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
         final CustomConfiguration customConfiguration = customConfigurationRepository.findByKey(key).
                 orElseThrow(() -> new NoSuchElementException("No configuration found for : " + key));
 
-        customConfiguration.setConfig_value(value);
+        customConfiguration.setValue(value);
 
         return customConfigurationRepository.save(customConfiguration);
     }

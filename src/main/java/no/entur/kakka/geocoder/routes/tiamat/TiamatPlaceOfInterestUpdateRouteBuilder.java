@@ -17,7 +17,6 @@
 package no.entur.kakka.geocoder.routes.tiamat;
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 import static no.entur.kakka.geocoder.GeoCoderConstants.*;
 
@@ -152,7 +150,10 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
     }
 
     private TopographicPlaceReader createTopographicPlaceReader(Exchange e) {
-        var poiFilters = Arrays.asList(customConfigurationService.getCustomConfigurationByKey("poiFilter").getConfig_value().split(","));
+        var poiFilters = Arrays.asList(customConfigurationService.getCustomConfigurationByKey("poiFilter").getValue().split(","));
+        if (poiFilters.isEmpty()) {
+            log.warn("No poiFilter values exist in database");
+        }
         return new PbfTopographicPlaceReader(poiFilters, IanaCountryTldEnumeration.NO, new File(localWorkingDirectory + "/" + osmFileName));
     }
 

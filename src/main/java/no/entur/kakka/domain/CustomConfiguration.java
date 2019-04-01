@@ -6,22 +6,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
-@Table(name = "costome_configuration")
-public class CustomConfiguration implements Serializable {
-
-    private static final long serialVersionUID = 5L;
+@Table(name = "custom_configuration")
+public class CustomConfiguration {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true)
-    private String config_key;
+    private String key;
 
     @Column(nullable = false)
-    private String config_value;
+    private String value;
 
 
     public long getId() {
@@ -32,19 +30,19 @@ public class CustomConfiguration implements Serializable {
         this.id = id;
     }
 
-    public String getConfig_key() {
-        return config_key;
+    public String getKey() {
+        return key;
     }
 
-    public void setConfig_key(String config_key) {
-        this.config_key = config_key;
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public String getConfig_value() {
-        return config_value;
+    public String getValue() {
+        return value;
     }
 
-    public void setConfig_value(String config_value) {
-        this.config_value = config_value;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

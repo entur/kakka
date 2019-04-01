@@ -42,8 +42,8 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
             public CustomConfiguration getCustomConfigurationByKey(String key) {
                 final CustomConfiguration customConfiguration = new CustomConfiguration();
                 customConfiguration.setId(100l);
-                customConfiguration.setConfig_key("poiFilter");
-                customConfiguration.setConfig_value("leisure=stadium,building=church");
+                customConfiguration.setKey("poiFilter");
+                customConfiguration.setValue("leisure=stadium,building=church");
                 return customConfiguration;
             }
 

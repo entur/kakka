@@ -16,16 +16,20 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
+import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
+import no.entur.kakka.services.CustomConfigurationService;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,6 +42,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -53,27 +58,32 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-
-    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
+    private static final Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
 
     private final long poiBoost;
-
     private final double gosBoostFactor;
-
+    private final List<String> poiFilter;
+    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
     private boolean gosInclude;
 
-    private final List<String> poiFilter;
-
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
-                                                                   @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                                   @Value("${pelias.gos.include:true}") boolean gosInclude) {
+                                                            @Autowired CustomConfigurationService customConfigurationService, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
+
+        final CustomConfiguration poiFilter = customConfigurationService.getCustomConfigurationByKey("poiFilter");
+        final List<String> poiFilters = new ArrayList<>();
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+            logger.info("Kakka found poiFilter from db: " + poiFilter.getValue());
+            poiFilters.addAll(Arrays.asList(poiFilter.getValue().split(",")));
+        }
+        if (!poiFilters.isEmpty()) {
+            this.poiFilter = poiFilters.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
         } else {
+            logger.warn("No poiFilter values exist in database");
             this.poiFilter = new ArrayList<>();
         }
     }
@@ -138,7 +148,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     }
 
     private Long getPopularityForGroupOfStopPlaces(GroupOfStopPlaces groupOfStopPlaces, Map<String, Long> popularityPerStopPlaceId) {
-        if (groupOfStopPlaces.getMembers()==null) {
+        if (groupOfStopPlaces.getMembers() == null) {
             return null;
         }
         try {
@@ -152,7 +162,14 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
             TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter);
-            return places.stream().map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<TopographicPlace>(p))).flatMap(documents -> documents.stream()).sorted(new PeliasDocumentPopularityComparator()).filter(d -> d != null).map(p -> ElasticsearchCommand.peliasIndexCommand(p)).collect(Collectors.toList());
+            final List<ElasticsearchCommand> collect = places.stream()
+                    .map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<>(p)))
+                    .flatMap(documents -> documents.stream())
+                    .sorted(new PeliasDocumentPopularityComparator())
+                    .filter(d -> d != null)
+                    .map(p -> ElasticsearchCommand.peliasIndexCommand(p))
+                    .collect(Collectors.toList());
+            return collect;
         }
         return new ArrayList<>();
     }

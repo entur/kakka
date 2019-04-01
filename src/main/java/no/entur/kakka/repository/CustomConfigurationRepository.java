@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface CustomConfigurationRepository extends JpaRepository<CustomConfiguration,Long> {
 
-    @Query("SELECT t FROM CustomConfiguration t where t.config_key = :key")
+    @Query("SELECT t FROM CustomConfiguration t where t.key = :key")
     Optional<CustomConfiguration> findByKey(@Param("key") String key);
 }

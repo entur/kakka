@@ -216,7 +216,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .endRest();
 
         from("direct:update-configuration")
-                .to("bean:customConfigurationService?method=updateCustomConfiguration()")
+                .to("bean:customConfigurationService?method=updateCustomConfiguration")
                 .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
                 .setBody(constant(""));
 

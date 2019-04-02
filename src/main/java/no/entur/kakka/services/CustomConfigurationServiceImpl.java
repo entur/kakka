@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-@Service
+@Service("customConfigurationService")
 @Transactional
 public class CustomConfigurationServiceImpl implements CustomConfigurationService {
 
@@ -17,16 +18,21 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
 
 
     @Override
+    public List<CustomConfiguration> findAllCustomConfigurations() {
+        return customConfigurationRepository.findAll();
+    }
+
+    @Override
     public CustomConfiguration getCustomConfigurationByKey(String key) {
         return customConfigurationRepository.findByKey(key).orElse(null);
     }
 
     @Override
-    public CustomConfiguration updateCustomConfiguration(String key, String value) {
-        final CustomConfiguration customConfiguration = customConfigurationRepository.findByKey(key).
-                orElseThrow(() -> new NoSuchElementException("No configuration found for : " + key));
+    public CustomConfiguration updateCustomConfiguration(CustomConfiguration updatedConfiguration) {
+        final CustomConfiguration customConfiguration = customConfigurationRepository.findByKey(updatedConfiguration.getKey()).
+                orElseThrow(() -> new NoSuchElementException("No configuration found for : " + updatedConfiguration.getKey()));
 
-        customConfiguration.setValue(value);
+        customConfiguration.setValue(customConfiguration.getValue());
 
         return customConfigurationRepository.save(customConfiguration);
     }

@@ -16,6 +16,7 @@
 
 package no.entur.kakka.rest;
 
+import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
@@ -147,6 +148,28 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        rest("/custom_configurations")
+                .description("Custom configuration REST service")
+                .consumes("application/json")
+                .produces("application/json")
+
+                .get().description("Find all custom configurations").outType(CustomConfiguration[].class)
+                .responseMessage().code(200).message("Custom configuration returen successfully").endResponseMessage()
+                .to("bean:customConfigurationService?method=findAllCustomConfigurations")
+
+                .get("/{key}").description("Find configuration by key")
+                .outType(CustomConfiguration.class)
+                .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
+                .responseMessage().code(200).message("Configuration successfully returned").endResponseMessage()
+                .to("bean:customConfigurationService?method=getCustomConfigurationByKey(${header.key})")
+
+                .put("/{key}").description("Update configuration").type(CustomConfiguration.class)
+                .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
+                .param().name("body").type(RestParamType.body).description("The configuration to update").endParam()
+                .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
+                .to("direct:update-configuration");
+
+
 
         rest("/organisation_admin")
                 .post("/administrative_zones/update")
@@ -192,6 +215,10 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        from("direct:update-configuration")
+                .to("bean:customConfigurationService?method=updateCustomConfiguration()")
+                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
+                .setBody(constant(""));
 
     }
 

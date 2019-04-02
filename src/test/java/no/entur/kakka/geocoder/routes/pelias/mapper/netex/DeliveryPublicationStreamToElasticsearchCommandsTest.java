@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DeliveryPublicationStreamToElasticsearchCommandsTest {
@@ -39,6 +40,11 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
     public void testTransform() throws Exception {
         CustomConfigurationService customConfigurationService = new CustomConfigurationService() {
             @Override
+            public List<CustomConfiguration> findAllCustomConfigurations() {
+                return null;
+            }
+
+            @Override
             public CustomConfiguration getCustomConfigurationByKey(String key) {
                 final CustomConfiguration customConfiguration = new CustomConfiguration();
                 customConfiguration.setId(100l);
@@ -48,7 +54,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
             }
 
             @Override
-            public CustomConfiguration updateCustomConfiguration(String key, String value) {
+            public CustomConfiguration updateCustomConfiguration(CustomConfiguration updatedConfiguration) {
                 return null;
             }
 

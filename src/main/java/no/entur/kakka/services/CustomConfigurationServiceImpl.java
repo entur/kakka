@@ -3,16 +3,13 @@ package no.entur.kakka.services;
 import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.repository.CustomConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service("customConfigurationService")
-@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 @Transactional
 public class CustomConfigurationServiceImpl implements CustomConfigurationService {
 

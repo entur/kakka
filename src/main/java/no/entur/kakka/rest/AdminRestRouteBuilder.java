@@ -167,7 +167,14 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
                 .param().name("body").type(RestParamType.body).description("The configuration to update").endParam()
                 .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
-                .to("direct:update-configuration");
+                .to("direct:update-configuration")
+
+                .post().description("Add new configuration").type(CustomConfiguration.class)
+                .param().name("body").type(RestParamType.body).description("new configuraiton").endParam()
+                .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
+                .to("direct:add-configuration");
+
+
 
 
 
@@ -217,6 +224,12 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
         from("direct:update-configuration")
                 .to("bean:customConfigurationService?method=updateCustomConfiguration")
+                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
+                .setBody(constant(""));
+
+        from("direct:add-configuration")
+                .transacted()
+                .to("bean:customConfigurationService?method=saveCustomConfiguration")
                 .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
                 .setBody(constant(""));
 

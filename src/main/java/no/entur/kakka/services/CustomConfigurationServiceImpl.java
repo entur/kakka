@@ -5,6 +5,7 @@ import no.entur.kakka.repository.CustomConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,7 +18,15 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
 
     @Override
     public List<CustomConfiguration> findAllCustomConfigurations() {
-        return customConfigurationRepository.findAll();
+
+        final Iterable<CustomConfiguration> all = customConfigurationRepository.findAll();
+        List<CustomConfiguration> customConfigurations= new ArrayList<>();
+        for (CustomConfiguration customConfiguration : all) {
+
+            customConfigurations.add(customConfiguration);
+        }
+
+        return customConfigurations;
     }
 
     @Override
@@ -27,12 +36,11 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
 
     @Override
     public CustomConfiguration updateCustomConfiguration(CustomConfiguration updatedConfiguration) {
-        final CustomConfiguration customConfiguration = customConfigurationRepository.findByKey(updatedConfiguration.getKey()).
+        final CustomConfiguration existingConfiguration = customConfigurationRepository.findByKey(updatedConfiguration.getKey()).
                 orElseThrow(() -> new NoSuchElementException("No configuration found for : " + updatedConfiguration.getKey()));
-
-        customConfiguration.setValue(customConfiguration.getValue());
-
-        return customConfigurationRepository.save(customConfiguration);
+        updatedConfiguration.setId(existingConfiguration.getId());
+        customConfigurationRepository.save(updatedConfiguration);
+        return existingConfiguration;
     }
 
     @Override

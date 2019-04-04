@@ -13,5 +13,5 @@ public interface CustomConfigurationService {
 
     CustomConfiguration saveCustomConfiguration(CustomConfiguration customConfiguration);
 
-    void deleteCustomConfiguration(CustomConfiguration customConfiguration);
+    void deleteCustomConfiguration(String key);
 }

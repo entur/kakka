@@ -64,7 +64,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
             }
 
             @Override
-            public void deleteCustomConfiguration(CustomConfiguration customConfiguration) {
+            public void deleteCustomConfiguration(String key) {
 
             }
         };

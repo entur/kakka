@@ -49,8 +49,8 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
     }
 
     @Override
-    public void deleteCustomConfiguration(CustomConfiguration customConfiguration) {
-
+    public void deleteCustomConfiguration(String key) {
+        var customConfiguration = customConfigurationRepository.findByKey(key).orElseThrow(() -> new NoSuchElementException("No configuration found for : " + key));
         customConfigurationRepository.delete(customConfiguration);
     }
 

@@ -167,16 +167,24 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
                 .param().name("body").type(RestParamType.body).description("The configuration to update").endParam()
                 .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
+                .route().routeId("poi-filter-update-route")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("direct:update-configuration")
+                .endRest()
 
                 .post().description("Add new configuration").type(CustomConfiguration.class)
                 .param().name("body").type(RestParamType.body).description("new configuraiton").endParam()
                 .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
+                .route().routeId("poi-filter-add-route")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("direct:add-configuration")
+                .endRest()
 
                 .delete("/{key}").description("Delete configuration")
                 .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
                 .responseMessage().code(204).message("Configuration successfully deleted").endResponseMessage()
+                .route().routeId("poi-filter-delete-route")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("bean:customConfigurationService?method=deleteCustomConfiguration(${header.key})");
 
 

@@ -7,6 +7,8 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.spi.RouteContext;
 import org.apache.camel.spi.RoutePolicy;
 import org.apache.camel.spring.SpringRouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.connection.JmsTransactionManager;
 
 import java.util.List;
 
@@ -17,10 +19,12 @@ import static no.entur.kakka.Constants.SINGLETON_ROUTE_DEFINITION_GROUP_NAME;
  */
 public abstract class BaseRouteBuilder extends SpringRouteBuilder {
 
+    @Autowired
+    JmsTransactionManager jmsTransactionManager;
 
     @Override
     public void configure() throws Exception {
-        errorHandler(transactionErrorHandler()
+        errorHandler(transactionErrorHandler(jmsTransactionManager)
                              .logExhausted(true)
                              .logRetryStackTrace(true));
     }

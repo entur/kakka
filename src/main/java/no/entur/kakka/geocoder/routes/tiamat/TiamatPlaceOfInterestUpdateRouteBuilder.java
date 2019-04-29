@@ -24,6 +24,7 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.TokenService;
+import no.entur.kakka.services.CustomConfigurationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
@@ -33,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.util.List;
+import java.util.Arrays;
 
 import static no.entur.kakka.geocoder.GeoCoderConstants.*;
 
@@ -64,9 +65,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
     @Value("${osm.pbf.blobstore.subdirectory:osm}")
     private String blobStoreSubdirectoryForOsm;
 
-    @Value("#{'${osm.poi.filter:}'.split(',')}")
-    private List<String> poiFilter;
-
     @Value("${tiamat.poi.update.enabled:true}")
     private boolean routeEnabled;
 
@@ -78,6 +76,9 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private CustomConfigurationService customConfigurationService;
 
     @Override
     public void configure() throws Exception {
@@ -149,7 +150,11 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
     }
 
     private TopographicPlaceReader createTopographicPlaceReader(Exchange e) {
-        return new PbfTopographicPlaceReader(poiFilter, IanaCountryTldEnumeration.NO, new File(localWorkingDirectory + "/" + osmFileName));
+        var poiFilters = Arrays.asList(customConfigurationService.getCustomConfigurationByKey("poiFilter").getValue().split(","));
+        if (poiFilters.isEmpty()) {
+            log.warn("No poiFilter values exist in database");
+        }
+        return new PbfTopographicPlaceReader(poiFilters, IanaCountryTldEnumeration.NO, new File(localWorkingDirectory + "/" + osmFileName));
     }
 
 }

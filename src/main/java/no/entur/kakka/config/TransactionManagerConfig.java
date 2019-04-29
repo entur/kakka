@@ -16,12 +16,15 @@
 
 package no.entur.kakka.config;
 
+import org.apache.camel.spring.spi.SpringTransactionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.JmsTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 
 import javax.jms.ConnectionFactory;
+import javax.persistence.EntityManagerFactory;
 
 @Configuration
 public class TransactionManagerConfig {
@@ -29,6 +32,17 @@ public class TransactionManagerConfig {
     @Bean
     JmsTransactionManager transactionManager(@Autowired ConnectionFactory connectionFactory){
         return new JmsTransactionManager(connectionFactory);
+    }
+
+
+    @Bean
+    JpaTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+
+    @Bean
+    SpringTransactionPolicy jmsTransactionPolicy(@Autowired JmsTransactionManager jmsTransactionManager) {
+        return new SpringTransactionPolicy(jmsTransactionManager);
     }
 
 }

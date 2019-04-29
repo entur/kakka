@@ -97,7 +97,10 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
             return false;
         }
 
-        return typeFilter.stream().anyMatch(filter -> place.getKeyList().getKeyValue().stream().map(key -> key.getKey() + "=" + key.getValue()).anyMatch(tag -> filter.startsWith(tag)));
+        return typeFilter.stream()
+                .anyMatch(filter -> place.getKeyList().getKeyValue().stream()
+                        .map(key -> key.getKey() + "=" + key.getValue())
+                        .anyMatch(tag -> filter.startsWith(tag)));
     }
 
     @Override

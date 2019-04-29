@@ -69,12 +69,11 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
     @Value("${tiamat.administrative.units.update.directory:files/orgReg/adminUnits}")
     private String localWorkingDirectory;
 
-    @Value("${kartverket.admin.units.archive.filename:Grensedata_Norge_UTM33_Adm_enheter_SOSI.zip}")
+    @Value("${kartverket.admin.units.archive.filename:county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip}")
     private String adminUnitsArchiveFileName;
 
-    @Value("${kartverket.admin.units.filename:ADM_enheter_Norge.sos}")
+    @Value("${kartverket.admin.units.filename:Basisdata_0000_Norge_25833_Fylker_SOSI.sos}")
     private String adminUnitsFileName;
-
 
     @Value("${organisation.registry.admin.zone.code.space.id:rb}")
     private String adminZoneCodeSpaceId;

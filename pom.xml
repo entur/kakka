@@ -31,7 +31,7 @@
         <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <httpcomponents.version>4.5.2</httpcomponents.version>
         <assertj-core.version>3.3.0</assertj-core.version>
-        <camel-version>2.23.0</camel-version>
+        <camel-version>2.23.1</camel-version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <keycloak.version>4.7.0.Final</keycloak.version>
         <spring.security.version>5.1.1.RELEASE</spring.security.version>

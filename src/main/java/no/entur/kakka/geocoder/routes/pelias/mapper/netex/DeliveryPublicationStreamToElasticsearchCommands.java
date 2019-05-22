@@ -26,6 +26,8 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,8 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
+    public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
+
 
     private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
 
@@ -73,8 +77,10 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         this.gosInclude = gosInclude;
         if (poiFilter != null) {
             this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+            logger.info("pelias poiFilter is set to: " + poiFilter );
         } else {
             this.poiFilter = new ArrayList<>();
+            logger.info("No pelias poiFilter found");
         }
     }
 
@@ -151,6 +157,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
+            logger.info("Total number of topographical places from tiamat: " + places.size());
             TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter);
             final List<ElasticsearchCommand> collect = places.stream()
                     .map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<>(p)))
@@ -159,6 +166,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
                     .filter(d -> d != null)
                     .map(p -> ElasticsearchCommand.peliasIndexCommand(p))
                     .collect(Collectors.toList());
+            logger.info("Total topographical places mapped forElasticsearchCommand: " + collect.size());
             return collect;
         }
         return new ArrayList<>();

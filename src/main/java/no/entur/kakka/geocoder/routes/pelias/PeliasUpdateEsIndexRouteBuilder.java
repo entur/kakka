@@ -157,13 +157,13 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-insert-addresses");
 
         from("direct:insertTiamatData")
-                .log(LoggingLevel.DEBUG, "Start inserting Tiamat data to ES")
+                .log(LoggingLevel.INFO, "Start inserting Tiamat data to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForTiamatGeoCoderExport))
                 .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/tiamat"))
                 .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromTiamat"))
                 .setHeader(FILE_EXTENSION, constant("xml"))
                 .to("direct:haltIfContentIsMissing")
-                .log(LoggingLevel.DEBUG, "Finished inserting Tiamat data to ES")
+                .log(LoggingLevel.INFO, "Finished inserting Tiamat data to ES")
                 .routeId("pelias-insert-tiamat-data");
 
         from("direct:insertPlaceNames")
@@ -265,7 +265,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-convert-commands-from-addresses");
 
         from("direct:convertToPeliasCommandsFromTiamat")
+                .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands")
                 .bean("deliveryPublicationStreamToElasticsearchCommands", "transform")
+                .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands completed")
                 .routeId("pelias-convert-commands-from-tiamat");
 
 

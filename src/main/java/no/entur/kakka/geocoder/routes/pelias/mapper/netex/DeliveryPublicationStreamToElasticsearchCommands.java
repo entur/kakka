@@ -16,20 +16,16 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
-import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
-import no.entur.kakka.services.CustomConfigurationService;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,7 +38,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -58,32 +53,27 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-    private static final Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
+
+    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
 
     private final long poiBoost;
+
     private final double gosBoostFactor;
-    private final List<String> poiFilter;
-    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
+
     private boolean gosInclude;
 
+    private final List<String> poiFilter;
+
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
-                                                            @Autowired CustomConfigurationService customConfigurationService, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
+                                                                   @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
                                                             @Value("${pelias.gos.include:true}") boolean gosInclude) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
-
-        final CustomConfiguration poiFilter = customConfigurationService.getCustomConfigurationByKey("poiFilter");
-        final List<String> poiFilters = new ArrayList<>();
         if (poiFilter != null) {
-            logger.info("Kakka found poiFilter from db: " + poiFilter.getValue());
-            poiFilters.addAll(Arrays.asList(poiFilter.getValue().split(",")));
-        }
-        if (!poiFilters.isEmpty()) {
-            this.poiFilter = poiFilters.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
         } else {
-            logger.warn("No poiFilter values exist in database");
             this.poiFilter = new ArrayList<>();
         }
     }

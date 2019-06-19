@@ -23,6 +23,7 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
+import no.entur.kakka.security.TokenService;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -59,6 +60,9 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private GeojsonFeatureWrapperFactory wrapperFactory;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public void configure() throws Exception {
@@ -103,6 +107,7 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
         from("direct:updateNeighbouringCountriesInTiamat")
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
+                .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-neighbouring-countries-update-start");
 

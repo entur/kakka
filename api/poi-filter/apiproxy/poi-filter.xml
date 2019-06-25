@@ -9,7 +9,6 @@
         <Policy>flowCallout.replaceTargetUrl</Policy>
         <Policy>spikeArrest</Policy>
         <Policy>flowCallout.globalIpBlacklistTeamRutedata</Policy>
-        <Policy>flowCallout.generalSecurityHeaders</Policy>
     </Policies>
     <ProxyEndpoints>
         <ProxyEndpoint>poi-filter-v1</ProxyEndpoint>

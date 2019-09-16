@@ -26,6 +26,7 @@ import no.entur.kakka.config.GcsStorageConfig;
 import no.entur.kakka.config.IdempotentRepositoryConfig;
 import no.entur.kakka.config.TransactionManagerConfig;
 import org.apache.camel.builder.RouteBuilder;
+import org.entur.pubsub.camel.config.GooglePubSubCamelComponentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +43,7 @@ import java.util.Set;
  */
 @SpringBootApplication
 @EnableScheduling
-@Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class})
+@Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class, GooglePubSubCamelComponentConfig.class})
 public class App extends RouteBuilder {
 
     @Value("${shutdown.timeout:300}")

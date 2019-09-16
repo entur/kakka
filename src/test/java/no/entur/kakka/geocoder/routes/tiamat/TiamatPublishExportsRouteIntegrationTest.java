@@ -97,6 +97,9 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         tiamatStartExportMock.expectedMessageCount(1);
         statusQueueMock.expectedMessageCount(1);
         rescheduleMock.expectedMessageCount(1);
+
+        context.start();
+
         input.sendBody(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something")).toString());
 
         tiamatStartExportMock.assertIsSatisfied();
@@ -109,6 +112,9 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         tiamatStartExportMock.expectedMessageCount(0);
         rescheduleMock.expectedMessageCount(0);
         changeLogExportMock.expectedMessageCount(1);
+
+        context.start();
+
         input.sendBody(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something", TiamatExportTaskType.CHANGE_LOG)).toString());
 
         tiamatStartExportMock.assertIsSatisfied();
@@ -123,6 +129,8 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         rescheduleMock.expectedMessageCount(1);
 
         tiamatPollMock.whenAnyExchangeReceived(e -> e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, true));
+
+        context.start();
 
         input.sendBodyAndHeader(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something")).toString(), Constants.LOOP_COUNTER, 1);
 
@@ -143,6 +151,8 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         headers.put(Constants.SYSTEM_STATUS, status().toString());
         headers.put(Constants.LOOP_COUNTER, maxRetries);
 
+        context.start();
+
         input.sendBodyAndHeaders(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something")).toString(), headers);
 
         tiamatPollMock.assertIsSatisfied();
@@ -158,6 +168,8 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
 
         tiamatPollMock.whenAnyExchangeReceived(e -> e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, false));
 
+        context.start();
+
         input.sendBodyAndHeader(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something"), new TiamatExportTask("AnotherTask", "?anotherQuery=xx")).toString(), Constants.LOOP_COUNTER, 1);
 
         tiamatPollMock.assertIsSatisfied();
@@ -172,6 +184,8 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         rescheduleMock.expectedMessageCount(0);
 
         tiamatPollMock.whenAnyExchangeReceived(e -> e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, false));
+
+        context.start();
 
         input.sendBodyAndHeader(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something")).toString(), Constants.LOOP_COUNTER, 1);
 

@@ -67,11 +67,11 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 		GeoCoderTask task4 = task(GeoCoderTask.Phase.PELIAS_UPDATE);
 
 		destination.expectedBodiesReceived(task1, task2, task3, task4);
+		context.start();
+
 		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task3).toString());
 		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task2, task4).toString());
 		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task1).toString());
-
-		context.start();
 
 		destination.assertIsSatisfied();
 	}
@@ -87,9 +87,10 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 		// First task is rescheduled for step 2
 		destination.whenExchangeReceived(1, e -> e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, ongoingFinalStep));
 		destination.expectedBodiesReceived(ongoingInit, ongoingFinalStep, earlierPhase);
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(ongoingInit, earlierPhase).toString());
 
 		context.start();
+
+		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(ongoingInit, earlierPhase).toString());
 
 		destination.assertIsSatisfied();
 	}
@@ -113,9 +114,10 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 		});
 
 		destination.expectedBodiesReceived(task, taskNextIteration);
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
 
 		context.start();
+
+		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
 
 		destination.assertIsSatisfied();
 	}

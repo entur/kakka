@@ -88,6 +88,9 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         });
 
         TiamatExportTask changeLogTask = new TiamatExportTask("testExport", "queryParam=XXX", TiamatExportTaskType.CHANGE_LOG);
+
+        context.start();
+
         input.request("direct:processTiamatChangeLogExportTask", ex -> {
             ex.setProperty(Constants.TIAMAT_EXPORT_TASKS, new TiamatExportTasks(changeLogTask));
             ex.getIn().setHeader(Constants.SYSTEM_STATUS, JobEvent.builder().correlationId("1").jobDomain(JobEvent.JobDomain.TIAMAT).state(JobEvent.State.STARTED).action("EXPORT").build().toString());
@@ -113,6 +116,8 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
             e.getOut().setBody(null);
             e.getOut().setHeaders(e.getIn().getHeaders());
         });
+
+        context.start();
 
 
         input.request("direct:processTiamatChangeLogExportTask", ex -> {

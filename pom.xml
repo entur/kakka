@@ -500,7 +500,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <inherited>true</inherited>
                 <configuration>
-                    <argLine>-Xmx2048m</argLine>
+                    <argLine>-Xmx1G</argLine>
+                    <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
             <plugin>

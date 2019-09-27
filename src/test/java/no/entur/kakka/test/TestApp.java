@@ -17,11 +17,18 @@
 package no.entur.kakka.test;
 
 import no.entur.kakka.App;
+import no.entur.kakka.config.KakkaSecurityConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@ComponentScan(excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = KakkaSecurityConfig.class),
+})
 public class TestApp extends App {
 
     private static Logger logger = LoggerFactory.getLogger(TestApp.class);

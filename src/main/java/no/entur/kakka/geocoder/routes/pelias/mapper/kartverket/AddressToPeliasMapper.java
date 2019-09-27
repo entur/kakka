@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
+import org.apache.commons.text.WordUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
@@ -26,7 +27,6 @@ import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.kartverket.KartverketAddress;
 import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

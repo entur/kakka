@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.8-SNAPSHOT</version>
+        <version>0.0.9-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -22,17 +22,13 @@
         <developerConnection>scm:git:ssh://git@github.com:entur/kakka.git</developerConnection>
     </scm>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <geotools.version>20.1</geotools.version>
-        <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
-        <httpcomponents.version>4.5.10</httpcomponents.version>
-        <camel-version>2.24.1</camel-version>
+        <camel.version>2.24.1</camel.version>
         <keycloak.version>4.8.3.Final</keycloak.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
-
 
     </properties>
 
@@ -46,11 +42,11 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-bom</artifactId>
+                <version>${camel.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -172,7 +168,6 @@
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.0.7</version>
         </dependency>
 
         <dependency>
@@ -204,81 +199,66 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jetty9</artifactId>
-            <version>${camel-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jetty-common</artifactId>
-            <version>${camel-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http-common</artifactId>
-            <version>${camel-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring</artifactId>
-            <version>${camel-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http4</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jms</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-boot</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-metrics</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-quartz2</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jaxb</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-netty4-http</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jsonpath</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-swagger-java</artifactId>
-            <version>${camel-version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jsr311-api</artifactId>
@@ -293,7 +273,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-hazelcast</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <!-- Due to maven artifact cache, this dependency needs to be explicit -->
         <dependency>
@@ -319,17 +298,14 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-sql</artifactId>
-            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${httpcomponents.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpcomponents.version}</version>
         </dependency>
 
         <dependency>
@@ -371,7 +347,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-javaconfig</artifactId>
-            <version>${camel-version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -388,12 +363,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.19</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>el-api</artifactId>
             <version>6.0.53</version>
@@ -402,8 +371,15 @@
         <dependency>
             <groupId>crosby.binary</groupId>
             <artifactId>osmpbf</artifactId>
-            <version>1.3.3-protobuf-3.8.0</version>
+            <version>1.3.3-entur</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.8</version>
+        </dependency>
+
         <!-- testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -414,14 +390,12 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test-spring</artifactId>
-            <version>${camel-version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test</artifactId>
-            <version>${camel-version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -463,7 +437,7 @@
         <dependency>
             <groupId>no.jskdata</groupId>
             <artifactId>jskdata</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15</version>
         </dependency>
         <dependency>
             <groupId>no.vegvesen.nvdb</groupId>
@@ -486,7 +460,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <goals>

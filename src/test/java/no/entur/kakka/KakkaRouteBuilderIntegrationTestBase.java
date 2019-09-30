@@ -22,6 +22,7 @@ import org.apache.camel.test.spring.CamelSpringBootRunner;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -33,6 +34,9 @@ public abstract class KakkaRouteBuilderIntegrationTestBase {
 
     @Autowired
     protected ModelCamelContext context;
+
+    @Autowired
+    protected PubSubTemplate pubSubTemplate;
 
 
     protected void replaceEndpoint(String routeId, String originalEndpoint, String replacementEndpoint) throws Exception {

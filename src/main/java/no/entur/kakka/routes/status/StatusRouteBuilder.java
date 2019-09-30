@@ -23,11 +23,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class StatusRouteBuilder extends RouteBuilder {
 
+	public static final String JOB_EVENT_QUEUE = "JobEventQueue";
+
 	@Override
 	public void configure() throws Exception {
 		from("direct:updateStatus")
 				.log(LoggingLevel.INFO, getClass().getName(), "Sending off job status event: ${body}")
-				.to("entur-google-pubsub:JobEventQueue")
+				.to("entur-google-pubsub:" + JOB_EVENT_QUEUE)
 				.routeId("update-status").startupOrder(1);
 	}
 

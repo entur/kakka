@@ -10,8 +10,13 @@ import java.nio.file.Paths;
 public class FileUtils {
 
     public static void renameFiles(String folder, String target, String replacement) {
+
+        File containingFolder = new File(folder);
+        if (!containingFolder.exists()) {
+            throw new KakkaException("The folder does not exist: " + folder);
+        }
         try {
-            for (String fileName : new File(folder).list()) {
+            for (String fileName : containingFolder.list()) {
                 if (fileName.contains(target)) {
 
                     Files.move(Paths.get(folder, fileName), Paths.get(folder, fileName.replace(target, replacement)));

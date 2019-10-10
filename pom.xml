@@ -338,6 +338,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!--Used by Spring Actuator to expose metrics to Prometheus-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -487,20 +493,20 @@
                         <goals>
                             <goal>copy</goal>
                         </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.google.cloud</groupId>
+                                    <artifactId>pubsub-emulator</artifactId>
+                                    <version>0.1-SNAPSHOT</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>com.google.cloud</groupId>
-                            <artifactId>pubsub-emulator</artifactId>
-                            <version>0.1-SNAPSHOT</version>
-                            <type>jar</type>
-                            <overWrite>true</overWrite>
-                            <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
-                        </artifactItem>
-                    </artifactItems>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -64,7 +64,13 @@ public class KartverketAddressReader {
 		List<KartverketAddress> addresses = new ArrayList<>();
 		Object record;
 		while ((record = in.read()) != null) {
-			if (in.getLineNumber() > 1) {
+			if (in.getLineNumber() == 1) {
+				if (record instanceof KartverketAddress) {
+					KartverketAddress address = (KartverketAddress) record;
+					addresses.add(address);
+				}
+			}
+			else  {
 				KartverketAddress address = (KartverketAddress) record;
 				addresses.add(address);
 			}

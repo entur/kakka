@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.GeoCoderConstants;
+import no.entur.kakka.geocoder.routes.pelias.kartverket.KartverketAddress;
 import no.entur.kakka.geocoder.routes.util.AbortRouteException;
 import no.entur.kakka.geocoder.routes.util.MarkContentChangedAggregationStrategy;
 import no.entur.kakka.geocoder.sosi.SosiFileFilter;
@@ -27,15 +28,19 @@ import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.component.http4.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.model.dataformat.BindyType;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
 import org.apache.camel.processor.validation.PredicateValidationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -43,6 +48,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static no.entur.kakka.Constants.CONTENT_CHANGED;
@@ -53,6 +60,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 @Component
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
+
 
     @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
     private String elasticsearchScratchUrl;
@@ -71,6 +79,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
     @Value("${pelias.insert.batch.size:10000}")
     private int insertBatchSize;
+
+    @Value("${pelias.addresses.batch.size:100000}")
+    private int addressesBatchSize;
 
     @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
     private List<String> placeTypeWhiteList;
@@ -150,7 +161,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.DEBUG, "Start inserting addresses to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForKartverket + "/addresses"))
                 .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/addresses"))
-                .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromAddresses"))
+                .setHeader("dataset", simple("addresses"))
                 .setHeader(FILE_EXTENSION, constant("csv"))
                 .to("direct:haltIfContentIsMissing")
                 .log(LoggingLevel.DEBUG, "Finished inserting addresses to ES")
@@ -225,6 +236,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .choice()
                 .when(PredicateBuilder.and(header(FILE_HANDLE).endsWith(".zip"), header(HEADER_EXPAND_ZIP).isNotEqualTo(Boolean.FALSE)))
                 .to("direct:insertToPeliasFromZipArchive")
+                .when(PredicateBuilder.and(header("dataset").isEqualTo("addresses")))
+                .to("direct:convertToPeliasCommandsFromLargeAddresses")
                 .otherwise()
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${header." + FILE_HANDLE + "}")
                 .toD("${header." + CONVERSION_ROUTE + "}")
@@ -259,10 +272,16 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .bean("gtfsStopPlaceStreamToElasticsearchCommands", "transform")
                 .routeId("pelias-convert-commands-gtfs-stop-places");
 
-
-        from("direct:convertToPeliasCommandsFromAddresses")
+        from("direct:convertToPeliasCommandsFromLargeAddresses")
+                .log("Start processing large addresses file ....")
+                .split()
+                .tokenize("\n",addressesBatchSize)
+                .streaming()
+                .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .bean("addressStreamToElasticSearchCommands", "transform")
-                .routeId("pelias-convert-commands-from-addresses");
+                .to("direct:invokePeliasBulkCommand")
+                .log("End with large address file ....")
+                .end();
 
         from("direct:convertToPeliasCommandsFromTiamat")
                 .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands")

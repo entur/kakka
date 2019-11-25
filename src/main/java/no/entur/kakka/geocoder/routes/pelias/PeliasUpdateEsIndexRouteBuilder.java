@@ -61,7 +61,6 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 @Component
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(40);
 
     @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
     private String elasticsearchScratchUrl;
@@ -283,7 +282,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log("Start processing large addresses file ....")
                 .split()
                 .tokenize("\n",addressesBatchSize)
-                .streaming().executorService(fixedThreadPool)
+                .streaming()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")

@@ -61,6 +61,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 @Component
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(40);
 
     @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
     private String elasticsearchScratchUrl;
@@ -158,13 +159,13 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:insertAddresses")
-                .log(LoggingLevel.DEBUG, "Start inserting addresses to ES")
+                .log(LoggingLevel.INFO, "Start inserting addresses to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForKartverket + "/addresses"))
                 .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/addresses"))
                 .setHeader("dataset", simple("addresses"))
                 .setHeader(FILE_EXTENSION, constant("csv"))
                 .to("direct:haltIfContentIsMissing")
-                .log(LoggingLevel.DEBUG, "Finished inserting addresses to ES")
+                .log(LoggingLevel.INFO, "Finished inserting addresses to ES")
                 .routeId("pelias-insert-addresses");
 
         from("direct:insertTiamatData")
@@ -237,6 +238,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .when(PredicateBuilder.and(header(FILE_HANDLE).endsWith(".zip"), header(HEADER_EXPAND_ZIP).isNotEqualTo(Boolean.FALSE)))
                 .to("direct:insertToPeliasFromZipArchive")
                 .when(PredicateBuilder.and(header("dataset").isEqualTo("addresses")))
+                .log(LoggingLevel.INFO,"processing addresses...")
                 .to("direct:convertToPeliasCommandsFromLargeAddresses")
                 .otherwise()
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${header." + FILE_HANDLE + "}")
@@ -254,6 +256,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${body.name}")
                 .choice()
                 .when(PredicateBuilder.and(header("dataset").isEqualTo("addresses")))
+                .log(LoggingLevel.INFO,"processing zip address file ...")
                 .to("direct:convertToPeliasCommandsFromLargeAddresses")
                 .otherwise()
                 .toD("${header." + CONVERSION_ROUTE + "}")
@@ -280,7 +283,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log("Start processing large addresses file ....")
                 .split()
                 .tokenize("\n",addressesBatchSize)
-                .streaming()
+                .streaming().executorService(fixedThreadPool)
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")

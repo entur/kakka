@@ -25,7 +25,7 @@
 
         <geotools.version>20.1</geotools.version>
         <camel.version>2.24.1</camel.version>
-        <keycloak.version>4.8.3.Final</keycloak.version>
+        <keycloak.version>8.0.1</keycloak.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>

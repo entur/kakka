@@ -74,11 +74,11 @@ public class PeliasIndexParentInfoEnricher {
             if (parent.getCountyId() != null && parent.getCounty() == null) {
                 parent.setCounty(adminUnitRepository.getAdminUnitName(parent.getCountyId()));
             }
+            if (parent.getBoroughId() != null && parent.getBorough() == null) {
+                parent.setBorough(adminUnitRepository.getAdminUnitName(parent.getBoroughId()));
+            }
+        }
 
-        }
-        if (parent.getBoroughId() != null && parent.getBorough() == null) {
-            parent.setBorough(adminUnitRepository.getAdminUnitName(parent.getBoroughId()));
-        }
     }
 
 

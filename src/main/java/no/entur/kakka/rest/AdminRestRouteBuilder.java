@@ -17,6 +17,7 @@
 package no.entur.kakka.rest;
 
 import no.entur.kakka.domain.CustomConfiguration;
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
@@ -35,6 +36,7 @@ import javax.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -189,7 +191,19 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
 
 
+        rest("/osmpoifilter")
+                .description("OSM POI Filters REST service")
+                .consumes("application/json")
+                .produces("application/json")
 
+                .get().description("Get all filters").outType(List.class)
+                .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
+                .to("bean:osmpoifilterService?method=getFilters")
+
+                .put().description("Update (replace) all filters")
+                .param().name("body").type(RestParamType.body).description("List of filters").endParam()
+                .responseMessage().code(204).message("Filters updated successfully").endResponseMessage()
+                .to("bean:osmpoifilterService?method=updateFilters");
 
         rest("/organisation_admin")
                 .post("/administrative_zones/update")

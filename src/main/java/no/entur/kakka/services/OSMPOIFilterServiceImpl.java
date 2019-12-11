@@ -12,8 +12,12 @@ import java.util.stream.Collectors;
 @Service("osmpoifilterService")
 @Transactional(transactionManager = "jpaTransactionManager")
 public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
-    @Autowired
+
     OSMPOIFilterRepository repository;
+
+    public OSMPOIFilterServiceImpl(@Autowired OSMPOIFilterRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public List<OSMPOIFilter> getFilters() {

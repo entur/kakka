@@ -1,0 +1,24 @@
+version: '3'
+services:
+  postgres:
+    image: "postgres:9"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "kakka"
+      POSTGRES_PASSWORD: "kakka"
+      POSTGRES_INITDB_ARGS: "-d"
+  activemq:
+    image: "rmohr/activemq"
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+  elasticsearch:
+    image: "eu.gcr.io/entur-system-1287/elasticsearch:2.3.4"
+    ports:
+      - "9300:9200"
+    volumes:
+      - "${LOCAL_GCS_STORAGE}:/usr/share/elasticsearch/data"
+
+
+

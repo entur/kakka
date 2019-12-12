@@ -1,0 +1,46 @@
+Index: src/main/java/no/entur/kakka/geocoder/routes/pelias/PeliasUpdateRouteBuilder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/no/entur/kakka/geocoder/routes/pelias/PeliasUpdateRouteBuilder.java	(revision 3f006d3cff83e80c3b0c58b3b2933cf699a40f7f)
++++ src/main/java/no/entur/kakka/geocoder/routes/pelias/PeliasUpdateRouteBuilder.java	(date 1575899694000)
+@@ -84,12 +84,14 @@
+                 .log(LoggingLevel.INFO, "Start updating Pelias")
+                 .bean(updateStatusService, "setBuilding")
+                 .process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.PELIAS_UPDATE).build()).to("direct:updateStatus")
+-
++                /*
+                 .choice()
+                 .when(constant(startNewEsScratch))
+                 .to("direct:startElasticsearchScratchInstance")
+                 .otherwise()
+-                .log(LoggingLevel.WARN,"Updating an existing es-scratch instance. Only for local testing!")
++
++                 */
++                .log(LoggingLevel.INFO,"Updating an existing es-scratch instance. Only for local testing!")
+                 .to("direct:insertElasticsearchIndexData")
+                 .routeId("pelias-upload");
+@@ -101,11 +103,11 @@
+                 // Shutdown if already running
+                 .log(LoggingLevel.INFO, "Elasticsearch scratch instance already running. Scaling down first.")
+                 .setHeader(JOB_STATUS_ROUTING_DESTINATION, constant("direct:startElasticsearchScratchInstance"))
+-                .to("direct:shutdownElasticsearchScratchInstance")
++                //.to("direct:shutdownElasticsearchScratchInstance")
+                 .otherwise()
+                 .setHeader(NO_OF_REPLICAS, constant(1))
+                 .setHeader(JOB_STATUS_ROUTING_DESTINATION, constant("direct:insertElasticsearchIndexData"))
+-                .to("direct:rescaleElasticsearchScratchInstance")
++                //.to("direct:rescaleElasticsearchScratchInstance")
+                 .end()
+                 .routeId("pelias-es-scratch-start");
+@@ -134,8 +136,8 @@
+                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.POST))
+                 .process(e -> e.getIn().setBody(new ScalingOrder(elasticsearchScratchDeploymentName, "kakka", e.getIn().getHeader(NO_OF_REPLICAS, Integer.class))))
+                 .marshal().json(JsonLibrary.Jackson)
+-                .to(babylonUrl + "/deployment/scale")
+-                .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
++                //.to(babylonUrl + "/deployment/scale")
++                //.setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
+                 .routeId("pelias-es-scratch-rescale");
+         from("direct:pollElasticsearchScratchStatus")

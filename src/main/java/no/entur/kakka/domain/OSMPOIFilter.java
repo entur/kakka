@@ -5,19 +5,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import javax.validation.Constraint;
+import java.lang.annotation.Annotation;
 
 @Entity
-@Table(name = "osm_poi_filter", uniqueConstraints = @UniqueConstraint(columnNames = {"key", "value"}))
+@Table(name = "osm_poi_filter")
 public class OSMPOIFilter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Version
-    private int version;
 
     @Column(nullable = false)
     private String key;
@@ -44,10 +44,6 @@ public class OSMPOIFilter {
         this.priority = priority;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
     public String getKey() {
         return key;
     }
@@ -62,9 +58,5 @@ public class OSMPOIFilter {
 
     public int getPriority() {
         return priority;
-    }
-
-    public int getVersion() {
-        return version;
     }
 }

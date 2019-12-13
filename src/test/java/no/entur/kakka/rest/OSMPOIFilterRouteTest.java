@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = AdminRestRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
 public class OSMPOIFilterRouteTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @Produce(uri = "/rest:get:services/osmpoifilter")
+    @Produce(uri = "rest:get:services/osmpoifilter")
     protected ProducerTemplate getTemplate;
 
     @Test

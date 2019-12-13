@@ -2,6 +2,8 @@ package no.entur.kakka.services;
 
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.repository.OSMPOIFilterRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,5 +39,4 @@ public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
         repository.deleteAll(filtersToDelete);
         repository.saveAll(filtersToUpdate);
     }
-
 }

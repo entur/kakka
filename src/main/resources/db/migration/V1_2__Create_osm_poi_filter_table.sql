@@ -7,7 +7,7 @@ CREATE TABLE osm_poi_filter
     UNIQUE (key, value)
 );
 
-CREATE INDEX osm_poi_filter_key_value_index ON osm_poi_filter (key, value);
+CREATE UNIQUE INDEX osm_poi_filter_key_value_index ON osm_poi_filter (key, value);
 
 INSERT INTO osm_poi_filter
 VALUES  (DEFAULT, 'amenity', 'cinema', 1),

@@ -14,15 +14,12 @@ import java.util.stream.Collectors;
 @Transactional(transactionManager = "jpaTransactionManager")
 public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     OSMPOIFilterRepository repository;
 
     public OSMPOIFilterServiceImpl(@Autowired OSMPOIFilterRepository repository) {
         this.repository = repository;
-    }
-
-    @Override
-    public Optional<OSMPOIFilter> getByKeyAndValue(String key, String value) {
-        return repository.getByKeyAndValue(key, value).stream().findAny();
     }
 
     @Override

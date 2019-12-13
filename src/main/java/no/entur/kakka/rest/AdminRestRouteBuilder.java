@@ -196,7 +196,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .consumes("application/json")
                 .produces("application/json")
 
-                .get().description("Get all filters").outType(List.class)
+                .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
 

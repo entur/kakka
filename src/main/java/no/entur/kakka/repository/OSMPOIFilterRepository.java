@@ -7,6 +7,4 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface OSMPOIFilterRepository extends JpaRepository<OSMPOIFilter, Long> {
-    List<OSMPOIFilter> getByKeyAndValue(@Param("key") String key, @Param("value") String value);
-}
+public interface OSMPOIFilterRepository extends JpaRepository<OSMPOIFilter, Long> {}

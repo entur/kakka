@@ -200,7 +200,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
 
-                .put().description("Update (replace) all filters")
+                .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
                 .param().name("body").type(RestParamType.body).description("List of filters").endParam()
                 .responseMessage().code(204).message("Filters updated successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=updateFilters");

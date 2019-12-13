@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OSMPOIFilterService {
-    public Optional<OSMPOIFilter> getFilterMatchingKeyAndValue(String key, String value);
+    public Optional<OSMPOIFilter> getByKeyAndValue(String key, String value);
     public List<OSMPOIFilter> getFilters();
     public void updateFilters(List<OSMPOIFilter> filters);
 }

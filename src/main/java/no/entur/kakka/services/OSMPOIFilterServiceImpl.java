@@ -21,7 +21,7 @@ public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
     }
 
     @Override
-    public Optional<OSMPOIFilter> getFilterMatchingKeyAndValue(String key, String value) {
+    public Optional<OSMPOIFilter> getByKeyAndValue(String key, String value) {
         return repository.getByKeyAndValue(key, value).stream().findAny();
     }
 

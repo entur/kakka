@@ -33,4 +33,7 @@ VALUES  (DEFAULT, 'amenity', 'cinema', 1),
         (DEFAULT, 'social_facility', 'nursing_home', 1),
         (DEFAULT, 'tourism', 'museum', 1),
         (DEFAULT, 'name', 'Entur AS', 1),
-        (DEFAULT, 'name', 'Kristiansand Dyrepark', 1);
+        (DEFAULT, 'name', 'Kristiansand Dyrepark', 1),
+        (DEFAULT, 'tourism', 'event', 1),
+        (DEFAULT, 'amenity', 'golf_course', 1),
+        (DEFAULT, 'amenity', 'library', 1);

@@ -22,7 +22,7 @@ public class OSMPOIFilterServiceTest {
     @Before
     public void init() {
         repository = new OSMPOIFilterRepositoryStub();
-        service = new OSMPOIFilterServiceImpl(repository);
+        service = new OSMPOIFilterServiceImpl(repository, 1);
     }
 
     @Test
@@ -44,7 +44,6 @@ public class OSMPOIFilterServiceTest {
     @Test
     public void testUpdate() {
         List<OSMPOIFilter> all = getTestFilters(5);
-        List<OSMPOIFilter> toBeDeleted = all.subList(0, 2);
         List<OSMPOIFilter> toBeUpdated = all.subList(2, 5)
                 .stream()
                 .map((old) -> {
@@ -70,6 +69,13 @@ public class OSMPOIFilterServiceTest {
         Assert.assertEquals(toBeUpdated, service.getFilters());
     }
 
+    @Test
+    public void testDefaultPriority() {
+        OSMPOIFilter testFilter = new OSMPOIFilter();
+        service.updateFilters(List.of(testFilter));
+        Assert.assertEquals(Integer.valueOf(1), repository.findAll().get(0).getPriority());
+    }
+
     private List<OSMPOIFilter> getTestFilters(int count) {
         List<OSMPOIFilter> filters = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -82,18 +88,5 @@ public class OSMPOIFilterServiceTest {
         OSMPOIFilter testFilter = new OSMPOIFilter();
         testFilter.setId((long) index);
         return testFilter;
-    }
-
-    private class ObjectEqualityArgumentMatcher<T> implements ArgumentMatcher<T> {
-        T thisObject;
-
-        public ObjectEqualityArgumentMatcher(T thisObject) {
-            this.thisObject = thisObject;
-        }
-
-        @Override
-        public boolean matches(Object argument) {
-            return thisObject.equals(argument);
-        }
     }
 }

@@ -3,6 +3,7 @@ package no.entur.kakka.services;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.repository.OSMPOIFilterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +14,13 @@ import java.util.stream.Collectors;
 @Service("osmpoifilterService")
 @Transactional(transactionManager = "jpaTransactionManager")
 public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
-    OSMPOIFilterRepository repository;
+    private OSMPOIFilterRepository repository;
+    private Integer defaultPriority;
 
-    public OSMPOIFilterServiceImpl(@Autowired OSMPOIFilterRepository repository) {
+    @Autowired
+    public OSMPOIFilterServiceImpl(OSMPOIFilterRepository repository, @Value("${osmpoifilter.priority.default:1}") Integer defaultPriority) {
         this.repository = repository;
+        this.defaultPriority = defaultPriority;
     }
 
     @Override
@@ -27,12 +31,32 @@ public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
     @Override
     public void updateFilters(List<OSMPOIFilter> filtersToUpdate) {
         List<OSMPOIFilter> currentFilters = repository.findAll();
-        List<OSMPOIFilter> filtersToDelete = currentFilters
-                .stream()
-                .filter(f1 -> filtersToUpdate.stream().noneMatch(f2 -> f1.getId().equals(f2.getId())))
-                .collect(Collectors.toList());
+        List<OSMPOIFilter> filtersToDelete = findFiltersToDelete(currentFilters, filtersToUpdate);
         repository.deleteAll(filtersToDelete);
-        repository.saveAll(filtersToUpdate);
+        repository.saveAll(preprocess(filtersToUpdate));
+    }
+
+    private List<OSMPOIFilter> findFiltersToDelete(List<OSMPOIFilter> currentFilters, List<OSMPOIFilter> filtersToUpdate) {
+        return currentFilters
+                .stream()
+                .filter(f -> containsFilter(f, filtersToUpdate))
+                .collect(Collectors.toList());
+    }
+
+    private boolean containsFilter(OSMPOIFilter filter, List<OSMPOIFilter> filters) {
+        return filters
+                .stream()
+                .anyMatch(f -> f.getId().equals(filter.getId()));
+    }
+
+    private List<OSMPOIFilter> preprocess(List<OSMPOIFilter> filters) {
+        return filters.stream().peek(this::addDefaultPriority).collect(Collectors.toList());
+    }
+
+    private void addDefaultPriority(OSMPOIFilter filter) {
+        if (filter.getPriority() == null) {
+            filter.setPriority(defaultPriority);
+        }
     }
 
 }

@@ -80,7 +80,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${pelias.insert.batch.size:10000}")
     private int insertBatchSize;
 
-    @Value("${pelias.addresses.batch.size:100000}")
+    @Value("${pelias.addresses.batch.size:10000}")
     private int addressesBatchSize;
 
     @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
@@ -284,6 +284,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .tokenize("\n",addressesBatchSize)
                 .streaming()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
+                .log("Batch counter: converted ${header.CamelSplitIndex}++  addresses")
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")
                 .log("End with large address file ....")

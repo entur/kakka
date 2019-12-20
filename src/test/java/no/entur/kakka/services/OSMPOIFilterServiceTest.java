@@ -16,29 +16,29 @@ import static org.mockito.Mockito.*;
 
 public class OSMPOIFilterServiceTest {
 
-    OSMPOIFilterRepository mockedRepository;
+    OSMPOIFilterRepositoryStub repository;
     OSMPOIFilterService service;
 
     @Before
     public void init() {
-        mockedRepository = Mockito.mock(OSMPOIFilterRepository.class);
-        service = new OSMPOIFilterServiceImpl(mockedRepository);
+        repository = new OSMPOIFilterRepositoryStub();
+        service = new OSMPOIFilterServiceImpl(repository);
     }
 
     @Test
     public void testGet() {
-        Assert.assertEquals(service.getFilters().size(), 0);
-        when(mockedRepository.findAll()).thenReturn(getTestFilters(5));
-        Assert.assertEquals(service.getFilters().size(), 5);
+        Assert.assertEquals(0, service.getFilters().size());
+        repository.setFilters(getTestFilters(5));
+        Assert.assertEquals(5, service.getFilters().size());
     }
 
     @Test
     public void testUpdateDeleteAll() {
         List<OSMPOIFilter> toBeDeleted = getTestFilters(5);
-        when(mockedRepository.findAll()).thenReturn(toBeDeleted);
-        Assert.assertEquals(service.getFilters().size(), 5);
+        repository.setFilters(toBeDeleted);
+        Assert.assertEquals(5, service.getFilters().size());
         service.updateFilters(List.of());
-        verify(mockedRepository, times(1)).deleteAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeDeleted)));
+        Assert.assertEquals( 0, service.getFilters().size());
     }
 
     @Test
@@ -65,10 +65,9 @@ public class OSMPOIFilterServiceTest {
                 })
                 .collect(Collectors.toList());
 
-        when(mockedRepository.findAll()).thenReturn(all);
+        repository.setFilters(all);
         service.updateFilters(toBeUpdated);
-        verify(mockedRepository, times(1)).deleteAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeDeleted)));
-        verify(mockedRepository, times(1)).saveAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeUpdated)));
+        Assert.assertEquals(toBeUpdated, service.getFilters());
     }
 
     private List<OSMPOIFilter> getTestFilters(int count) {

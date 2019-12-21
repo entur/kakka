@@ -59,7 +59,17 @@ public class OSMPOIFilterRepositoryStub implements OSMPOIFilterRepository {
 
     @Override
     public void deleteAll(Iterable<? extends OSMPOIFilter> iterable) {
-        filters = filters.stream().filter(f -> StreamSupport.stream(iterable.spliterator(), false).noneMatch(i -> i.getId().equals(f.getId()))).collect(Collectors.toList());
+        List<OSMPOIFilter> list = StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList());
+        filters = filters
+                .stream()
+                .filter(f -> !containsFilter(f, list))
+                .collect(Collectors.toList());
+    }
+
+    private boolean containsFilter(OSMPOIFilter filter, List<OSMPOIFilter> filters) {
+        return filters
+                .stream()
+                .anyMatch(f -> f.getId().equals(filter.getId()));
     }
 
     @Override
@@ -74,7 +84,18 @@ public class OSMPOIFilterRepositoryStub implements OSMPOIFilterRepository {
 
     @Override
     public <S extends OSMPOIFilter> List<S> saveAll(Iterable<S> entities) {
-        filters = StreamSupport.stream(entities.spliterator(), false).collect(Collectors.toList());
+
+        StreamSupport.stream(entities.spliterator(), false)
+                .forEach(f -> {
+                    if (containsFilter(f, filters)) {
+                        OSMPOIFilter filter = filters.stream().filter(f2 -> f.getId().equals(f2.getId())).findFirst().get();
+                        filter.setKey(f.getKey());
+                        filter.setValue(f.getValue());
+                        filter.setPriority(f.getPriority());
+                    } else {
+                        filters.add(f);
+                    }
+                });
         return null;
     }
 

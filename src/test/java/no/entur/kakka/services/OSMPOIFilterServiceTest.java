@@ -66,7 +66,12 @@ public class OSMPOIFilterServiceTest {
 
         repository.setFilters(all);
         service.updateFilters(toBeUpdated);
-        Assert.assertEquals(toBeUpdated, service.getFilters());
+
+        List<OSMPOIFilter> updatedFilters = service.getFilters();
+
+        for (int i = 0; i < updatedFilters.size(); i++) {
+            Assert.assertEquals(toBeUpdated.get(i).getId(), updatedFilters.get(i).getId());
+        }
     }
 
     @Test

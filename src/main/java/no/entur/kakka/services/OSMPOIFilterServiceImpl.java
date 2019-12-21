@@ -29,17 +29,34 @@ public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
     }
 
     @Override
-    public void updateFilters(List<OSMPOIFilter> filtersToUpdate) {
+    public void updateFilters(List<OSMPOIFilter> filters) {
         List<OSMPOIFilter> currentFilters = repository.findAll();
-        List<OSMPOIFilter> filtersToDelete = findFiltersToDelete(currentFilters, filtersToUpdate);
+        List<OSMPOIFilter> filtersToDelete = findFiltersToDelete(currentFilters, filters);
+        List<OSMPOIFilter> filtersToUpdate = findFiltersToUpdate(currentFilters, filters);
+        List<OSMPOIFilter> filtersToAdd = findFiltersToAdd(currentFilters, filters);
         repository.deleteAll(filtersToDelete);
         repository.saveAll(preprocess(filtersToUpdate));
+        repository.saveAll(preprocess(filtersToAdd));
     }
 
-    private List<OSMPOIFilter> findFiltersToDelete(List<OSMPOIFilter> currentFilters, List<OSMPOIFilter> filtersToUpdate) {
+    private List<OSMPOIFilter> findFiltersToDelete(List<OSMPOIFilter> currentFilters, List<OSMPOIFilter> filters) {
         return currentFilters
                 .stream()
-                .filter(f -> containsFilter(f, filtersToUpdate))
+                .filter(f -> !containsFilter(f, filters))
+                .collect(Collectors.toList());
+    }
+
+    private List<OSMPOIFilter> findFiltersToUpdate(List<OSMPOIFilter> currentFilters, List<OSMPOIFilter> filters) {
+        return filters
+                .stream()
+                .filter(f -> containsFilter(f, currentFilters))
+                .collect(Collectors.toList());
+    }
+
+    private List<OSMPOIFilter> findFiltersToAdd(List<OSMPOIFilter> currentFilters, List<OSMPOIFilter> filters) {
+        return filters
+                .stream()
+                .filter(f -> !containsFilter(f, currentFilters))
                 .collect(Collectors.toList());
     }
 

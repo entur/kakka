@@ -5,12 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
-import javax.validation.Constraint;
-import java.lang.annotation.Annotation;
 
 @Entity
 @Table(name = "osm_poi_filter")
@@ -26,7 +21,7 @@ public class OSMPOIFilter {
     private String value;
 
     @Column(nullable = false)
-    private int priority;
+    private Integer priority;
 
     public void setId(Long id) {
         this.id = id;
@@ -40,7 +35,7 @@ public class OSMPOIFilter {
         this.value = value;
     }
 
-    public void setPriority(int priority) {
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 
@@ -56,7 +51,7 @@ public class OSMPOIFilter {
         return value;
     }
 
-    public int getPriority() {
+    public Integer getPriority() {
         return priority;
     }
 

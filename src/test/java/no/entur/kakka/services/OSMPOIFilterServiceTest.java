@@ -16,35 +16,34 @@ import static org.mockito.Mockito.*;
 
 public class OSMPOIFilterServiceTest {
 
-    OSMPOIFilterRepository mockedRepository;
+    OSMPOIFilterRepositoryStub repository;
     OSMPOIFilterService service;
 
     @Before
     public void init() {
-        mockedRepository = Mockito.mock(OSMPOIFilterRepository.class);
-        service = new OSMPOIFilterServiceImpl(mockedRepository);
+        repository = new OSMPOIFilterRepositoryStub();
+        service = new OSMPOIFilterServiceImpl(repository, 1);
     }
 
     @Test
     public void testGet() {
-        Assert.assertEquals(service.getFilters().size(), 0);
-        when(mockedRepository.findAll()).thenReturn(getTestFilters(5));
-        Assert.assertEquals(service.getFilters().size(), 5);
+        Assert.assertEquals(0, service.getFilters().size());
+        repository.setFilters(getTestFilters(5));
+        Assert.assertEquals(5, service.getFilters().size());
     }
 
     @Test
     public void testUpdateDeleteAll() {
         List<OSMPOIFilter> toBeDeleted = getTestFilters(5);
-        when(mockedRepository.findAll()).thenReturn(toBeDeleted);
-        Assert.assertEquals(service.getFilters().size(), 5);
+        repository.setFilters(toBeDeleted);
+        Assert.assertEquals(5, service.getFilters().size());
         service.updateFilters(List.of());
-        verify(mockedRepository, times(1)).deleteAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeDeleted)));
+        Assert.assertEquals( 0, service.getFilters().size());
     }
 
     @Test
     public void testUpdate() {
         List<OSMPOIFilter> all = getTestFilters(5);
-        List<OSMPOIFilter> toBeDeleted = all.subList(0, 2);
         List<OSMPOIFilter> toBeUpdated = all.subList(2, 5)
                 .stream()
                 .map((old) -> {
@@ -65,10 +64,21 @@ public class OSMPOIFilterServiceTest {
                 })
                 .collect(Collectors.toList());
 
-        when(mockedRepository.findAll()).thenReturn(all);
+        repository.setFilters(all);
         service.updateFilters(toBeUpdated);
-        verify(mockedRepository, times(1)).deleteAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeDeleted)));
-        verify(mockedRepository, times(1)).saveAll(argThat(new ObjectEqualityArgumentMatcher<>(toBeUpdated)));
+
+        List<OSMPOIFilter> updatedFilters = service.getFilters();
+
+        for (int i = 0; i < updatedFilters.size(); i++) {
+            Assert.assertEquals(toBeUpdated.get(i).getId(), updatedFilters.get(i).getId());
+        }
+    }
+
+    @Test
+    public void testDefaultPriority() {
+        OSMPOIFilter testFilter = new OSMPOIFilter();
+        service.updateFilters(List.of(testFilter));
+        Assert.assertEquals(Integer.valueOf(1), repository.findAll().get(0).getPriority());
     }
 
     private List<OSMPOIFilter> getTestFilters(int count) {
@@ -83,18 +93,5 @@ public class OSMPOIFilterServiceTest {
         OSMPOIFilter testFilter = new OSMPOIFilter();
         testFilter.setId((long) index);
         return testFilter;
-    }
-
-    private class ObjectEqualityArgumentMatcher<T> implements ArgumentMatcher<T> {
-        T thisObject;
-
-        public ObjectEqualityArgumentMatcher(T thisObject) {
-            this.thisObject = thisObject;
-        }
-
-        @Override
-        public boolean matches(Object argument) {
-            return thisObject.equals(argument);
-        }
     }
 }

@@ -58,7 +58,6 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
         if (PLACE_OF_INTEREST.equals(place.getTopographicPlaceType())) {
             document.setPopularity(popularity * getPopularityBoost(place));
             document.setCategory(Arrays.asList("poi"));
-            document.set
         } else {
             document.setPopularity(popularity);
         }

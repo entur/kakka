@@ -64,7 +64,7 @@ public class TopographicPlaceConverterTest {
 
     @Test
     public void testConvertPlaceOfInterestFromOsmPbf() throws Exception {
-        List<OSMPOIFilter> filters = Arrays.asList(createFilter("leisure", "common"), createFilter("naptan", "indicator"));
+        List<OSMPOIFilter> filters = Arrays.asList(createFilter("leisure", "common"), createFilter("naptan:indicator", ""));
         TopographicPlaceReader reader = new PbfTopographicPlaceReader(filters, IanaCountryTldEnumeration.NO,
                                                                              new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
         String targetPath = "target/poi.xml";

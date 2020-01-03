@@ -155,7 +155,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         for (Map.Entry<String, String> tag : entity.getTags().entrySet()) {
-            if (osmpoiFilters.stream().anyMatch(f -> (f.getKey().equals(tag.getKey()) && f.getValue().equals(tag.getValue())))) {
+            if (osmpoiFilters.stream().anyMatch(f -> (tag.getKey().equals(f.getKey()) && tag.getValue().startsWith(f.getValue())))) {
                 return true;
             }
         }

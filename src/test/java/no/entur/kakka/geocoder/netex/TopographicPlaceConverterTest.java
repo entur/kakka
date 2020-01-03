@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.netex;
 
 
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonCollectionTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
@@ -63,8 +64,8 @@ public class TopographicPlaceConverterTest {
 
     @Test
     public void testConvertPlaceOfInterestFromOsmPbf() throws Exception {
-        List<String> filter = Arrays.asList("leisure=common", "naptan:indicator");
-        TopographicPlaceReader reader = new PbfTopographicPlaceReader(filter, IanaCountryTldEnumeration.NO,
+        List<OSMPOIFilter> filters = Arrays.asList(createFilter("leisure", "common"), createFilter("naptan", "indicator"));
+        TopographicPlaceReader reader = new PbfTopographicPlaceReader(filters, IanaCountryTldEnumeration.NO,
                                                                              new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
         String targetPath = "target/poi.xml";
         converter.toNetexFile(reader,
@@ -123,5 +124,11 @@ public class TopographicPlaceConverterTest {
         return publicationDeliveryStructure;
     }
 
+    private OSMPOIFilter createFilter(String key, String value) {
+        OSMPOIFilter filter = new OSMPOIFilter();
+        filter.setKey(key);
+        filter.setValue(value);
+        return filter;
+    }
 
 }

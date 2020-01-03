@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.netex.pbf;
 
 
+import no.entur.kakka.domain.OSMPOIFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
@@ -33,7 +34,7 @@ public class PbfTopographicPlaceReaderTest {
 	@Test
 	public void testParsePbfSampleFile() throws Exception {
 		PbfTopographicPlaceReader reader =
-				new PbfTopographicPlaceReader(Arrays.asList("leisure=common", "naptan:indicator"), IanaCountryTldEnumeration.NO,
+				new PbfTopographicPlaceReader(Arrays.asList(createFilter("leisure", "common"), createFilter("naptan", "indicator")), IanaCountryTldEnumeration.NO,
 						                             new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
 
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
@@ -48,5 +49,12 @@ public class PbfTopographicPlaceReaderTest {
 			Assert.assertNotNull(tp.getCentroid());
 		}
 
+	}
+
+	private OSMPOIFilter createFilter(String key, String value) {
+		OSMPOIFilter filter = new OSMPOIFilter();
+		filter.setKey(key);
+		filter.setValue(value);
+		return filter;
 	}
 }

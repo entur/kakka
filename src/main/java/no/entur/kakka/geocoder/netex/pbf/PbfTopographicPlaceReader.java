@@ -65,7 +65,7 @@ public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 	@Override
 	public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException {
 		for (File file : files) {
-			OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, filter, PARTICIPANT_REF, countryRef);
+			OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, osmpoiFilters, PARTICIPANT_REF, countryRef);
 			BinaryOpenStreetMapParser parser = new BinaryOpenStreetMapParser(contentHandler);
 
 			// Parse ways to collect nodes first

@@ -63,4 +63,11 @@ public class OSMPOIFilter {
         }
         return 0;
     }
+
+    public static OSMPOIFilter fromKeyAndValue(String key, String value) {
+        OSMPOIFilter filter = new OSMPOIFilter();
+        filter.setKey(key);
+        filter.setValue(value);
+        return filter;
+    }
 }

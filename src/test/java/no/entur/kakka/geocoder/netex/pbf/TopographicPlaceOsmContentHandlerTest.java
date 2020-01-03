@@ -84,9 +84,6 @@ public class TopographicPlaceOsmContentHandlerTest {
 	}
 
 	private OSMPOIFilter createFilter(String key, String value) {
-		OSMPOIFilter filter = new OSMPOIFilter();
-		filter.setKey(key);
-		filter.setValue(value);
-		return filter;
+		return OSMPOIFilter.fromKeyAndValue(key, value);
 	}
 }

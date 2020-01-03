@@ -125,10 +125,6 @@ public class TopographicPlaceConverterTest {
     }
 
     private OSMPOIFilter createFilter(String key, String value) {
-        OSMPOIFilter filter = new OSMPOIFilter();
-        filter.setKey(key);
-        filter.setValue(value);
-        return filter;
+        return OSMPOIFilter.fromKeyAndValue(key, value);
     }
-
 }

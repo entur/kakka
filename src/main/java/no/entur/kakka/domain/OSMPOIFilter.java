@@ -54,4 +54,13 @@ public class OSMPOIFilter {
     public Integer getPriority() {
         return priority;
     }
+
+    public static int sort(OSMPOIFilter a, OSMPOIFilter b) {
+        if (a.getPriority() > b.getPriority()) {
+            return 1;
+        } else if (b.getPriority() > a.getPriority()) {
+            return -1;
+        }
+        return 0;
+    }
 }

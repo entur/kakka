@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
 
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 
 import org.rutebanken.netex.model.MultilingualString;
@@ -26,6 +27,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.rutebanken.netex.model.TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST;
 
@@ -35,10 +39,13 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
 
     private List<String> typeFilter;
 
-    public TopographicPlaceToPeliasMapper(long popularity, List<String> typeFilter) {
+    private List<OSMPOIFilter> osmpoiFilters;
+
+    public TopographicPlaceToPeliasMapper(long popularity, List<String> typeFilter, List<OSMPOIFilter> osmpoiFilters) {
         super();
         this.popularity = popularity;
         this.typeFilter = typeFilter;
+        this.osmpoiFilters = osmpoiFilters;
     }
 
     @Override
@@ -48,11 +55,19 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
             place.getAlternativeDescriptors().getTopographicPlaceDescriptor().stream().filter(an -> an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
         }
 
-        document.setPopularity(popularity);
-
         if (PLACE_OF_INTEREST.equals(place.getTopographicPlaceType())) {
+            document.setPopularity(popularity * getPopularityBoost(place));
             document.setCategory(Arrays.asList("poi"));
+        } else {
+            document.setPopularity(popularity);
         }
+    }
+
+    private int getPopularityBoost(TopographicPlace place) {
+        return osmpoiFilters.stream().filter(f ->
+            place.getKeyList().getKeyValue().stream()
+                    .anyMatch(key -> key.getKey().equals(f.getKey()) && key.getValue().equals(f.getValue()))
+        ).max(OSMPOIFilter::sort).map(OSMPOIFilter::getPriority).orElse(1);
     }
 
     @Override

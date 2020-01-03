@@ -57,7 +57,6 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-    @Autowired
     OSMPOIFilterRepository osmpoiFilterRepository;
 
     public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
@@ -74,11 +73,12 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
                                                                    @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                            @Value("${pelias.gos.include:true}") boolean gosInclude) {
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterRepository osmpoiFilterRepository) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
+        this.osmpoiFilterRepository = osmpoiFilterRepository;
         if (poiFilter != null) {
             this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
             logger.info("pelias poiFilter is set to: " + poiFilter );

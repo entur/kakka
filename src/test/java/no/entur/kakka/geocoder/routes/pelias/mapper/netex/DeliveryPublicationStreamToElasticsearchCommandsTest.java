@@ -20,6 +20,8 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
+import no.entur.kakka.repository.OSMPOIFilterRepository;
+import no.entur.kakka.services.OSMPOIFilterRepositoryStub;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,9 +37,10 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
 
     @Test
     public void testTransform() throws Exception {
+        OSMPOIFilterRepository osmpoiFilterRepository = new OSMPOIFilterRepositoryStub();
         DeliveryPublicationStreamToElasticsearchCommands mapper =
                 new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
-                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true);
+                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterRepository);
 
         Collection<ElasticsearchCommand> commands = mapper
                                                             .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));

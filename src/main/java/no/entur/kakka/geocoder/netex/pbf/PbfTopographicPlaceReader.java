@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.netex.pbf;
 
 import crosby.binary.file.BlockInputStream;
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.openstreetmap.BinaryOpenStreetMapParser;
 import no.entur.kakka.openstreetmap.OpenStreetMapContentHandler;
@@ -37,7 +38,7 @@ public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 
 	private File[] files;
 
-	private List<String> filter;
+	private List<OSMPOIFilter> osmpoiFilters;
 
 	private IanaCountryTldEnumeration countryRef;
 
@@ -45,9 +46,9 @@ public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 
 	private static final String PARTICIPANT_REF = "OSM";
 
-	public PbfTopographicPlaceReader(List<String> filter, IanaCountryTldEnumeration countryRef, File... files) {
+	public PbfTopographicPlaceReader(List<OSMPOIFilter> osmpoiFilters, IanaCountryTldEnumeration countryRef, File... files) {
 		this.files = files;
-		this.filter = filter;
+		this.osmpoiFilters = osmpoiFilters;
 		this.countryRef = countryRef;
 	}
 

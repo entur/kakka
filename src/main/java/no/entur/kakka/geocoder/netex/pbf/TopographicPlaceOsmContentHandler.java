@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.netex.pbf;
 
 import net.opengis.gml._3.PolygonType;
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.netex.NetexGeoUtil;
 import no.entur.kakka.geocoder.netex.TopographicPlaceNetexWriter;
 import no.entur.kakka.openstreetmap.OpenStreetMapContentHandler;
@@ -65,7 +66,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
     private BlockingQueue<TopographicPlace> topographicPlaceQueue;
 
-    private List<String> tagFilters;
+    private List<OSMPOIFilter> osmpoiFilters;
 
     private String participantRef;
 
@@ -80,9 +81,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
     private boolean gatherNodesUsedInWaysPhase = true;
 
     public TopographicPlaceOsmContentHandler(BlockingQueue<TopographicPlace> topographicPlaceQueue,
-                                                    List<String> tagFilters, String participantRef, IanaCountryTldEnumeration countryRef) {
+                                                    List<OSMPOIFilter> osmpoiFilters, String participantRef, IanaCountryTldEnumeration countryRef) {
         this.topographicPlaceQueue = topographicPlaceQueue;
-        this.tagFilters = cleanFilter(tagFilters);
+        this.osmpoiFilters = osmpoiFilters;
         this.participantRef = participantRef;
         this.countryRef = countryRef;
     }
@@ -154,7 +155,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         for (Map.Entry<String, String> tag : entity.getTags().entrySet()) {
-            if (tagFilters.stream().anyMatch(f -> (tag.getKey() + "=" + tag.getValue()).startsWith(f))) {
+            if (osmpoiFilters.stream().anyMatch(f -> (f.getKey().equals(tag.getKey()) && f.getValue().equals(tag.getValue())))) {
                 return true;
             }
         }

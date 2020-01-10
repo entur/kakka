@@ -28,12 +28,16 @@ import org.apache.camel.ExchangeProperty;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
 public class PeliasIndexParentInfoEnricher {
+
+    private static final Logger logger= LoggerFactory.getLogger(PeliasIndexParentInfoEnricher.class);
 
     private GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -97,6 +101,16 @@ public class PeliasIndexParentInfoEnricher {
                 parent.setLocalityId(locality.getId());
                 parent.setCountyId(locality.getParentId());
                 parent.setCountryId(locality.getCountryRef());
+            }
+            else {
+                TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
+                if (country != null) {
+                    if (parent == null) {
+                        parent = new Parent();
+                        peliasDocument.setParent(parent);
+                    }
+                    parent.setCountryId(country.getCountryRef());
+                }
             }
         }
     }

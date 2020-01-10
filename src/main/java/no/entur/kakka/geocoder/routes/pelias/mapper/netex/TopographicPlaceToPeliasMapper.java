@@ -124,22 +124,21 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
 
             case PLACE_OF_INTEREST:
                 return "address";
+            case MUNICIPALITY:
+                return "locality";
 
-            // Still using adm units directly from kartverket. Change if tiamat IDs are needed.
-//            case MUNICIPALITY:
-//                return "locality";
-//
-//            case COUNTY:
-//                return "county";
-//
-//            case AREA:
-//                return "borough";
+            case COUNTY:
+                return "county";
 
+            case COUNTRY:
+                return "country";
+
+            case AREA:
+                return "borough";
+            default:
+                return null;
 
         }
-
-        return null;
-
     }
 
 

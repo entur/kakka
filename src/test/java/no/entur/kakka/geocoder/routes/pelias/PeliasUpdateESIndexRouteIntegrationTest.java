@@ -90,8 +90,8 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 			}
 		});
 
-		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/administrativeUnits/SosiTest.sos",
-				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")), false);
+		//inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/administrativeUnits/SosiTest.sos",
+		//		new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")), false);
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
 				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/addresses/addresses.csv",

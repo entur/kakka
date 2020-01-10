@@ -16,10 +16,13 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.exceptions.FileValidationException;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
+import no.entur.kakka.repository.OSMPOIFilterRepository;
+import no.entur.kakka.services.OSMPOIFilterService;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -55,8 +58,9 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-    public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
+    private OSMPOIFilterService osmpoiFilterService;
 
+    public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
 
     private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
 
@@ -70,11 +74,12 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
                                                                    @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                            @Value("${pelias.gos.include:true}") boolean gosInclude) {
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
+        this.osmpoiFilterService = osmpoiFilterService;
         if (poiFilter != null) {
             this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
             logger.info("pelias poiFilter is set to: " + poiFilter );
@@ -158,7 +163,8 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
             logger.info("Total number of topographical places from tiamat: " + places.size());
-            TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter);
+
+            TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter, osmpoiFilterService.getFilters());
             final List<ElasticsearchCommand> collect = places.stream()
                     .map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<>(p)))
                     .flatMap(documents -> documents.stream())

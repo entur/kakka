@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.netex.pbf;
 
 
+import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.openstreetmap.model.OSMNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,21 +55,16 @@ public class TopographicPlaceOsmContentHandlerTest {
 		Assert.assertTrue(handler().matchesFilter(node("name=1", "key=startOTHER", "other=other")));
 	}
 
-	@Test
-	public void testEmptyFilterMatchesNothing() {
-		Assert.assertFalse(handler("").matchesFilter(node("name=1", "key=startOTHER", "other=other")));
-	}
-
 	private TopographicPlaceOsmContentHandler handler() {
 
-		String filterKey = "leisure";
-		String filterFull = "amenity=test";
-		String filterStartsWith = "key=start";
+		OSMPOIFilter filterKey = createFilter("leisure", null);
+		OSMPOIFilter filterFull = createFilter("amenity", "test");
+		OSMPOIFilter filterStartsWith = createFilter("key", "start");
 
 		return handler(filterKey, filterFull, filterStartsWith);
 	}
 
-	private TopographicPlaceOsmContentHandler handler(String... filter) {
+	private TopographicPlaceOsmContentHandler handler(OSMPOIFilter... filter) {
 
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 
@@ -85,5 +81,9 @@ public class TopographicPlaceOsmContentHandlerTest {
 					t.split("=")[0], t.split("=")[1]));
 		}
 		return node;
+	}
+
+	private OSMPOIFilter createFilter(String key, String value) {
+		return OSMPOIFilter.fromKeyAndValue(key, value);
 	}
 }

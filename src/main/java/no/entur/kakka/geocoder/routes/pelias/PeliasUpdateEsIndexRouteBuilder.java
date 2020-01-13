@@ -113,7 +113,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertAdministrativeUnits", "direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
+                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)
@@ -187,16 +187,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.DEBUG, "Finished inserting place names to ES")
                 .routeId("pelias-insert-place-names");
 
-        from("direct:insertAdministrativeUnits")
-                .log(LoggingLevel.DEBUG, "Start inserting administrative units to ES")
-                .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForKartverket + "/administrativeUnits"))
-                .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/adminUnits"))
-                .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromKartverketSOSI"))
-                .setHeader(FILE_EXTENSION, constant("sos"))
-                .to("direct:haltIfContentIsMissing")
-                .log(LoggingLevel.DEBUG, "Finished inserting administrative units to ES")
-                .routeId("pelias-insert-admin-units");
-
         from("direct:insertGtfsStopPlaceData")
                 .filter(simple("{{pelias.gtfs.stop.place.enabled:false}}"))
                 .log(LoggingLevel.DEBUG, "Start inserting GTFS stop place data to ES")
@@ -263,10 +253,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .end()
                 .process(e -> deleteDirectory(new File(e.getIn().getHeader(WORKING_DIRECTORY, String.class))))
                 .routeId("pelias-insert-from-zip");
-
-        from("direct:convertToPeliasCommandsFromKartverketSOSI")
-                .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
-                .routeId("pelias-convert-commands-kartverket-sosi");
 
         from("direct:convertToPeliasCommandsFromPlaceNames")
                 .process(e -> filterSosiFile(e))

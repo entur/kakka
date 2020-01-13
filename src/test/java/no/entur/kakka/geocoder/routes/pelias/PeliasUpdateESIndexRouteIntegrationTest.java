@@ -99,7 +99,7 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 
 
 		esScratchAdminIndexMock.expectedMessageCount(2);
-		esScratchMock.expectedMessageCount(4);
+		esScratchMock.expectedMessageCount(3);
 		context.start();
 
 		Exchange e = insertESDataTemplate.request("direct:insertElasticsearchIndexData", ex -> {

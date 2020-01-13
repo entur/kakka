@@ -229,7 +229,10 @@ public class AdminUnitRepositoryBuilder {
         }
 
        private boolean isCurrent(TopographicPlace topographicPlace) {
-           final ValidBetween validBetween = topographicPlace.getValidBetween().get(0);
+           ValidBetween validBetween = null;
+           if (!topographicPlace.getValidBetween().isEmpty()) {
+               validBetween = topographicPlace.getValidBetween().get(0);
+           }
            if (validBetween == null) {
                return false;
            }

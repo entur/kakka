@@ -46,40 +46,53 @@ public class PeliasIndexParentInfoEnricher {
      */
     public void addMissingParentInfo(@Body Collection<ElasticsearchCommand> commands,
             @ExchangeProperty(value = GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO) AdminUnitRepository adminUnitRepository) {
-        commands.forEach(c -> addMissingParentInfo(c, adminUnitRepository));
+        logger.debug("Start updating missing parent info for {} commands",commands.size());
+        var ref = new Object() {
+            long commandIdx = 1;
+        };
+        commands.forEach(c -> {
+            addMissingParentInfo(c, adminUnitRepository);
+            logger.debug("Updated {} / {} command", ref.commandIdx,commands.size());
+            ref.commandIdx++;
+        });
     }
 
     void addMissingParentInfo(ElasticsearchCommand command, AdminUnitRepository adminUnitRepository) {
+
         if (!(command.getSource() instanceof PeliasDocument)) {
             return;
         }
         PeliasDocument peliasDocument = (PeliasDocument) command.getSource();
-
         if (isLocalityMissing(peliasDocument.getParent())) {
+            logger.debug("Locality is missing doing reverseGeoLookup for :" + peliasDocument.getDefaultName());
             addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
         }
         addAdminUnitNamesByIds(adminUnitRepository, peliasDocument);
+
     }
 
     private void addAdminUnitNamesByIds(AdminUnitRepository adminUnitRepository, PeliasDocument peliasDocument) {
         Parent parent = peliasDocument.getParent();
         if (parent != null) {
 
+            logger.debug("Update parentInfo by Ids");
+
             if (parent.getLocalityId() != null && parent.getLocality() == null) {
+                logger.debug("1. Locality is missing get locality name by id: " + parent.getLocalityId());
                 String localityName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
                 if (localityName != null) {
                     parent.setLocality(localityName);
                 } else {
                     // Locality id on document does not match any known locality, match on geography instead
+                    logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId());
                     addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
+                    logger.debug("3. Once again setLocalty by Id : " + parent.getLocalityId());
                     parent.setLocality(adminUnitRepository.getAdminUnitName(parent.getLocalityId()));
                 }
             }
             if (parent.getCountyId() != null && parent.getCounty() == null) {
+                logger.debug("County is missing get county name by id: " + parent.getLocalityId());
                 parent.setCounty(adminUnitRepository.getAdminUnitName(parent.getCountyId()));
-            }
-            if (parent.getBoroughId() != null && parent.getBorough() == null) {
-                parent.setBorough(adminUnitRepository.getAdminUnitName(parent.getBoroughId()));
             }
         }
 
@@ -103,6 +116,7 @@ public class PeliasIndexParentInfoEnricher {
                 parent.setCountryId(locality.getCountryRef());
             }
             else {
+                logger.debug("Unable to find locality in adminUnitRepo looking for countyrRef for:" + peliasDocument.getDefaultName());
                 TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
                 if (country != null) {
                     if (parent == null) {

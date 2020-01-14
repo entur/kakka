@@ -28,6 +28,7 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.repository.BlobStoreRepository;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -41,8 +42,6 @@ import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.rutebanken.netex.model.TopographicPlaceTypeEnumeration;
 import org.rutebanken.netex.model.ValidBetween;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -216,11 +215,13 @@ public class AdminUnitRepositoryBuilder {
                         var topographicPlaceAdapter= netexTopographicPlaceAdapter(topographicPlace,geometry);
                         if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.MUNICIPALITY)) {
                             localities.add(topographicPlaceAdapter);
+                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
                         }
                         if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.COUNTRY)) {
                             countries.add(topographicPlaceAdapter);
+                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
+
                         }
-                        tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
                     }
                 }
 
@@ -248,7 +249,8 @@ public class AdminUnitRepositoryBuilder {
             return new TopographicPlaceAdapter() {
                 @Override
                 public String getId() {
-                    return topographicPlace.getId() ;
+                    // We just need last part of id
+                    return StringUtils.substringAfterLast(topographicPlace.getId(),":");
                 }
 
                 @Override

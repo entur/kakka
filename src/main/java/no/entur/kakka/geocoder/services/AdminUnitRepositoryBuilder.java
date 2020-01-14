@@ -96,7 +96,7 @@ public class AdminUnitRepositoryBuilder {
     public AdminUnitRepository build() {
         RefreshCache refreshJob = new RefreshCache();
         refreshJob.buildNewCache();
-        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities, refreshJob.countries);
+        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities);
     }
 
     private class CacheAdminUnitRepository implements AdminUnitRepository {
@@ -105,13 +105,9 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> localities;
 
-        private List<TopographicPlaceAdapter> countries;
-
-        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries) {
+        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities) {
             this.idCache = idCache;
             this.localities = localities;
-            this.countries = countries;
-
         }
 
         @Override
@@ -122,11 +118,6 @@ public class AdminUnitRepositoryBuilder {
         @Override
         public TopographicPlaceAdapter getLocality(Point point) {
             return getTopographicPlaceAdapter(point, localities);
-        }
-
-        @Override
-        public TopographicPlaceAdapter getCountry(Point point) {
-            return getTopographicPlaceAdapter(point, countries);
         }
 
         private TopographicPlaceAdapter getTopographicPlaceAdapter(Point point, List<TopographicPlaceAdapter> topographicPlaces) {
@@ -153,13 +144,10 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> localities;
 
-        private List<TopographicPlaceAdapter> countries;
-
         public void buildNewCache() {
             BlobStoreFiles blobs = repository.listBlobs(blobStoreSubdirectoryForTiamatGeoCoderExport);
 
             localities = new ArrayList<>();
-            countries = new ArrayList<>();
             tmpCache = CacheBuilder.newBuilder().maximumSize(cacheMaxSize).build();
 
             for (BlobStoreFiles.File blob : blobs.getFiles()) {
@@ -216,11 +204,6 @@ public class AdminUnitRepositoryBuilder {
                         if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.MUNICIPALITY)) {
                             localities.add(topographicPlaceAdapter);
                             tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
-                        }
-                        if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.COUNTRY)) {
-                            countries.add(topographicPlaceAdapter);
-                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
-
                         }
                     }
                 }

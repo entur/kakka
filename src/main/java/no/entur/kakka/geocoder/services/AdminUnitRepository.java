@@ -25,6 +25,4 @@ public interface AdminUnitRepository {
 	String getAdminUnitName(String id);
 
 	TopographicPlaceAdapter getLocality(Point point);
-	TopographicPlaceAdapter getCountry(Point point);
-
 }

@@ -115,17 +115,6 @@ public class PeliasIndexParentInfoEnricher {
                 parent.setCountyId(locality.getParentId());
                 parent.setCountryId(locality.getCountryRef());
             }
-            else {
-                logger.debug("Unable to find locality in adminUnitRepo looking for countyrRef for:" + peliasDocument.getDefaultName());
-                TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
-                if (country != null) {
-                    if (parent == null) {
-                        parent = new Parent();
-                        peliasDocument.setParent(parent);
-                    }
-                    parent.setCountryId(country.getCountryRef());
-                }
-            }
         }
     }
 

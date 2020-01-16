@@ -32,7 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class PeliasIndexParentInfoEnricher {
@@ -105,19 +109,29 @@ public class PeliasIndexParentInfoEnricher {
         GeoPoint centerPoint = peliasDocument.getCenterPoint();
         if (centerPoint != null) {
             Point point = geometryFactory.createPoint(new Coordinate(centerPoint.getLon(), centerPoint.getLat()));
-            TopographicPlaceAdapter locality = adminUnitRepository.getLocality(point);
-            if (locality != null) {
+
+            TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
+            if (country != null) {
                 if (parent == null) {
                     parent = new Parent();
                     peliasDocument.setParent(parent);
                 }
-                parent.setLocalityId(locality.getId());
-                parent.setCountyId(locality.getParentId());
-                parent.setCountryId(locality.getCountryRef());
+                parent.setCountryId(country.getCountryRef());
+            }
+            if (country == null) {
+                TopographicPlaceAdapter locality = adminUnitRepository.getLocality(point);
+                if (locality != null) {
+                    if (parent == null) {
+                        parent = new Parent();
+                        peliasDocument.setParent(parent);
+                    }
+                    parent.setLocalityId(locality.getId());
+                    parent.setCountyId(locality.getParentId());
+                    parent.setCountryId(locality.getCountryRef());
+                }
             }
         }
     }
-
     private boolean isLocalityMissing(Parent parent) {
         return parent == null || parent.getLocalityId() == null;
     }

@@ -69,23 +69,18 @@ import static javax.xml.bind.JAXBContext.newInstance;
 
 @Service
 public class AdminUnitRepositoryBuilder {
-    @Value("${admin.units.cache.max.size:30000}")
-    private Integer cacheMaxSize;
-
-    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
-    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-
-    @Value("${pelias.download.directory:files/adminUnitCache}")
-    private String localWorkingDirectory;
-
     @Autowired
     BlobStoreRepository repository;
-
     @Autowired
     Storage storage;
-
     @Value("${blobstore.gcs.container.name}")
     String containerName;
+    @Value("${admin.units.cache.max.size:30000}")
+    private Integer cacheMaxSize;
+    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
+    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
+    @Value("${pelias.download.directory:files/adminUnitCache}")
+    private String localWorkingDirectory;
 
     @PostConstruct
     public void init() {
@@ -96,7 +91,7 @@ public class AdminUnitRepositoryBuilder {
     public AdminUnitRepository build() {
         RefreshCache refreshJob = new RefreshCache();
         refreshJob.buildNewCache();
-        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities);
+        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities, refreshJob.countries);
     }
 
     private class CacheAdminUnitRepository implements AdminUnitRepository {
@@ -105,9 +100,13 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> localities;
 
-        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities) {
+        private List<TopographicPlaceAdapter> countries;
+
+        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries) {
             this.idCache = idCache;
             this.localities = localities;
+            this.countries = countries;
+
         }
 
         @Override
@@ -120,6 +119,11 @@ public class AdminUnitRepositoryBuilder {
             return getTopographicPlaceAdapter(point, localities);
         }
 
+        @Override
+        public TopographicPlaceAdapter getCountry(Point point) {
+            return getTopographicPlaceAdapter(point, countries);
+        }
+
         private TopographicPlaceAdapter getTopographicPlaceAdapter(Point point, List<TopographicPlaceAdapter> topographicPlaces) {
             if (topographicPlaces == null) {
                 return null;
@@ -127,10 +131,8 @@ public class AdminUnitRepositoryBuilder {
 
             for (TopographicPlaceAdapter topographicPlace : topographicPlaces) {
                 var polygon=topographicPlace.getDefaultGeometry();
-                if (polygon != null) {
-                    if (polygon.covers(point)) {
+                if (polygon != null && polygon.covers(point)) {
                         return topographicPlace;
-                    }
                 }
             }
             return null;
@@ -138,16 +140,19 @@ public class AdminUnitRepositoryBuilder {
     }
 
 
-   private class RefreshCache {
+    private class RefreshCache {
 
         private Cache<String, String> tmpCache;
 
         private List<TopographicPlaceAdapter> localities;
 
+        private List<TopographicPlaceAdapter> countries;
+
         public void buildNewCache() {
             BlobStoreFiles blobs = repository.listBlobs(blobStoreSubdirectoryForTiamatGeoCoderExport);
 
             localities = new ArrayList<>();
+            countries = new ArrayList<>();
             tmpCache = CacheBuilder.newBuilder().maximumSize(cacheMaxSize).build();
 
             for (BlobStoreFiles.File blob : blobs.getFiles()) {
@@ -167,6 +172,33 @@ public class AdminUnitRepositoryBuilder {
 
             new File(localWorkingDirectory).delete();
         }
+
+        private void addAdminUnit(TopographicPlace topographicPlace) {
+            if (isCurrent(topographicPlace)) {
+                var polygon = topographicPlace.getPolygon();
+                final LocalDateTime toDate = topographicPlace.getValidBetween().get(0).getToDate();
+                if (toDate == null || toDate.isAfter(LocalDateTime.now())) {
+                    if (polygon != null) {
+                        final Polygon geometry = new GeometryFactory().createPolygon(convertToCoordinateSequence(polygon.getExterior()));
+                        var topographicPlaceAdapter = netexTopographicPlaceAdapter(topographicPlace, geometry);
+                        if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.MUNICIPALITY)) {
+                            localities.add(topographicPlaceAdapter);
+                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
+                        }
+                        if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.COUNTY)) {
+                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
+                        }
+                        if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.COUNTRY)) {
+                            countries.add(topographicPlaceAdapter);
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+
         private List<TopographicPlace> fromDeliveryPublicationStructure(File publicationDeliveryStream) {
             try {
                 PublicationDeliveryStructure deliveryStructure = unmarshall(new FileInputStream(publicationDeliveryStream));
@@ -186,6 +218,7 @@ public class AdminUnitRepositoryBuilder {
 
             return Collections.emptyList();
         }
+
         private PublicationDeliveryStructure unmarshall(InputStream in) throws Exception {
             JAXBContext publicationDeliveryContext = newInstance(PublicationDeliveryStructure.class);
             Unmarshaller unmarshaller = publicationDeliveryContext.createUnmarshaller();
@@ -193,70 +226,61 @@ public class AdminUnitRepositoryBuilder {
             JAXBElement<PublicationDeliveryStructure> jaxbElement = unmarshaller.unmarshal(new StreamSource(in), PublicationDeliveryStructure.class);
             return jaxbElement.getValue();
         }
-        private void addAdminUnit(TopographicPlace topographicPlace) {
-            if (isCurrent(topographicPlace)) {
-                var polygon=topographicPlace.getPolygon();
-                final LocalDateTime toDate = topographicPlace.getValidBetween().get(0).getToDate();
-                if (toDate == null || toDate.isAfter(LocalDateTime.now())) {
-                    if (polygon != null) {
-                        final Polygon geometry = new GeometryFactory().createPolygon(convertToCoordinateSequence(polygon.getExterior()));
-                        var topographicPlaceAdapter= netexTopographicPlaceAdapter(topographicPlace,geometry);
-                        if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.MUNICIPALITY)) {
-                            localities.add(topographicPlaceAdapter);
-                            tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
-                        }
-                    }
-                }
 
+        private boolean isCurrent(TopographicPlace topographicPlace) {
+            ValidBetween validBetween = null;
+            if (!topographicPlace.getValidBetween().isEmpty()) {
+                validBetween = topographicPlace.getValidBetween().get(0);
             }
-
+            if (validBetween == null) {
+                return false;
+            }
+            final LocalDateTime fromDate = validBetween.getFromDate();
+            final LocalDateTime toDate = validBetween.getToDate();
+            if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+                //Invalid Validity toDate < fromDate
+                return false;
+            } else return fromDate != null && toDate == null || Objects.requireNonNull(fromDate).isBefore(toDate);
         }
 
-       private boolean isCurrent(TopographicPlace topographicPlace) {
-           ValidBetween validBetween = null;
-           if (!topographicPlace.getValidBetween().isEmpty()) {
-               validBetween = topographicPlace.getValidBetween().get(0);
-           }
-           if (validBetween == null) {
-               return false;
-           }
-           final LocalDateTime fromDate = validBetween.getFromDate();
-           final LocalDateTime toDate = validBetween.getToDate();
-           if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-               //Invalid Validity toDate < fromDate
-               return false;
-           } else return fromDate != null && toDate == null || Objects.requireNonNull(fromDate).isBefore(toDate);
-       }
-
-       private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {
+        private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {
+            var id= StringUtils.substringAfterLast(topographicPlace.getId(), ":");
+            var isoCode = topographicPlace.getIsoCode();
+            final String parentId;
+            if (topographicPlace.getParentTopographicPlaceRef() != null) {
+                parentId = StringUtils.substringAfterLast(topographicPlace.getParentTopographicPlaceRef().getRef(), ":");
+            } else {
+                parentId = null;
+            }
+            var name = topographicPlace.getDescriptor().getName().getValue();
+            var topographicPlaceType = topographicPlace.getTopographicPlaceType();
+            var countryRef = new Locale("en", topographicPlace.getCountryRef().getRef().name());
             return new TopographicPlaceAdapter() {
+
+
                 @Override
                 public String getId() {
-                    // We just need last part of id
-                    return StringUtils.substringAfterLast(topographicPlace.getId(),":");
+                    return id;
                 }
 
                 @Override
                 public String getIsoCode() {
-                    return topographicPlace.getIsoCode();
+                    return isoCode;
                 }
 
                 @Override
                 public String getParentId() {
-                    if (topographicPlace.getParentTopographicPlaceRef() != null) {
-                        return topographicPlace.getParentTopographicPlaceRef().getRef();
-                    }
-                    return null;
+                    return parentId;
                 }
 
                 @Override
                 public String getName() {
-                    return topographicPlace.getDescriptor().getName().getValue();
+                    return name;
                 }
 
                 @Override
                 public Type getType() {
-                    switch (topographicPlace.getTopographicPlaceType()) {
+                    switch (topographicPlaceType) {
                         case COUNTRY:
                             return Type.COUNTRY;
                         case COUNTY:
@@ -281,8 +305,7 @@ public class AdminUnitRepositoryBuilder {
 
                 @Override
                 public String getCountryRef() {
-                    var locale = new Locale("en",topographicPlace.getCountryRef().getRef().name());
-                    return locale.getISO3Country();
+                    return countryRef.getISO3Country();
                 }
 
                 @Override
@@ -307,10 +330,10 @@ public class AdminUnitRepositoryBuilder {
                     .map(DirectPositionListType::getValue)
                     .get();
 
-            Coordinate[] coordinates = new Coordinate[coordinateValues.size()/2];
+            Coordinate[] coordinates = new Coordinate[coordinateValues.size() / 2];
             int coordinateIndex = 0;
             for (int index = 0; index < coordinateValues.size(); index += 2) {
-                Coordinate coordinate = new Coordinate(coordinateValues.get(index+1), coordinateValues.get(index));
+                Coordinate coordinate = new Coordinate(coordinateValues.get(index + 1), coordinateValues.get(index));
                 coordinates[coordinateIndex++] = coordinate;
             }
             return new CoordinateArraySequence(coordinates);

@@ -37,6 +37,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
+import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.model.TopographicPlace;
@@ -189,7 +190,9 @@ public class AdminUnitRepositoryBuilder {
                             tmpCache.put(topographicPlaceAdapter.getId(), topographicPlaceAdapter.getName());
                         }
                         if (topographicPlace.getTopographicPlaceType().equals(TopographicPlaceTypeEnumeration.COUNTRY)) {
-                            countries.add(topographicPlaceAdapter);
+                            if (!topographicPlace.getCountryRef().getRef().equals(IanaCountryTldEnumeration.RU)) {
+                                countries.add(topographicPlaceAdapter);
+                            }
                         }
 
                     }

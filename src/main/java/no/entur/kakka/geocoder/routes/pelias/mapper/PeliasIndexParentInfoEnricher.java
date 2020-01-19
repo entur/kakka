@@ -55,8 +55,11 @@ public class PeliasIndexParentInfoEnricher {
             long commandIdx = 1;
         };
         commands.forEach(c -> {
+            long startTime = System.nanoTime();
             addMissingParentInfo(c, adminUnitRepository);
-            logger.debug("Updated {} / {} command", ref.commandIdx,commands.size());
+            long endTime =System.nanoTime();
+            long duration= (endTime-startTime)/1000000;
+            logger.debug("Updated {} / {} command in {} milliseconds", ref.commandIdx,commands.size(),duration);
             ref.commandIdx++;
         });
     }
@@ -68,10 +71,18 @@ public class PeliasIndexParentInfoEnricher {
         }
         PeliasDocument peliasDocument = (PeliasDocument) command.getSource();
         if (isLocalityMissing(peliasDocument.getParent())) {
-            logger.debug("Locality is missing doing reverseGeoLookup for :" + peliasDocument.getDefaultName());
+            long startTime = System.nanoTime();
             addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
+            long endTime =System.nanoTime();
+            long duration= (endTime-startTime)/1000000;
+            logger.debug("Locality is missing doing reverseGeoLookup for :" + peliasDocument.getCategory() + " type: " + peliasDocument.getLayer()+ "duration(ms): " + duration );
         }
+
+        long startTime = System.nanoTime();
         addAdminUnitNamesByIds(adminUnitRepository, peliasDocument);
+        long endTime =System.nanoTime();
+        long duration= (endTime-startTime)/1000000;
+        logger.debug("addAdminUnitNamesByIds duration(ms): " + duration);
 
     }
 
@@ -82,21 +93,35 @@ public class PeliasIndexParentInfoEnricher {
             logger.debug("Update parentInfo by Ids");
 
             if (parent.getLocalityId() != null && parent.getLocality() == null) {
-                logger.debug("1. Locality is missing get locality name by id: " + parent.getLocalityId());
+                long startTime = System.nanoTime();
                 String localityName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
+                long endTime =System.nanoTime();
+                long duration= (endTime-startTime)/1000000;
+                logger.debug("1. Locality is missing get locality name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): " + duration);
                 if (localityName != null) {
                     parent.setLocality(localityName);
                 } else {
                     // Locality id on document does not match any known locality, match on geography instead
-                    logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId());
+                    long startTime1 = System.nanoTime();
                     addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
-                    logger.debug("3. Once again setLocalty by Id : " + parent.getLocalityId());
-                    parent.setLocality(adminUnitRepository.getAdminUnitName(parent.getLocalityId()));
+                    long endTime1 =System.nanoTime();
+                    long duration1= (endTime1-startTime1)/1000000;
+                    logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId()+ " duration: " + duration1);
+                    long startTime2 = System.nanoTime();
+                    final String adminUnitName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
+                    long endTime2 =System.nanoTime();
+                    long duration2= (endTime1-startTime1)/1000000;
+                    logger.debug("3. Once again setLocality by Id : " + parent.getLocalityId()+ " duration: " + duration2);
+                    parent.setLocality(adminUnitName);
                 }
             }
             if (parent.getCountyId() != null && parent.getCounty() == null) {
-                logger.debug("County is missing get county name by id: " + parent.getLocalityId());
-                parent.setCounty(adminUnitRepository.getAdminUnitName(parent.getCountyId()));
+                long startTime = System.nanoTime();
+                final String adminUnitName = adminUnitRepository.getAdminUnitName(parent.getCountyId());
+                long endTime =System.nanoTime();
+                long duration= (endTime-startTime)/1000000;
+                logger.debug("County is missing get county name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): "+ duration ) ;
+                parent.setCounty(adminUnitName);
             }
         }
 
@@ -110,24 +135,24 @@ public class PeliasIndexParentInfoEnricher {
         if (centerPoint != null) {
             Point point = geometryFactory.createPoint(new Coordinate(centerPoint.getLon(), centerPoint.getLat()));
 
-            TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
-            if (country != null) {
+            TopographicPlaceAdapter locality = adminUnitRepository.getLocality(point);
+            if (locality != null) {
                 if (parent == null) {
                     parent = new Parent();
                     peliasDocument.setParent(parent);
                 }
-                parent.setCountryId(country.getCountryRef());
+                parent.setLocalityId(locality.getId());
+                parent.setCountyId(locality.getParentId());
+                parent.setCountryId(locality.getCountryRef());
             }
-            if (country == null) {
-                TopographicPlaceAdapter locality = adminUnitRepository.getLocality(point);
-                if (locality != null) {
+            else  {
+                TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
+                if (country != null) {
                     if (parent == null) {
                         parent = new Parent();
                         peliasDocument.setParent(parent);
                     }
-                    parent.setLocalityId(locality.getId());
-                    parent.setCountyId(locality.getParentId());
-                    parent.setCountryId(locality.getCountryRef());
+                    parent.setCountryId(country.getCountryRef());
                 }
             }
         }

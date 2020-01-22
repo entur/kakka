@@ -1,0 +1,79 @@
+apiVersion: v1
+data:
+  application.properties: |-
+    tiamat.url=http4://tiamat.default:80
+    spring.datasource.driver-class-name=org.postgresql.Driver
+    organisations.api.url=http://baba.default/services/organisations/
+    spring.jmx.unique-names=true
+    keycloak.realm=rutebanken
+    server.port=8081
+    server.admin.port=8080
+    geocoder.max.retries=600
+    keycloak.auth-server-url=https://kc-dev.devstage.entur.io/auth
+    spring.profiles.active=gcs-blobstore
+    spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
+    tiamat.publish.export.cron.schedule=0+0+23+*+*+?
+    quartz.enabled=true
+    camel.springboot.name=kakka
+    tiamat.export.max.retries=480
+    kartverket.username=erlendnils1
+    geocoder.place.type.whitelist=tettsteddel,bydel
+    kartverket.download.directory=files/kartverket
+    blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
+    blobstore.gcs.credential.path=/etc/marduk/marduk-blobstore-credentials.json
+    spring.datasource.username=kakka
+    server.host=0.0.0.0
+    server.admin.host=0.0.0.0
+    tiamat.publish.export=Full,versionValidity=ALL&tariffZoneExportMode=ALL&topographicPlaceExportMode=ALL;CurrentAndFuture,versionValidity=CURRENT_FUTURE;Current,versionValidity=CURRENT;RailStations,versionValidity=CURRENT&stopPlaceType=RAIL_STATION;01_Ostfold,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:01;  Oslo_og_Akershus,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:03&countyReference=KVE:TopographicPlace:02;  04_Hedmark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:04;05_Oppland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:05;06_Buskerud,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:06;07_Vestfold,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:07;08_Telemark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:08;Agder,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:09&versionValidity=CURRENT&countyReference=KVE:TopographicPlace:10;11_Rogaland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:11;12_Hordaland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:12;14_Sogn
+    og Fjordane,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:14;15_More
+    og Romsdal,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:15; 18_Nordland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:18;19_Troms,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:19;20_Finnmark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:20;50_Trondelag,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:50
+    keycloak.bearer-only=true
+    blobstore.gcs.project.id={{ .Values.configMap.projectId }}
+    spring.activemq.broker-url=tcp://activemq.default:61616?jms.redeliveryPolicy.maximumRedeliveries=0
+    spring.main.sources=no.entur.kakka
+    keycloak.resource=kakka
+    #geocoder.autoStartup=true
+    spring.main.allow-bean-definition-overriding=true
+
+    ## TODO remove when keycloack spring sec adapter is fixed
+    spring.main.allow-bean-definition-overriding=true
+
+    ## Flyway configuration
+
+    spring.flyway.baseline-description=<< Flyway Baseline >>
+    spring.flyway.baseline-on-migrate=true
+    spring.flyway.baseline-version=1
+    kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
+    kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
+    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
+    spring.cloud.gcp.pubsub.credentials.location=file:/etc/marduk-pubsub-account/marduk-pubsub-credentials.json
+    spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
+    spring.cloud.gcp.pubsub.subscriber.executor-threads=30
+    spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
+    management.server.port=8776
+    management.endpoints.enabled-by-default=false
+    management.endpoint.info.enabled=true
+    management.endpoint.health.enabled=true
+    management.endpoint.prometheus.enabled=true
+    management.endpoints.web.base-path=/
+    management.endpoints.web.exposure.include=info,health,prometheus
+
+    #spring.flyway.enabled=true
+
+    # Pelias config
+
+    pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
+    pelias.gos.include=true
+    pelias.place.boost= {{.Values.configMap.pelias.placeBoost}}
+    pelias.stop.place.boost.config= {{`{"defaultValue":3, "stopTypeFactors":{"airport":{"*":2},"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}}}`}}
+    pelias.gos.boost.factor= {{.Values.configMap.pelias.boostFactor }}
+    pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
+    pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
+    pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
+    osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
+kind: ConfigMap
+metadata:
+  name: {{ template "kakka.name" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "common.labels" . | indent 4 }}

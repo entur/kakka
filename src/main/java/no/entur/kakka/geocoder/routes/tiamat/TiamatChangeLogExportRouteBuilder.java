@@ -155,8 +155,8 @@ public class TiamatChangeLogExportRouteBuilder extends BaseRouteBuilder {
         } else {
             query.append("?");
         }
-        query.append("from=").append(e.getIn().getHeader(FROM));
-        query.append("&to=").append(e.getIn().getHeader(TO));
+        query.append("from=").append(e.getIn().getHeader(FROM, String.class));
+        query.append("&to=").append(e.getIn().getHeader(TO, String.class));
         query.append("&=per_page").append(maxStopsPerPage);
         return query.toString();
     }

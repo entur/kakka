@@ -20,14 +20,16 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.routes.status.JobEvent;
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Message;
+import org.apache.camel.processor.aggregate.GroupedMessageAggregationStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -53,18 +55,20 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 
 		from("direct:geoCoderStart")
 				.process(e -> e.getIn().setBody(new GeoCoderTaskMessage(e.getIn().getBody(GeoCoderTask.class)).toString()))
-				.to("activemq:queue:GeoCoderQueue")
+				.to("entur-google-pubsub:GeoCoderQueue")
 				.routeId("geocoder-start");
 
 		from("direct:geoCoderStartBatch")
 				.process(e -> e.getIn().setBody(createMessageFromTaskTypes(e.getIn().getBody(Collection.class)).toString()))
-				.to("activemq:queue:GeoCoderQueue")
+				.to("entur-google-pubsub:GeoCoderQueue")
 				.routeId("geocoder-start-batch");
 
 
-		singletonFrom("activemq:queue:GeoCoderQueue?transacted=true&messageListenerContainerFactoryRef=batchListenerContainerFactory")
+		singletonFrom("entur-google-pubsub:GeoCoderQueue")
 				.autoStartup("{{geocoder.autoStartup:true}}")
-				.transacted()
+				.aggregate(constant(true)).aggregationStrategy(new GroupedMessageAggregationStrategy()).completionSize(100).completionTimeout(1000)
+				.process(exchange -> addOnCompletionForAggregatedExchange(exchange))
+				.log(LoggingLevel.INFO, "Aggregated ${exchangeProperty.CamelAggregatedSize} GeoCoder requests (aggregation completion triggered by ${exchangeProperty.CamelAggregatedCompletedBy}).")
 				.to("direct:geoCoderMergeTaskMessages")
 				.setProperty(TASK_MESSAGE, simple("${body}"))
 				.to("direct:geoCoderRehydrate")
@@ -89,7 +93,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 				.log(LoggingLevel.INFO, getClass().getName(), "GeoCoder route completed")
 				.otherwise()
 				.convertBodyTo(String.class)
-				.to("activemq:queue:GeoCoderQueue")
+				.to("entur-google-pubsub:GeoCoderQueue")
 				.end()
 
 				.routeId("geocoder-main-route");
@@ -103,7 +107,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 				.routeId("geocoder-delay-retry");
 
 		from("direct:geoCoderMergeTaskMessages")
-				.process(e -> e.getIn().setBody(merge(e.getIn().getBody(Collection.class))))
+				.process(e -> e.getIn().setBody(merge(e)))
 				.routeId("geocoder-merge-messages");
 
 		from("direct:geoCoderRehydrate")
@@ -115,7 +119,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 				.routeId("geocoder-dehydrate-task");
 
 		from("direct:geoCoderRescheduleTask")
-				.process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0) + 1))
+				.process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
 				.choice()
 				.when(simple("${header." + Constants.LOOP_COUNTER + "} > " + maxRetries))
 				.log(LoggingLevel.WARN, getClass().getName(), "${header." + GeoCoderConstants.GEOCODER_CURRENT_TASK + "} timed out. Config should probably be tweaked. Not rescheduling.")
@@ -145,17 +149,19 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 	}
 
 
-	private GeoCoderTaskMessage merge(Collection<ActiveMQTextMessage> messages) {
+	private GeoCoderTaskMessage merge(Exchange e) {
+		Collection<Message> messages = e.getIn().getBody(List.class);
 		GeoCoderTaskMessage merged = new GeoCoderTaskMessage();
 
 		if (!CollectionUtils.isEmpty(messages)) {
-			for (ActiveMQTextMessage msg : messages) {
+			for (Message msg : messages) {
 				try {
 					// TODO merge smarter, keep oldest. log discard?
-					GeoCoderTaskMessage taskMessage = GeoCoderTaskMessage.fromString(msg.getText());
+					String jsonString = new String((byte[]) msg.getBody());
+					GeoCoderTaskMessage taskMessage = GeoCoderTaskMessage.fromString(jsonString);
 					merged.getTasks().addAll(taskMessage.getTasks());
-				} catch (Exception e) {
-					log.warn("Discarded unparseable text msg: " + msg + ". Exception:" + e.getMessage(), e);
+				} catch (Exception ex) {
+					log.warn("Discarded unparseable text msg: " + msg + ". Exception:" + ex.getMessage(), ex);
 				}
 			}
 		}

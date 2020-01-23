@@ -38,9 +38,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.HashMap;
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatPublishExportsRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatPublishExportsRouteBuilder.class,
+        properties = {
+        "spring.main.sources=no.entur.kakka.test",
+        "tiamat.export.retry.delay=1"
+        })
 public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
+    @Value("${tiamat.export.max.retries:480}")
+    private int maxRetries;
 
     @Autowired
     private ModelCamelContext context;
@@ -162,7 +168,7 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
 
         tiamatPollMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
-        rescheduleMock.assertIsSatisfied(20000);
+        rescheduleMock.assertIsSatisfied();
     }
 
     @Test
@@ -175,7 +181,7 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
 
         Map<String, Object> headers = new HashMap<>();
         headers.put(Constants.SYSTEM_STATUS, status().toString());
-        headers.put(Constants.LOOP_COUNTER, 1);
+        headers.put(Constants.LOOP_COUNTER, maxRetries);
 
         context.start();
 

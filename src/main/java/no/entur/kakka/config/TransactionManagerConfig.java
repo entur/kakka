@@ -26,7 +26,7 @@ import javax.persistence.EntityManagerFactory;
 public class TransactionManagerConfig {
 
     @Bean
-    JpaTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) {
+    JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
 

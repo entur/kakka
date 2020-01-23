@@ -19,6 +19,7 @@ package no.entur.kakka.rest;
 import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
 import org.apache.camel.Exchange;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  * REST interface for backdoor triggering of messages
  */
 @Component
-public class AdminRestRouteBuilder extends BaseRouteBuilder {
+public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
     private static final String PLAIN = "text/plain";
 

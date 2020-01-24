@@ -28,6 +28,7 @@ spec:
             serviceName: {{ template "kakka.name" . }}
             servicePort: {{ .Values.service.http.externalPort }}
 {{- end }}
+---
 {{- if .Values.ingress.enabled }}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -58,6 +59,7 @@ spec:
             serviceName: {{ template "kakka.name" . }}
             servicePort: {{ .Values.service.httpAdmin.externalPort }}
 {{- end }}
+---
 {{- if .Values.ingress.enabled }}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -89,4 +91,4 @@ spec:
             servicePort: {{ .Values.service.httpAdmin.externalPort }}
 
 {{- end }}
-
+---

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,8 +44,9 @@ public class KartverketSosiStreamToElasticsearchCommands {
 
 
     public Collection<ElasticsearchCommand> transform(InputStream placeNamesStream) {
-        return new SosiTopographicPlaceAdapterReader(sosiElementWrapperFactory, placeNamesStream).read().stream()
-                       .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(d -> d != null).collect(Collectors.toList());
+        final List<ElasticsearchCommand> collect = new SosiTopographicPlaceAdapterReader(sosiElementWrapperFactory, placeNamesStream).read().stream()
+                .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(d -> d != null).collect(Collectors.toList());
+        return collect;
     }
 
     TopographicPlaceAdapterToPeliasDocument createMapper(TopographicPlaceAdapter wrapper) {

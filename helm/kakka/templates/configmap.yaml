@@ -71,6 +71,8 @@ data:
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
+
+    kakka.remote.kubernetes.namespace = {{.Values.env }}
 kind: ConfigMap
 metadata:
   name: {{ template "kakka.name" . }}-config

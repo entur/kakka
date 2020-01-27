@@ -243,7 +243,11 @@ public class AdminUnitRepositoryBuilder {
             if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
                 //Invalid Validity toDate < fromDate
                 return false;
-            } else return fromDate != null && toDate == null || Objects.requireNonNull(fromDate).isBefore(toDate);
+            } else if (fromDate != null && toDate == null) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {

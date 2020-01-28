@@ -38,41 +38,5 @@ secretMounts:
     subPath: marduk-blobstore-credentials.json
     secretName: marduk-carbon-storage-key
     readOnly: true
-  - name: kakka-service-account
-    mountPath: /etc/kakka-service-account
-    subPath: ""
-    secretName: kakka-service-account
-    readOnly: true
-  - name: marduk-pubsub-key
-    mountPath: /etc/marduk-pubsub-account
-    subPath: ""
-    secretName: marduk-pubsub-key
-    readOnly: true
 
 
-configMapMounts:
-  - name: application-config
-    mountPath: /etc/application-config
-    subPath: ""
-    configMap: kakka-config
-    readOnly: false
-
-image:
-  identifier: ${artifact.metadata.image}
-  imagePullPolicy: Always
-
-service:
-  http:
-    externalPort: 80
-    internalPort: 8776
-  httpAdmin:
-    externalPort: 8080
-    internalPort: 8080
-  jolokia:
-    internalPort: 8778
-
-ingress:
-    enabled: true
-    devIp: 35.195.223.29
-    stagingIp: 35.195.146.93
-    productionIp: 35.187.15.14

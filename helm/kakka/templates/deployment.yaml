@@ -66,7 +66,7 @@ spec:
                 secretKeyRef:
                   key: password
                   name: kakka-keycloak-secret
-          image: {{ .Values.image.repo }}:latest
+          image: {{ .Values.image.identifier }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           livenessProbe:
             failureThreshold: 3

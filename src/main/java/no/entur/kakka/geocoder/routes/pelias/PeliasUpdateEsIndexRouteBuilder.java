@@ -83,7 +83,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${pelias.addresses.batch.size:10000}")
     private int addressesBatchSize;
 
-    @Value("#{'${geocoder.place.type.whitelist:tettsteddel,bydel}'.split(',')}")
+    @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
     private List<String> placeTypeWhiteList;
 
     @Autowired
@@ -113,7 +113,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertPlaceNames")
+                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)

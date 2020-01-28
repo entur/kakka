@@ -38,5 +38,15 @@ secretMounts:
     subPath: marduk-blobstore-credentials.json
     secretName: marduk-neon-storage-key
     readOnly: true
+  - name: kakka-service-account
+    mountPath: /etc/kakka-service-account
+    subPath: ""
+    secretName: kakka-service-account
+    readOnly: true
+  - name: marduk-pubsub-key
+    mountPath: /etc/marduk-pubsub-account
+    subPath: ""
+    secretName: marduk-pubsub-key
+    readOnly: true
 
 

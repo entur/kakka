@@ -24,7 +24,7 @@ aliases:
 - &read-image-version
   name: Read new image version from workspace
   command: |
-    echo "VERSION=$(< ../version)"  >> $BASH_ENV
+    echo "export VERSION=$(cat ./version)" >> $BASH_ENV
 - &docker-build-and-push
   name: Docker build and push
   command: |
@@ -74,7 +74,7 @@ jobs:
         - target
         - Dockerfile
         - .circleci
-        - version
+        - ./version
   deploy-docker:
     docker:
     - image: eu.gcr.io/entur-system-1287/circleci-toolbox-image-java11

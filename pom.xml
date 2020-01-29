@@ -448,7 +448,7 @@
         <dependency>
             <groupId>no.vegvesen.nvdb</groupId>
             <artifactId>sosi-reader-impl</artifactId>
-            <version>1.18</version>
+            <version>1.25</version>
         </dependency>
         <dependency>
             <groupId>org.wololo</groupId>

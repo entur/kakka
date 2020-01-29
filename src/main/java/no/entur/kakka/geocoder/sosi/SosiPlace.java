@@ -16,6 +16,7 @@
 
 package no.entur.kakka.geocoder.sosi;
 
+import no.vegvesen.nvdb.sosi.document.SosiValue;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -60,6 +61,9 @@ public class SosiPlace extends SosiElementWrapper {
         if (names == null) {
             names = new HashMap<>();
             String name = getProperty("STEDSNAVN", "SKRIVEMÅTE", "LANGNAVN");
+            if (name == null) {
+                name = getCompleteName();
+            }
             String lang = getProperty("STEDSNAVN", "SPRÅK");
             if (lang == null) {
                 lang = "nor";
@@ -67,6 +71,17 @@ public class SosiPlace extends SosiElementWrapper {
             names.put(lang, name);
         }
         return names;
+    }
+
+    private String getCompleteName() {
+        SosiElement subElement = sosiElement;
+        String propName = "KOMPLETTSKRIVEMÅTE";
+        subElement = subElement.findSubElementRecursively(se -> propName.equals(se.getName())).orElse(null);
+
+        if (subElement != null) {
+            return subElement.getValueAs(SosiValue.class).getString();
+        }
+        return null;
     }
 
     @Override

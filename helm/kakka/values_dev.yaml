@@ -13,6 +13,8 @@ sql:
 configMap:
   gcsBlobstore: marduk
   projectId: carbon-1287
+  keycloakUrl: https://kc-dev.devstage.entur.io/auth
+  poiUpdateEnabled: true
   pelias:
     gtfs: true
     placeBoost: 40

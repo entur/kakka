@@ -13,8 +13,10 @@ sql:
 configMap:
   gcsBlobstore: marduk-production
   projectId: neon-1287
+  keycloakUrl: https://auth.entur.org/auth
+  poiUpdateEnabled: true
   pelias:
-    gtfs: true
+    gtfs: false
     placeBoost: 40
     boostConfig: {"defaultValue":30, "stopTypeFactors":{"airport":{"*":2},"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}},"interchangeFactors":{"recommendedInterchange":2,"preferredInterchange":5}}
     boostFactor: 10

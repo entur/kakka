@@ -1,6 +1,7 @@
 apiVersion: v1
 data:
   application.properties: |-
+    tiamat.poi.update.enabled={{ .Values.configMap.poiUpdateEnabled }}
     tiamat.url=http4://tiamat.default:80
     spring.datasource.driver-class-name=org.postgresql.Driver
     organisations.api.url=http://baba.default/services/organisations/
@@ -9,7 +10,7 @@ data:
     server.port=8081
     server.admin.port=8080
     geocoder.max.retries=600
-    keycloak.auth-server-url=https://kc-dev.devstage.entur.io/auth
+    keycloak.auth-server-url={{.Values.configMap.keycloakUrl}}
     spring.profiles.active=gcs-blobstore
     spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
     tiamat.publish.export.cron.schedule=0+0+23+*+*+?

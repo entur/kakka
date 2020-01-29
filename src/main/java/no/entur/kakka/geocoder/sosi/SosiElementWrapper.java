@@ -129,7 +129,11 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
 
     @Override
     public String getName() {
-        return getNames().get("norsk");
+        String name = getNames().get("norsk");
+        if (name == null) {
+            name = getNames().get("nor");
+        }
+        return name;
     }
 
     @Override

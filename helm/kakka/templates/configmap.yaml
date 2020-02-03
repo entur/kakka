@@ -4,7 +4,7 @@ data:
     tiamat.poi.update.enabled={{ .Values.configMap.poiUpdateEnabled }}
     tiamat.url=http4://tiamat.default:80
     spring.datasource.driver-class-name=org.postgresql.Driver
-    organisations.api.url=http://baba.default/services/organisations/
+    organisations.api.url=http://baba/services/organisations/
     spring.jmx.unique-names=true
     keycloak.realm=rutebanken
     server.port=8081

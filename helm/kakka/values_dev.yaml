@@ -18,8 +18,8 @@ configMap:
   pelias:
     gtfs: true
     placeBoost: 40
-    boostConfig: {"defaultValue":30, "stopTypeFactors":{"airport":{"*":2},"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}},"interchangeFactors":{"recommendedInterchange":2,"preferredInterchange":5}}
-    boostFactor: 10
+    boostConfig: "{\"defaultValue\":30, \"stopTypeFactors\":{\"airport\":{\"*\":2},\"busStation\":{\"*\":2},\"metroStation\":{\"*\":2},\"railStation\":{\"*\":2}}}"
+    oostFactor: 10
     addressBoost: 20
     streetBoost: 20
     stopPlaceBoost: 40

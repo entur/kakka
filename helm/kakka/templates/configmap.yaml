@@ -64,7 +64,7 @@ data:
     pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
     pelias.gos.include=true
     pelias.place.boost= {{.Values.configMap.pelias.placeBoost}}
-    pelias.stop.place.boost.config= {{`{"defaultValue":3, "stopTypeFactors":{"airport":{"*":2},"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}}}`}}
+    pelias.stop.place.boost.config={{.Values.configMap.pelias.boostConfig}}
     pelias.gos.boost.factor= {{.Values.configMap.pelias.boostFactor }}
     pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}

@@ -89,7 +89,7 @@ public class AdminUnitRepositoryBuilder {
         repository.setContainerName(containerName);
     }
 
-    public AdminUnitRepository build() {
+    public AdminUnitRepository build() throws IOException {
         RefreshCache refreshJob = new RefreshCache();
         refreshJob.buildNewCache();
         return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities, refreshJob.countries);
@@ -149,7 +149,7 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> countries;
 
-        public void buildNewCache() {
+        public void buildNewCache() throws IOException {
             BlobStoreFiles blobs = repository.listBlobs(blobStoreSubdirectoryForTiamatGeoCoderExport);
 
             localities = new ArrayList<>();
@@ -171,7 +171,7 @@ public class AdminUnitRepositoryBuilder {
                     new File(localWorkingDirectory), new String[]{"xml"}, true)
                     .forEach(f -> fromDeliveryPublicationStructure(f).forEach(this::addAdminUnit));
 
-            new File(localWorkingDirectory).delete();
+            FileUtils.deleteDirectory(new File(localWorkingDirectory));
         }
 
         private void addAdminUnit(TopographicPlace topographicPlace) {

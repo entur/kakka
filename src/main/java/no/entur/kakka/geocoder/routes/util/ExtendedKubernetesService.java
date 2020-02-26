@@ -1,6 +1,5 @@
 package no.entur.kakka.geocoder.routes.util;
 
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.CronJobSpec;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -8,9 +7,6 @@ import io.fabric8.kubernetes.api.model.batch.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.JobSpec;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.Watch;
-import io.fabric8.kubernetes.client.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +16,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ExtendedKubernetesService {
@@ -36,12 +30,6 @@ public class ExtendedKubernetesService {
 
     @Value("${elasticsearch.scratch.deployment.name:es-scratch}")
     private String elasticsearchScratchDeploymentName;
-
-    @Value("${kakka.es.build.remote.kubernetes.timeout:9000}")
-    private long jobTimeoutSecond;
-
-    @Value("${kakka.es.build.remote.kubernetes.job.cleanup:true}")
-    private boolean deleteJobAfterCompletion;
 
     public ExtendedKubernetesService() {
         this.kubernetesClient = new DefaultKubernetesClient();
@@ -77,59 +65,6 @@ public class ExtendedKubernetesService {
         log.info("Creating es build job with name {} ", jobName);
         Job job = buildJobFromCronJobSpecTemplate(specTemplate, jobName);
         kubernetesClient.batch().jobs().inNamespace(kubernetesNamespace).create(job);
-
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        try (Watch watch = kubernetesClient.pods().inNamespace(kubernetesNamespace).withLabel("job-name", jobName).watch(new Watcher<Pod>() {
-
-            int backOffLimit = job.getSpec().getBackoffLimit();
-            int podFailureCounter = 0;
-
-            @Override
-            public void eventReceived(Action action, Pod pod) {
-                String podName = pod.getMetadata().getName();
-                log.info("The es-build-job pod {} is in phase {} (Action: {}).", podName, pod.getStatus().getPhase(), action.name());
-                if (pod.getStatus().getPhase().equals("Succeeded")) {
-                    countDownLatch.countDown();
-                }
-                if (pod.getStatus().getPhase().equals("Failed")) {
-                    podFailureCounter++;
-                    if (podFailureCounter > backOffLimit) {
-                        countDownLatch.countDown();
-                    }
-                }
-            }
-
-            @Override
-            public void onClose(KubernetesClientException exp) {
-                if (exp != null) {
-                    throw new RuntimeException("Es build job ended with an error", exp);
-                }
-            }
-        })) {
-            boolean jobCompletedBeforeTimeout = countDownLatch.await(jobTimeoutSecond, TimeUnit.SECONDS);
-            if (!jobCompletedBeforeTimeout) {
-                throw new RuntimeException("Timeout while waiting for the Es build job " + jobName + "to complete");
-            }
-
-            Integer succeeded = kubernetesClient.batch().jobs().inNamespace(kubernetesNamespace).withName(jobName).get().getStatus().getSucceeded();
-            boolean jobSucceeded = succeeded != null && succeeded > 0;
-            if (jobSucceeded) {
-                log.info("The Graph Builder job {} completed successfully.", jobName);
-            } else {
-                throw new RuntimeException("The Graph Builder job " + jobName + " failed.");
-            }
-
-        } catch (KubernetesClientException | InterruptedException e) {
-            throw new RuntimeException("Could not watch pod ", e);
-        } finally {
-
-            // Delete job after completion
-            if (deleteJobAfterCompletion) {
-                log.info("Deleting job {} after completion.", jobName);
-                kubernetesClient.batch().jobs().inNamespace(kubernetesNamespace).delete(job);
-                log.info("Deleted job {} after completion.", jobName);
-            }
-        }
     }
 
     protected CronJobSpec getCronJobSpecTemplate(KubernetesClient client) {

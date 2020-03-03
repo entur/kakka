@@ -17,23 +17,20 @@
 package no.entur.kakka.geocoder.routes.pelias;
 
 
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.geocoder.routes.pelias.babylon.DeploymentStatus;
-import no.entur.kakka.geocoder.routes.pelias.babylon.ScalingOrder;
-import no.entur.kakka.geocoder.routes.pelias.babylon.StartFile;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
 import no.entur.kakka.routes.status.JobEvent;
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.component.http4.HttpMethods;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import static no.entur.kakka.Constants.JOB_STATUS_ROUTING_DESTINATION;
-import static no.entur.kakka.geocoder.GeoCoderConstants.*;
+import static no.entur.kakka.geocoder.GeoCoderConstants.GEOCODER_NEXT_TASK;
+import static no.entur.kakka.geocoder.GeoCoderConstants.GEOCODER_RESCHEDULE_TASK;
+import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
 
 @Component
 public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
@@ -44,27 +41,16 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
     @Value("${pelias.update.cron.schedule:0+0+23+?+*+MON-FRI}")
     private String cronSchedule;
 
-    @Value("${babylon.url:http4://babylon/services/local}")
-    private String babylonUrl;
 
-    @Value("${elasticsearch.scratch.deployment.name:es-scratch}")
-    private String elasticsearchScratchDeploymentName;
-
-    @Value("${elasticsearch.build.file.name:es-image-build-pod.yaml}")
-    private String elasticsearchBuildFileName;
-
-    @Value("${tiamat.max.retries:3000}")
-    private int maxRetries;
-
-    @Value("${tiamat.retry.delay:15000}")
-    private long retryDelay;
-
-    // Whether or not to ask babylon to start a new es-scratch instance. Should only be set to false for local testing.
+    // Whether or not  to start a new es-scratch instance. Should only be set to false for local testing.
     @Value("${elasticsearch.scratch.start.new:true}")
     private boolean startNewEsScratch;
 
     @Autowired
     private PeliasUpdateStatusService updateStatusService;
+
+    @Autowired
+    private ExtendedKubernetesService extendedKubernetesService;
 
     private static String NO_OF_REPLICAS = "RutebankenESNoOfReplicas";
 
@@ -97,7 +83,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:getElasticsearchScratchStatus")
 
                 .choice()
-                .when(simple("${body.availableReplicas} > 0"))
+                .when(simple("${body} > 0"))
                 // Shutdown if already running
                 .log(LoggingLevel.INFO, "Elasticsearch scratch instance already running. Scaling down first.")
                 .setHeader(JOB_STATUS_ROUTING_DESTINATION, constant("direct:startElasticsearchScratchInstance"))
@@ -129,19 +115,21 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:rescaleElasticsearchScratchInstance")
-                .log(LoggingLevel.INFO, "Requesting Babylon to scale Elasticsearch scratch to ${header." + NO_OF_REPLICAS + "} replicas")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.POST))
-                .process(e -> e.getIn().setBody(new ScalingOrder(elasticsearchScratchDeploymentName, "kakka", e.getIn().getHeader(NO_OF_REPLICAS, Integer.class))))
-                .marshal().json(JsonLibrary.Jackson)
-                .to(babylonUrl + "/deployment/scale")
+                .log(LoggingLevel.INFO, "Scaling Elasticsearch scratch to ${header." + NO_OF_REPLICAS + "} replicas")
+                .choice()
+                .when(simple("${header." + NO_OF_REPLICAS + "} > 0"))
+                .bean(extendedKubernetesService,"scaleUpDeployment")
+                .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
+                .otherwise()
+                .bean(extendedKubernetesService,"scaleDownDeployment")
                 .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
                 .routeId("pelias-es-scratch-rescale");
 
         from("direct:pollElasticsearchScratchStatus")
-                .to("direct:getElasticsearchScratchStatus")
+                .bean(extendedKubernetesService,"getNoOfAvailableReplicas")
+                .log(LoggingLevel.DEBUG,"number of running replicas: ${body} ")
                 .choice()
-                .when(simple("${body.availableReplicas} == ${header." + NO_OF_REPLICAS + "}"))
+                .when(simple("${body} == ${header." + NO_OF_REPLICAS + "}"))
                 .toD("${header." + JOB_STATUS_ROUTING_DESTINATION + "}")
                 .otherwise()
                 .setProperty(GEOCODER_RESCHEDULE_TASK, constant(true))
@@ -150,19 +138,13 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
         from("direct:getElasticsearchScratchStatus")
                 .setBody(constant(null))
-                .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
-                .to(babylonUrl + "/deployment/status?deployment=" + elasticsearchScratchDeploymentName)
-                .unmarshal().json(JsonLibrary.Jackson, DeploymentStatus.class)
+                .bean(extendedKubernetesService,"getNoOfAvailableReplicas")
                 .routeId("pelias-es-scratch-status");
 
 
         from("direct:buildElasticsearchImage")
-                .log(LoggingLevel.INFO, "Requesting Babylon to build new elasticsearch image for pelias")
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.POST))
-                .setBody(constant(new StartFile(elasticsearchBuildFileName)))
-                .marshal().json(JsonLibrary.Jackson)
-                .to(babylonUrl + "/job/run")
+                .log(LoggingLevel.DEBUG, "Creating a job es-build-job to upload es data in gcs")
+                .bean(extendedKubernetesService,"startESDataUploadJob")
                 .to("direct:processPeliasDeployCompleted")
                 .routeId("pelias-es-build");
 

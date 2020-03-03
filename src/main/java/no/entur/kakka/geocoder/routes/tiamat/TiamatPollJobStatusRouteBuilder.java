@@ -24,6 +24,8 @@ import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.http.common.HttpOperationFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,8 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_POLL;
 
 @Component
 public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
+
+    public static final Logger logger= LoggerFactory.getLogger(TiamatPollJobStatusRouteBuilder.class);
 
     @Value("${tiamat.url}")
     private String tiamatUrl;
@@ -57,7 +61,9 @@ public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
                 .setHeader("current_status", simple("${body.status}"))
                 .doCatch(HttpOperationFailedException.class).onWhen(exchange -> {
                     HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
-                    return (ex.getStatusCode() == 404);
+                    logger.debug("Got some exception : " + ex.getStatusCode());
+                    return (
+                            ex.getStatusCode() == 404);
                 })
                     .log(LoggingLevel.WARN, correlation() + "got 404 from Tiamat. Something is wrong... giving up")
                     .setHeader("current_status", constant(JobStatus.FAILED.toString()))

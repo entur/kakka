@@ -251,11 +251,11 @@ public class AdminUnitRepositoryBuilder {
         }
 
         private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {
-            var id= StringUtils.substringAfterLast(topographicPlace.getId(), ":");
+            var id= topographicPlace.getId();
             var isoCode = topographicPlace.getIsoCode();
             final String parentId;
             if (topographicPlace.getParentTopographicPlaceRef() != null) {
-                parentId = StringUtils.substringAfterLast(topographicPlace.getParentTopographicPlaceRef().getRef(), ":");
+                parentId = topographicPlace.getParentTopographicPlaceRef().getRef();
             } else {
                 parentId = null;
             }

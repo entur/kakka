@@ -19,8 +19,8 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/path: /prometheus
-        prometheus.io/port: '8776'
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: '9001'
         prometheus.io/scrape: 'true'
       labels:
         {{- include "common.labels" . | indent 8 }}
@@ -71,8 +71,8 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health
-              port: {{ .Values.service.http.internalPort }}
+              path: /actuator/health
+              port: 9001
               scheme: HTTP
             initialDelaySeconds: 121
             periodSeconds: 10
@@ -92,8 +92,8 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health
-              port: {{ .Values.service.http.internalPort }}
+              path: /actuator/health
+              port: 9001
               scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10

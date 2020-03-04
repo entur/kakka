@@ -26,11 +26,11 @@ configMap:
 
 
 resources:
-  cpuLimit: 2500m
-  memLimit: 6000Mi
+  cpuLimit: 4500m
+  memLimit: 9000Mi
   cpuRequest: "1"
-  memRequest: 4500Mi
-  xmx: 4g
+  memRequest: 8500Mi
+  xmx: 7g
 
 secretMounts:
   - name: marduk-key
@@ -58,7 +58,7 @@ configMapMounts:
     readOnly: false
 
 image:
-  identifier: ${artifact.metadata.image}
+  identifier: eu.gcr.io/entur-system-1287/kakka@sha256:18f286198544fc01cd1bc65dc9f7e317bd022a37701ab8c70a6fa3db05f198d6
   imagePullPolicy: Always
 
 service:

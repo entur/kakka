@@ -58,7 +58,7 @@ configMapMounts:
     readOnly: false
 
 image:
-  identifier: eu.gcr.io/entur-system-1287/kakka@sha256:18f286198544fc01cd1bc65dc9f7e317bd022a37701ab8c70a6fa3db05f198d6
+  identifier: ${artifact.metadata.image}
   imagePullPolicy: Always
 
 service:

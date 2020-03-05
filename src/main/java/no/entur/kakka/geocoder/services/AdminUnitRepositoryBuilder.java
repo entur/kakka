@@ -116,6 +116,17 @@ public class AdminUnitRepositoryBuilder {
         }
 
         @Override
+        public TopographicPlaceAdapter getLocality(String id) {
+            for (TopographicPlaceAdapter topographicPlace : localities) {
+                var topographicPlaceId=topographicPlace.getId();
+                if (topographicPlaceId != null && topographicPlaceId.equals(id)) {
+                    return topographicPlace;
+                }
+            }
+            return null;
+        }
+
+        @Override
         public TopographicPlaceAdapter getLocality(Point point) {
             return getTopographicPlaceAdapter(point, localities);
         }

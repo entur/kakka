@@ -89,9 +89,7 @@ public class AddressToPeliasMapper {
 
 	private Parent toParent(KartverketAddress address) {
 		return Parent.builder().withPostalCodeId(address.getPostnrn())
-				       .withCountryId("NOR")
-				       .withCountyId( address.getFylkesNo())
-				       .withLocalityId( address.getFullKommuneNo())
+				       .withLocalityId("KVE:TopographicPlace:" + address.getFullKommuneNo())
 				       .withBoroughId(address.getGrunnkretsnr())
 				       .withBorough(formatName(address.getGrunnkretsnavn()))
 				       .build();

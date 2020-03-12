@@ -17,9 +17,12 @@ data:
     quartz.enabled=true
     camel.springboot.name=kakka
     tiamat.export.max.retries=720
+    tiamat.change.log.download.directory=/tmp/tiamat/changelog
+    tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
+    tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     kartverket.username=erlendnils1
     geocoder.place.type.whitelist=tettsteddel,bydel
-    kartverket.download.directory=files/kartverket
+    kartverket.download.directory=/tmp/tiamat/files/kartverket
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
     blobstore.gcs.credential.path=/etc/marduk/marduk-blobstore-credentials.json
     spring.datasource.username=kakka
@@ -69,6 +72,7 @@ data:
     pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
+    pelias.download.directory=/tmp/tiamat/pelias
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
 
     kakka.remote.kubernetes.namespace = {{.Values.env }}

@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
 
+import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.netex.boost.StopPlaceBoostConfiguration;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -125,6 +126,16 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
             // A bug in elasticsearch 2.3.4 used for pelias causes prefix queries for array values to fail, thus making it impossible to query by tariff zone prefixes. Instead adding
             // tariff zone authorities as a distinct indexed value.
             document.setTariffZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream().map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct().collect(Collectors.toList()));
+        }
+
+        // Add parent info locality/county/country
+        if (place.getTopographicPlaceRef() != null) {
+            Parent parent=document.getParent();
+            if (parent == null) {
+                parent = new Parent();
+                document.setParent(parent);
+            }
+            parent.setLocalityId(place.getTopographicPlaceRef().getRef());
         }
     }
 

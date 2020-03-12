@@ -17,9 +17,12 @@ data:
     quartz.enabled=true
     camel.springboot.name=kakka
     tiamat.export.max.retries=720
+    tiamat.change.log.download.directory=/tmp/tiamat/changelog
+    tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
+    tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     kartverket.username=erlendnils1
     geocoder.place.type.whitelist=tettsteddel,bydel
-    kartverket.download.directory=files/kartverket
+    kartverket.download.directory=/tmp/tiamat/files/kartverket
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
     blobstore.gcs.credential.path=/etc/marduk/marduk-blobstore-credentials.json
     spring.datasource.username=kakka
@@ -42,6 +45,7 @@ data:
     spring.flyway.baseline-description=<< Flyway Baseline >>
     spring.flyway.baseline-on-migrate=true
     spring.flyway.baseline-version=1
+    spring.flyway.table=schema_version
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
@@ -49,12 +53,11 @@ data:
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
-    management.server.port=8776
+    management.server.port=9001
     management.endpoints.enabled-by-default=false
     management.endpoint.info.enabled=true
     management.endpoint.health.enabled=true
     management.endpoint.prometheus.enabled=true
-    management.endpoints.web.base-path=/
     management.endpoints.web.exposure.include=info,health,prometheus
 
     #spring.flyway.enabled=true
@@ -69,6 +72,7 @@ data:
     pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
+    pelias.download.directory=/tmp/tiamat/pelias
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
 
     kakka.remote.kubernetes.namespace = {{.Values.env }}

@@ -44,9 +44,6 @@ import java.util.stream.Collectors;
 @Component
 public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
-
-    private static final String LOCAL_WORKING_DIRECTORY = "files/tiamat/publish";
-
     @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
     private String cronSchedule;
 
@@ -56,12 +53,14 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
     @Value("#{'${tiamat.publish.export:}'.split(';')}")
     private List<String> exportConfigStrings;
 
+    @Value("${tiamat.publish.localworkdir:files/tiamat/publish}")
+    private String localWorkDir;
+
     @Value("${tiamat.export.max.retries:480}")
     private int maxRetries;
 
     @Value("${tiamat.export.retry.delay:15000}")
     private long retryDelay;
-
 
     @Override
     public void configure() throws Exception {
@@ -150,7 +149,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
         from("direct:processTiamatPublishExportResults")
 
 
-                .setHeader(Exchange.FILE_PARENT, constant(LOCAL_WORKING_DIRECTORY))
+                .setHeader(Exchange.FILE_PARENT, constant(localWorkDir))
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:tiamatExportDownloadFile")
                 // Rename xml files

@@ -77,10 +77,8 @@ public class AddressStreamToElasticsearchCommandsTest {
         Assert.assertEquals(wgs84Point.getX(), known.getCenterPoint().getLon(), 0.0001);
 
         Parent parent = known.getParent();
-        Assert.assertEquals("NOR", parent.getCountryId());
         Assert.assertEquals("1820", parent.getPostalCodeId());
-        Assert.assertEquals("01", parent.getCountyId());
-        Assert.assertEquals("0123", parent.getLocalityId());
+        Assert.assertEquals("KVE:TopographicPlace:0123", parent.getLocalityId());
         Assert.assertEquals("01230107", parent.getBoroughId());
         Assert.assertEquals("Lund", parent.getBorough());
 

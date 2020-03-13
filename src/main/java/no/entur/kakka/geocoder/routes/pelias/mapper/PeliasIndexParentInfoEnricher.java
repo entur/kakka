@@ -94,12 +94,14 @@ public class PeliasIndexParentInfoEnricher {
 
             if (parent.getLocalityId() != null && parent.getLocality() == null) {
                 long startTime = System.nanoTime();
-                String localityName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
+                TopographicPlaceAdapter locality = adminUnitRepository.getLocality(parent.getLocalityId());
                 long endTime =System.nanoTime();
                 long duration= (endTime-startTime)/1000000;
                 logger.debug("1. Locality is missing get locality name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): " + duration);
-                if (localityName != null) {
-                    parent.setLocality(localityName);
+                if (locality != null) {
+                    parent.setLocality(locality.getName());
+                    parent.setCountyId(locality.getParentId());
+                    parent.setCountryId(locality.getCountryRef());
                 } else {
                     // Locality id on document does not match any known locality, match on geography instead
                     long startTime1 = System.nanoTime();
@@ -107,9 +109,7 @@ public class PeliasIndexParentInfoEnricher {
                     long endTime1 =System.nanoTime();
                     long duration1= (endTime1-startTime1)/1000000;
                     logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId()+ " duration: " + duration1);
-                    long startTime2 = System.nanoTime();
                     final String adminUnitName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
-                    long endTime2 =System.nanoTime();
                     long duration2= (endTime1-startTime1)/1000000;
                     logger.debug("3. Once again setLocality by Id : " + parent.getLocalityId()+ " duration: " + duration2);
                     parent.setLocality(adminUnitName);

@@ -26,11 +26,11 @@ configMap:
 
 
 resources:
-  cpuLimit: 2500m
-  memLimit: 6000Mi
+  cpuLimit: 4500m
+  memLimit: 9000Mi
   cpuRequest: "1"
-  memRequest: 4500Mi
-  xmx: 4g
+  memRequest: 8500Mi
+  xmx: 7g
 
 secretMounts:
   - name: marduk-key

@@ -75,7 +75,6 @@ data:
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
     pelias.download.directory=/tmp/tiamat/pelias
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
-    tiamat.poi.update.directory=/tmp/tiamat/poi/update
 
     kakka.remote.kubernetes.namespace = {{.Values.env }}
 kind: ConfigMap

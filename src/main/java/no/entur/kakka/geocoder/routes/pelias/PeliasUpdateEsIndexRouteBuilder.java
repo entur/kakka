@@ -41,6 +41,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -98,7 +100,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .setHeader(CONTENT_CHANGED, constant(false))
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))
                 .to("direct:cleanUpLocalDirectory")
-                .process(e -> new File(localWorkingDirectory).mkdirs())
+                .process(e -> Files.createDirectories(Path.of(localWorkingDirectory)))
                 .to("direct:createPeliasIndex")
                 .bean("adminUnitRepositoryBuilder", "build")
                 .setProperty(GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO, simple("body"))
@@ -231,7 +233,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:insertToPeliasFromZipArchive")
-                .process(e -> ZipFileUtils.unzipAddressFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(WORKING_DIRECTORY, String.class)))
+                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(WORKING_DIRECTORY, String.class)))
                 .split().exchange(e -> listFiles(e)).stopOnException()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .to("direct:haltIfAborted")

@@ -33,6 +33,7 @@
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.0.1</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
+        <zt-zip.version>1.13</zt-zip.version>
 
         <resteasy.version>3.6.1.Final</resteasy.version>
 
@@ -342,6 +343,13 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>${zt-zip.version}</version>
+            <type>jar</type>
         </dependency>
 
         <!-- http://mvnrepository.com/artifact/org.apache.camel/camel-spring-javaconfig -->

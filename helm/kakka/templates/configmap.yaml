@@ -14,16 +14,12 @@ data:
     spring.profiles.active=gcs-blobstore
     spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
     tiamat.publish.export.cron.schedule=0+0+23+*+*+?
-    tiamat.publish.localworkdir=/tmp/tiamat/publish
     quartz.enabled=true
     camel.springboot.name=kakka
     tiamat.export.max.retries=720
-    tiamat.change.log.download.directory=/tmp/tiamat/changelog
-    tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
-    tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     kartverket.username=erlendnils1
     geocoder.place.type.whitelist=tettsteddel,bydel
-    kartverket.download.directory=/tmp/tiamat/files/kartverket
+    kartverket.download.directory=files/kartverket
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
     blobstore.gcs.credential.path=/etc/marduk/marduk-blobstore-credentials.json
     spring.datasource.username=kakka
@@ -46,7 +42,6 @@ data:
     spring.flyway.baseline-description=<< Flyway Baseline >>
     spring.flyway.baseline-on-migrate=true
     spring.flyway.baseline-version=1
-    spring.flyway.table=flyway_schema_history
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
@@ -73,9 +68,7 @@ data:
     pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
-    pelias.download.directory=/tmp/tiamat/pelias
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
-    tiamat.poi.update.directory=/tmp/tiamat/poi/update
 
     kakka.remote.kubernetes.namespace = {{.Values.env }}
 kind: ConfigMap

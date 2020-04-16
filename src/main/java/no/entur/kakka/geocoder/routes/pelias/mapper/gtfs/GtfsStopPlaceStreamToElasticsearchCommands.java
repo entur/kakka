@@ -48,7 +48,7 @@ public class GtfsStopPlaceStreamToElasticsearchCommands {
             throw new RuntimeException("Unable to create tmp file for gtfs: " + ioe.getMessage(), ioe);
         }
 
-        try(GTFSFeed feed = GTFSFeed.fromFile(gtfsFile.getAbsolutePath())) {
+        try (GTFSFeed feed = GTFSFeed.fromFile(gtfsFile.getAbsolutePath())) {
             return feed.stops.values().stream()
                     .map(w -> ElasticsearchCommand.peliasIndexCommand(mapper.toPeliasDocument(w))).filter(d -> d != null).collect(Collectors.toList());
         }

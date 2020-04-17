@@ -33,6 +33,13 @@ spec:
             - -log_debug_stdout
           image: gcr.io/cloudsql-docker/gce-proxy:1.15
           imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 30
           name: cloudsql-proxy
           resources:
             requests:

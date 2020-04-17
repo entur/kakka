@@ -227,10 +227,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-boot</artifactId>
         </dependency>
         <dependency>
@@ -268,10 +264,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-camel</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-hazelcast</artifactId>
         </dependency>
@@ -283,11 +275,6 @@
         <dependency>
             <groupId>org.entur.helpers</groupId>
             <artifactId>organisation</artifactId>
-            <version>${entur.helpers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.entur.helpers</groupId>
-            <artifactId>jms-batch</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>
@@ -415,11 +402,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

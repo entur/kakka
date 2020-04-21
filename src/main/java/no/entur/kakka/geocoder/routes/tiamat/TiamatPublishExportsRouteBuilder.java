@@ -25,7 +25,6 @@ import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.routes.file.FileUtils;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
-import org.apache.activemq.ScheduledMessage;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.lang3.StringUtils;
@@ -33,15 +32,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static no.entur.kakka.Constants.BLOBSTORE_MAKE_BLOB_PUBLIC;
-import static no.entur.kakka.Constants.WORKING_DIRECTORY;
 
 /**
  * Routes for triggering regular exports of different datasets for backup and publish.
@@ -91,15 +84,14 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .otherwise()
                 .setBody(constant(new TiamatExportTasks(exportTasks).toString()))
                 .log(LoggingLevel.INFO, "Starting Tiamat exports: ${body}")
-                .inOnly("activemq:queue:TiamatExportQueue")
+                .inOnly("entur-google-pubsub:TiamatExportQueue")
                 .end()
                 .routeId("tiamat-publish-export-start-full");
 
 
-        singletonFrom("activemq:queue:TiamatExportQueue?transacted=true")
-                .transacted()
+        singletonFrom("entur-google-pubsub:TiamatExportQueue")
                 .process(e -> e.setProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.fromString(e.getIn().getBody(String.class))))
-                .process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0) + 1))
+                .process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
                 .setBody(constant(null))
                 .choice()
                 .when(simple("${header." + Constants.LOOP_COUNTER + "} == 1"))
@@ -111,7 +103,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .choice()
                 .when(simple("${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".complete} == false"))
                 .process(e -> e.getIn().setBody(e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).toString()))
-                .to("activemq:TiamatExportQueue")
+                .to("entur-google-pubsub:TiamatExportQueue")
                 .end()
 
                 .routeId("tiamat-publish-export");
@@ -138,14 +130,12 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         from("direct:pollForTiamatExportStatus")
                 .to("direct:tiamatPollJobStatus")
-
                 .choice()
                 .when(simple("${exchangeProperty." + GeoCoderConstants.GEOCODER_RESCHEDULE_TASK + "}"))
                 .choice()
                 .when(simple("${header." + Constants.LOOP_COUNTER + "} <= " + maxRetries))
-                .setHeader(ScheduledMessage.AMQ_SCHEDULED_DELAY, constant(retryDelay))
-                // Remove or ActiveMQ will think message is overdue and resend immediately
-                .removeHeader("scheduledJobId")
+                .delay(retryDelay)
+                .endChoice()
                 .otherwise()
                 .log(LoggingLevel.WARN, getClass().getName(), "${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name} timed out. Config should probably be tweaked. Not rescheduling.")
                 .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.TIMEOUT).build()).to("direct:updateStatus")

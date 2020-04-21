@@ -33,13 +33,6 @@ logging.level.no.entur.kakka=INFO
 logging.level.org=INFO
 logging.level.org.apache.camel.util=INFO
 
-
-spring.activemq.broker-url=tcp://localhost:51616?jms.redeliveryPolicy.maximumRedeliveries=0
-activemq.broker.host=localhost
-activemq.broker.mgmt.port=18161
-spring.activemq.password=admin
-spring.activemq.user=admin
-spring.activemq.pooled=true
 spring.main.sources=no.entur.kakka
 spring.profiles.active=gcs-blobstore
 
@@ -57,7 +50,7 @@ kartverket.password=
 * Docker image: `mvn -Dspring.profiles.active=dev -Pf8-build`
 * Run the docker image in docker inside vagrant:
 
-     ```docker rm -f kakka ; mvn -Pf8-build && docker run -it --name kakka -e JAVA_OPTIONS="-Xmx1280m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" --link activemq --link lamassu  -v /git/config/kakka/dev/application.properties:/app/config/application.properties:ro dr.rutebanken.org/rutebanken/kakka:0.0.1-SNAPSHOT```
+     ```docker rm -f kakka ; mvn -Pf8-build && docker run -it --name kakka -e JAVA_OPTIONS="-Xmx1280m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" --link lamassu  -v /git/config/kakka/dev/application.properties:/app/config/application.properties:ro dr.rutebanken.org/rutebanken/kakka:0.0.1-SNAPSHOT```
 
 * For more docker plugin goals, see: http://ro14nd.de/docker-maven-plugin/goals.html
 

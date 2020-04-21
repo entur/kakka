@@ -42,7 +42,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@EndpointInject(uri = "mock:destination")
 	protected MockEndpoint destination;
 
-	@Produce(uri = "activemq:queue:GeoCoderQueue")
+	@Produce(uri = "entur-google-pubsub:GeoCoderQueue")
 	protected ProducerTemplate geoCoderQueueTemplate;
 
 	@EndpointInject(uri = "mock:statusQueue")
@@ -110,7 +110,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 
 		destination.whenExchangeReceived(2, e -> {
 			Assert.assertEquals(taskNextIteration, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
-			Assert.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME));
+			Assert.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME, String.class));
 		});
 
 		destination.expectedBodiesReceived(task, taskNextIteration);

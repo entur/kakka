@@ -26,6 +26,7 @@ import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
 import org.junit.Before;
@@ -37,18 +38,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.HashMap;
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatPublishExportsRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatPublishExportsRouteBuilder.class,
+        properties = {
+        "spring.main.sources=no.entur.kakka.test",
+        "tiamat.export.retry.delay=1"
+        })
 public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
+    @Value("${tiamat.export.max.retries:480}")
+    private int maxRetries;
 
     @Autowired
     private ModelCamelContext context;
-
-    @Value("${tiamat.max.retries:3000}")
-    private int maxRetries;
-
-    @Value("${tiamat.retry.delay:15000}")
-    private long retryDelay;
 
     @EndpointInject(uri = "mock:updateStatus")
     protected MockEndpoint statusQueueMock;
@@ -67,7 +68,7 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
     protected MockEndpoint changeLogExportMock;
 
 
-    @Produce(uri = "activemq:queue:TiamatExportQueue")
+    @Produce(uri = "entur-google-pubsub:TiamatExportQueue")
     protected ProducerTemplate input;
 
     @Before
@@ -78,14 +79,45 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         tiamatPollMock.reset();
         try {
 
-            replaceEndpoint("tiamat-publish-export-poll-status", "direct:tiamatPollJobStatus", "mock:tiamatPollJobStatus");
-            replaceEndpoint("tiamat-publish-export-start-new", "direct:tiamatExport", "mock:tiamatExport");
+            context.getRouteDefinition("tiamat-publish-export-poll-status").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("direct:tiamatPollJobStatus").replace().to("mock:tiamatPollJobStatus");
+                }
+            });
+            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("direct:tiamatExport").replace().to("mock:tiamatExport");
+                }
+            });
+            context.getRouteDefinition("tiamat-publish-export").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("entur-google-pubsub:TiamatExportQueue").replace().to("mock:TiamatExportQueue");
+                }
+            });
+            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
+                }
+            });
 
-            replaceEndpoint("tiamat-publish-export", "activemq:TiamatExportQueue", "mock:TiamatExportQueue");
-            replaceEndpoint("tiamat-publish-export-start-new", "direct:updateStatus", "mock:updateStatus");
-            replaceEndpoint("tiamat-publish-export-poll-status", "direct:updateStatus", "mock:updateStatus");
+            context.getRouteDefinition("tiamat-publish-export-poll-status").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
+                }
+            });
 
-            replaceEndpoint("tiamat-publish-export-start-new", "direct:processTiamatChangeLogExportTask", "mock:changeLogExportMock");
+            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    weaveByToUri("direct:processTiamatChangeLogExportTask").replace().to("mock:changeLogExportMock");
+                }
+            });
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);

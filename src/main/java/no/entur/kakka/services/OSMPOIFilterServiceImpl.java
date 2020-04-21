@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("osmpoifilterService")
-@Transactional(transactionManager = "jpaTransactionManager")
+@Transactional
 public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
     private OSMPOIFilterRepository repository;
     private Integer defaultPriority;

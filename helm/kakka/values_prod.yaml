@@ -1,0 +1,54 @@
+env: production
+
+replicas: 1
+
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+sql:
+  instance: neon-1287:europe-west1:kakka-db-1=tcp:5432
+
+configMap:
+  gcsBlobstore: marduk-production
+  projectId: neon-1287
+  keycloakUrl: https://auth.entur.org/auth
+  poiUpdateEnabled: true
+  pelias:
+    gtfs: false
+    placeBoost: 40
+    boostConfig: {"defaultValue":30, "stopTypeFactors":{"airport":{"*":2},"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}},"interchangeFactors":{"recommendedInterchange":2,"preferredInterchange":5}}
+    boostFactor: 10
+    addressBoost: 20
+    streetBoost: 20
+    stopPlaceBoost: 40
+    osmPoiFilterDefaultPriority: 10
+
+
+
+resources:
+  cpuLimit: 2500m
+  memLimit: 6000Mi
+  cpuRequest: "1"
+  memRequest: 4500Mi
+  xmx: 4g
+
+secretMounts:
+  - name: marduk-key
+    mountPath: /etc/marduk/marduk-blobstore-credentials.json
+    subPath: marduk-blobstore-credentials.json
+    secretName: marduk-neon-storage-key
+    readOnly: true
+  - name: kakka-service-account
+    mountPath: /etc/kakka-service-account
+    subPath: ""
+    secretName: kakka-service-account
+    readOnly: true
+  - name: marduk-pubsub-key
+    mountPath: /etc/marduk-pubsub-account
+    subPath: ""
+    secretName: marduk-pubsub-key
+    readOnly: true
+
+

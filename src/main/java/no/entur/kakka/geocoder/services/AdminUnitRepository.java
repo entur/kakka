@@ -26,4 +26,5 @@ public interface AdminUnitRepository {
 
 	TopographicPlaceAdapter getLocality(Point point);
 
+	TopographicPlaceAdapter getCountry(Point point);
 }

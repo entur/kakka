@@ -19,28 +19,23 @@ package no.entur.kakka.geocoder.routes.pelias;
 import com.google.common.collect.Lists;
 import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.geocoder.routes.pelias.kartverket.KartverketAddress;
 import no.entur.kakka.geocoder.routes.util.AbortRouteException;
 import no.entur.kakka.geocoder.routes.util.MarkContentChangedAggregationStrategy;
 import no.entur.kakka.geocoder.sosi.SosiFileFilter;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.component.http4.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
-import org.apache.camel.model.dataformat.BindyType;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
 import org.apache.camel.processor.validation.PredicateValidationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -48,8 +43,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static no.entur.kakka.Constants.CONTENT_CHANGED;
@@ -80,7 +73,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${pelias.insert.batch.size:10000}")
     private int insertBatchSize;
 
-    @Value("${pelias.addresses.batch.size:100000}")
+    @Value("${pelias.addresses.batch.size:10000}")
     private int addressesBatchSize;
 
     @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
@@ -113,7 +106,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertAdministrativeUnits", "direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
+                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)
@@ -187,16 +180,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.DEBUG, "Finished inserting place names to ES")
                 .routeId("pelias-insert-place-names");
 
-        from("direct:insertAdministrativeUnits")
-                .log(LoggingLevel.DEBUG, "Start inserting administrative units to ES")
-                .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForKartverket + "/administrativeUnits"))
-                .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/adminUnits"))
-                .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromKartverketSOSI"))
-                .setHeader(FILE_EXTENSION, constant("sos"))
-                .to("direct:haltIfContentIsMissing")
-                .log(LoggingLevel.DEBUG, "Finished inserting administrative units to ES")
-                .routeId("pelias-insert-admin-units");
-
         from("direct:insertGtfsStopPlaceData")
                 .filter(simple("{{pelias.gtfs.stop.place.enabled:false}}"))
                 .log(LoggingLevel.DEBUG, "Start inserting GTFS stop place data to ES")
@@ -264,10 +247,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .process(e -> deleteDirectory(new File(e.getIn().getHeader(WORKING_DIRECTORY, String.class))))
                 .routeId("pelias-insert-from-zip");
 
-        from("direct:convertToPeliasCommandsFromKartverketSOSI")
-                .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
-                .routeId("pelias-convert-commands-kartverket-sosi");
-
         from("direct:convertToPeliasCommandsFromPlaceNames")
                 .process(e -> filterSosiFile(e))
                 .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
@@ -284,6 +263,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .tokenize("\n",addressesBatchSize)
                 .streaming()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
+                .log("Batch counter: converted ${header.CamelSplitIndex}++  addresses")
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")
                 .log("End with large address file ....")

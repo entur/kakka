@@ -12,11 +12,13 @@
     </Policies>
     <ProxyEndpoints>
         <ProxyEndpoint>poi-filter-v1</ProxyEndpoint>
+        <ProxyEndpoint>poi-filter-v2</ProxyEndpoint>
     </ProxyEndpoints>
     <Resources/>
     <Spec></Spec>
     <TargetServers/>
     <TargetEndpoints>
         <TargetEndpoint>poi-filter-v1</TargetEndpoint>
+        <TargetEndpoint>poi-filter-v2</TargetEndpoint>
     </TargetEndpoints>
 </APIProxy>

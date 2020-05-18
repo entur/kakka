@@ -52,7 +52,7 @@ public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-validate-job-status-parameters");
 
         from("direct:checkTiamatJobStatus")
-                .removeHeaders("Camel*")
+                .removeHeaders("CamelHttp*")
                 .setBody(constant(""))
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
                 .doTry()

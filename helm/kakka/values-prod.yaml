@@ -51,4 +51,4 @@ secretMounts:
     secretName: marduk-pubsub-key
     readOnly: true
 
-
+monitoring: false

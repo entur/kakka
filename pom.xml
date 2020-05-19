@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,7 +23,7 @@
     </scm>
     <properties>
 
-        <camel.version>2.25.0</camel.version>
+        <camel.version>2.25.1</camel.version>
 
         <geotools.version>20.1</geotools.version>
         <wololo.version>0.13.0</wololo.version>
@@ -31,7 +31,7 @@
 
         <keycloak.version>4.8.3.Final</keycloak.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.0.11</entur.helpers.version>
+        <entur.helpers.version>1.0.14</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
 
         <resteasy.version>3.6.1.Final</resteasy.version>

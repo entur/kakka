@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +92,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("entur-google-pubsub:TiamatExportQueue")
                 .process(e -> e.setProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.fromString(e.getIn().getBody(String.class))))
-                .process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
+                .process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
                 .setBody(constant(null))
                 .choice()
                 .when(simple("${header." + Constants.LOOP_COUNTER + "} == 1"))
@@ -149,7 +150,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
         from("direct:processTiamatPublishExportResults")
 
 
-                .setHeader(Exchange.FILE_PARENT, constant(localWorkDir))
+                .setHeader(Exchange.FILE_PARENT, simple(localWorkDir + "/${date:now:yyyyMMddHHmmss}"))
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:tiamatExportDownloadFile")
                 // Rename xml files

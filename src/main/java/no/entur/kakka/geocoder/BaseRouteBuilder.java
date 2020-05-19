@@ -34,6 +34,9 @@ public abstract class BaseRouteBuilder extends SpringRouteBuilder {
     @Value("${kakka.camel.redelivery.backoff.multiplier:3}")
     private int backOffMultiplier;
 
+    @Value("${rutebanken.kubernetes.enabled:true}")
+    private boolean kubernetesEnabled;
+
 
     @Override
     public void configure() throws Exception {
@@ -108,6 +111,12 @@ public abstract class BaseRouteBuilder extends SpringRouteBuilder {
     }
 
     protected boolean isLeader(String routeId) {
+
+        // for testing in a local environment
+        if (!kubernetesEnabled) {
+            return true;
+        }
+
         RouteContext routeContext = getContext().getRoute(routeId).getRouteContext();
         List<RoutePolicy> routePolicyList = routeContext.getRoutePolicyList();
         if (routePolicyList != null) {

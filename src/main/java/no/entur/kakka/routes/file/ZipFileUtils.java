@@ -40,7 +40,7 @@ public class ZipFileUtils {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 String fileName = zipEntry.getName();
-                logger.info("unzipping file: {}", fileName);
+                logger.info("unzipping file {} in folder {} ", fileName, targetFolder);
 
                 File newFile = new File(targetFolder + "/" + fileName);
                 if (fileName.endsWith("/")) {

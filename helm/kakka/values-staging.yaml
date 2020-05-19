@@ -50,3 +50,5 @@ secretMounts:
     subPath: ""
     secretName: marduk-pubsub-key
     readOnly: true
+
+monitoringEnabled: true

@@ -150,7 +150,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
         from("direct:processTiamatPublishExportResults")
 
 
-                .setHeader(Exchange.FILE_PARENT, simple(localWorkDir + "/${date:now:yyyyMMddHHmmss}"))
+                .setHeader(Exchange.FILE_PARENT, simple(localWorkDir + "/${date:now:yyyyMMddHHmmssSSS}"))
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:tiamatExportDownloadFile")
                 // Rename xml files

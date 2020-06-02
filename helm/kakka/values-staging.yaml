@@ -1,12 +1,5 @@
 env: staging
 
-replicas: 1
-
-
-rollingUpdate:
-  maxSurge: 1
-  maxUnavailable: 1
-
 sql:
   instance: radon-1287:europe-west1:kakka-db-1=tcp:5432
 
@@ -24,15 +17,6 @@ configMap:
     streetBoost: 20
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
-
-
-
-resources:
-  cpuLimit: 4500m
-  memLimit: 13000Mi
-  cpuRequest: "1"
-  memRequest: 11000Mi
-  xmx: 10g
 
 secretMounts:
   - name: marduk-key

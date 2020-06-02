@@ -2,7 +2,6 @@ env: dev
 
 replicas: 2
 
-
 rollingUpdate:
   maxSurge: 1
   maxUnavailable: 1
@@ -23,14 +22,12 @@ configMap:
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
 
-
-
 resources:
   cpuLimit: 4500m
   memLimit: 9000Mi
   cpuRequest: "1"
   memRequest: 8500Mi
-  xmx: 7g
+  xmx: 10g
 
 secretMounts:
   - name: marduk-key
@@ -48,7 +45,6 @@ secretMounts:
     subPath: ""
     secretName: marduk-pubsub-key
     readOnly: true
-
 
 configMapMounts:
   - name: application-config

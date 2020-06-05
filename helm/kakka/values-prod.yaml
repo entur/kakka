@@ -1,11 +1,12 @@
 env: production
 
 sql:
-  instance: neon-1287:europe-west1:kakka-db-1=tcp:5432
+  instance: entur-ror-prod:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: marduk-production
-  projectId: neon-1287
+  gcsBlobstore: ror-kakka-production
+  blobstoreProjectId: entur-ror-prod
+  pubsubProjectId: entur-ror-prod
   keycloakUrl: https://auth.entur.org/auth
   poiUpdateEnabled: true
   pelias:
@@ -18,22 +19,9 @@ configMap:
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
 
-secretMounts:
-  - name: marduk-key
-    mountPath: /etc/marduk/marduk-blobstore-credentials.json
-    subPath: marduk-blobstore-credentials.json
-    secretName: marduk-neon-storage-key
-    readOnly: true
-  - name: kakka-service-account
-    mountPath: /etc/kakka-service-account
-    subPath: ""
-    secretName: kakka-service-account
-    readOnly: true
-  - name: marduk-pubsub-key
-    mountPath: /etc/marduk-pubsub-account
-    subPath: ""
-    secretName: marduk-pubsub-key
-    readOnly: true
-
+ingress:
+  enabled: true
+  loadBalancerIP: 35.187.15.14
+  domainName: .entur.io
 monitoringEnabled: false
 

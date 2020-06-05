@@ -1,11 +1,10 @@
-env: staging
-
 sql:
-  instance: radon-1287:europe-west1:kakka-db-1=tcp:5432
+  instance: entur-ror-test:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: marduk-stage
-  projectId: radon-1287
+  gcsBlobstore: ror-kakka-test
+  blobstoreProjectId: entur-ror-test
+  pubsubProjectId: entur-ror-test
   keycloakUrl: https://kc-stage.devstage.entur.io/auth
   poiUpdateEnabled: false
   pelias:
@@ -18,21 +17,8 @@ configMap:
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
 
-secretMounts:
-  - name: marduk-key
-    mountPath: /etc/marduk/marduk-blobstore-credentials.json
-    subPath: marduk-blobstore-credentials.json
-    secretName: marduk-radon-storage-key
-    readOnly: true
-  - name: kakka-service-account
-    mountPath: /etc/kakka-service-account
-    subPath: ""
-    secretName: kakka-service-account
-    readOnly: true
-  - name: marduk-pubsub-key
-    mountPath: /etc/marduk-pubsub-account
-    subPath: ""
-    secretName: marduk-pubsub-key
-    readOnly: true
-
+ingress:
+  enabled: true
+  loadBalancerIP: 35.195.146.93
+  domainName: .staging.entur.io
 monitoringEnabled: true

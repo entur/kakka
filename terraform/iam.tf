@@ -26,7 +26,7 @@ resource "google_pubsub_topic_iam_member" "kakka_pubsub_geocoderqueue_iam_member
 }
 
 resource "google_storage_bucket_iam_member" "kakka_storage_iam_member" {
-  bucket = google_storage_bucket.storage_bucket.name
+  bucket = google_storage_bucket.kakka_storage_bucket.name
   role = var.service_account_bucket_role
   member = "serviceAccount:${google_service_account.kakka_service_account.email}"
 }

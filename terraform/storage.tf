@@ -1,5 +1,5 @@
 # Create bucket
-resource "google_storage_bucket" "storage_bucket" {
+resource "google_storage_bucket" "kakka_storage_bucket" {
   name = "${var.labels.team}-${var.labels.app}-${var.bucket_instance_suffix}"
   force_destroy = var.force_destroy
   location = var.location
@@ -21,33 +21,33 @@ resource "google_storage_bucket" "storage_bucket" {
 resource "google_storage_bucket_object" "es-data" {
   name          = "es-data/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
 
 resource "google_storage_bucket_object" "geocoder" {
   name          = "geocoder/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
 
 resource "google_storage_bucket_object" "geojson" {
   name          = "geojson/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
 
 resource "google_storage_bucket_object" "kartverket" {
   name          = "kartverket/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
 resource "google_storage_bucket_object" "osm" {
   name          = "osm/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
 resource "google_storage_bucket_object" "tiamat" {
   name          = "tiamat/"
   content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  bucket        = google_storage_bucket.kakka_storage_bucket.name
 }

@@ -1,0 +1,36 @@
+# Create Service account and secretes
+resource "google_service_account" "kakka_service_account" {
+  account_id = "${var.labels.team}-${var.labels.app}-sa"
+  display_name = "${var.labels.team}-${var.labels.app} service account"
+  project = var.gcp_project
+}
+
+resource "google_project_iam_member" "kakka_cloudsql_iam_member" {
+  project = var.cloudsql_project
+  role = var.service_account_cloudsql_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
+resource "google_pubsub_topic_iam_member" "kakka_pubsub_tiamatexportqueue_iam_member" {
+  project = var.pubsub_project
+  topic = module.pubsub_tiamatexport_queue.topic
+  role = var.service_account_pubsub_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
+resource "google_pubsub_topic_iam_member" "kakka_pubsub_geocoderqueue_iam_member" {
+  project = var.pubsub_project
+  topic = module.pubsub_geocoder_queue.topic
+  role = var.service_account_pubsub_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
+resource "google_storage_bucket_iam_member" "kakka_storage_iam_member" {
+  bucket = google_storage_bucket.storage_bucket.name
+  role = var.service_account_bucket_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
+resource "google_service_account_key" "kakka_service_account_key" {
+  service_account_id = google_service_account.kakka_service_account.name
+}

@@ -45,6 +45,7 @@ resource "google_sql_database_instance" "db_instance" {
     backup_configuration {
       enabled = var.db_backup_enabled
     }
+    user_labels = var.labels
   }
   database_version = "POSTGRES_9_6"
 }

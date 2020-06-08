@@ -20,11 +20,7 @@ secretMount:
   readOnly: true
 
 configMapMount:
-  name: application-config
-  mountPath: /etc/application-config
-  subPath: ""
-  configMap: kakka-config
-  readOnly: false
+  name: kakka-config
 
 image:
   identifier: ${artifact.metadata.image}

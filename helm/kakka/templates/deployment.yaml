@@ -49,7 +49,7 @@ spec:
           terminationMessagePolicy: File
           volumeMounts:
             - mountPath: /etc/kakka-service-account
-              name: kakka-service-account
+              name: {{ .Values.secretMount.name }}
         - env:
             - name: JAVA_OPTIONS
               value: -server -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90

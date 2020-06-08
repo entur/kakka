@@ -11,12 +11,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   rules:
-  - timetable-admin-v1-export{{ .Values.ingress.domainName }}
-  {{- if eq .Values.env "production"}}
-  - host: timetable-admin-v1-export-{{ .Release.Namespace }}.entur.io
-  {{ else }}
-  - host: timetable-admin-v1-export-{{ .Release.Namespace }}.{{ .Release.Namespace }}.entur.io
-  {{- end}}
+  - host: timetable-admin-v1-export{{ .Values.ingress.domainName }}
     http:
       paths:
         - backend:
@@ -32,22 +27,12 @@ metadata:
     {{- include "common.labels" . | indent 4 }}
   annotations:
     kubernetes.io/ingress.class: traefik
-    {{- if eq .Values.env "production"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.productionIp }}
-    {{ else if eq .Values.env "staging"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.stagingIp }}
-    {{ else if eq .Values.env "dev"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.devIp }}
-    {{- end}}
+    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.loadBalancerIP }}
   name: timetable-admin-v1-geocoder
   namespace: {{ .Release.Namespace }}
 spec:
   rules:
-  {{- if eq .Values.env "production"}}
-  - host: timetable-admin-v1-geocoder-{{ .Release.Namespace }}.entur.io
-  {{ else }}
-  - host: timetable-admin-v1-geocoder-{{ .Release.Namespace }}.{{ .Release.Namespace }}.entur.io
-  {{- end}}
+  - host: timetable-admin-v1-geocoder{{ .Values.ingress.domainName }}
     http:
       paths:
         - backend:
@@ -63,22 +48,12 @@ metadata:
     {{- include "common.labels" . | indent 4 }}
   annotations:
     kubernetes.io/ingress.class: traefik
-    {{- if eq .Values.env "production"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.productionIp }}
-    {{ else if eq .Values.env "staging"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.stagingIp }}
-    {{ else if eq .Values.env "dev"}}
-    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.devIp }}
-    {{- end}}
+    external-dns.alpha.kubernetes.io/target: {{ .Values.ingress.loadBalancerIP }}
   name: timetable-admin-v1-poi-filter
   namespace: {{ .Release.Namespace }}
 spec:
   rules:
-  {{- if eq .Values.env "production"}}
-  - host: timetable-admin-v1-poi-filter-{{ .Release.Namespace }}.entur.io
-  {{ else }}
-  - host: timetable-admin-v1-poi-filter-{{ .Release.Namespace }}.{{ .Release.Namespace }}.entur.io
-  {{- end}}
+  - host: timetable-admin-v1-poi-filter{{ .Values.ingress.domainName }}
     http:
       paths:
         - backend:

@@ -1,5 +1,3 @@
-env: dev
-
 sql:
   instance: entur-ror-dev:europe-west1:kakka-db-1=tcp:5432
 

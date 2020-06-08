@@ -90,6 +90,10 @@ variable "load_config_file" {
 variable ror-kakka-db-password {
   description = "Kakka database password"
 }
+
+variable "ror-kakka-kartverket-password" {
+  default = "Kakka kartverket password"
+}
 variable "db_tier" {
   description = "Database instance tier"
   default = "db-g1-small"

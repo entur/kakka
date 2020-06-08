@@ -62,13 +62,13 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: password
-                  name: kakka-db-password
+                  key: kakka-db-password
+                  name: ror-kakka-secrets
             - name: KARTVERKET_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: password
-                  name: kakka-kartverket-password
+                  key: ror-kakka-kartverket-password
+                  name: ror-kakka-secrets
             - name: IAM_KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:

@@ -26,7 +26,7 @@ data:
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
-    blobstore.gcs.credential.path=/etc/marduk/marduk-blobstore-credentials.json
+    blobstore.gcs.credential.path=/etc/kakka/credentials.json
     spring.datasource.username=kakka
     server.host=0.0.0.0
     server.admin.host=0.0.0.0

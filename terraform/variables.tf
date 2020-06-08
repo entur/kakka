@@ -99,3 +99,6 @@ variable "db_backup_enabled" {
   description = "Enabled automated db backup"
   default = false
 }
+variable "db_availability_type" {
+  default = "Database availability type"
+}

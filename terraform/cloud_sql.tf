@@ -8,7 +8,7 @@ resource "google_sql_database_instance" "db_instance" {
     availability_type = var.db_availability_type
     tier = var.db_tier
     location_preference {
-      zone = "b"
+      zone = "europe-west1-b"
     }
     backup_configuration {
       enabled = var.db_backup_enabled

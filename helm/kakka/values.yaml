@@ -1,26 +1,9 @@
-env: dev
-
 replicas: 2
 
 rollingUpdate:
   maxSurge: 1
   maxUnavailable: 1
 
-sql:
-  instance: carbon-1287:europe-west1:kakka-db-1=tcp:5432
-
-configMap:
-  gcsBlobstore: marduk
-  projectId: carbon-1287
-  pelias:
-    gtfs: true
-    placeBoost: 40
-    boostConfig: "{\"defaultValue\":30, \"stopTypeFactors\":{\"airport\":{\"*\":2},\"busStation\":{\"*\":2},\"metroStation\":{\"*\":2},\"railStation\":{\"*\":2}}}"
-    boostFactor: 10
-    addressBoost: 20
-    streetBoost: 20
-    stopPlaceBoost: 40
-    osmPoiFilterDefaultPriority: 10
 
 resources:
   cpuLimit: 4500m
@@ -29,22 +12,12 @@ resources:
   memRequest: 8500Mi
   xmx: 10g
 
-secretMounts:
-  - name: marduk-key
-    mountPath: /etc/marduk/marduk-blobstore-credentials.json
-    subPath: marduk-blobstore-credentials.json
-    secretName: marduk-carbon-storage-key
-    readOnly: true
-  - name: kakka-service-account
-    mountPath: /etc/kakka-service-account
-    subPath: ""
-    secretName: kakka-service-account
-    readOnly: true
-  - name: marduk-pubsub-key
-    mountPath: /etc/marduk-pubsub-account
-    subPath: ""
-    secretName: marduk-pubsub-key
-    readOnly: true
+secretMount:
+  name: kakka-key
+  mountPath: /etc/kakka/credentials.json
+  subPath: credentials.json
+  secretName: ror-kakka-sa-key
+  readOnly: true
 
 configMapMounts:
   - name: application-config
@@ -64,11 +37,4 @@ service:
   httpAdmin:
     externalPort: 8080
     internalPort: 8080
-  jolokia:
-    internalPort: 8778
 
-ingress:
-    enabled: true
-    devIp: 35.195.223.29
-    stagingIp: 35.195.146.93
-    productionIp: 35.187.15.14

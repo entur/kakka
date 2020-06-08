@@ -1,0 +1,24 @@
+sql:
+  instance: entur-ror-dev:europe-west1:kakka-db-1=tcp:5432
+
+configMap:
+  gcsBlobstore: ror-kakka-dev
+  blobstoreProjectId: entur-ror-dev
+  pubsubProjectId: entur-ror-dev
+  keycloakUrl: https://kc-dev.devstage.entur.io/auth
+  poiUpdateEnabled: true
+  pelias:
+    gtfs: true
+    placeBoost: 40
+    boostConfig: "{\"defaultValue\":30, \"stopTypeFactors\":{\"airport\":{\"*\":2},\"busStation\":{\"*\":2},\"metroStation\":{\"*\":2},\"railStation\":{\"*\":2}}}"
+    boostFactor: 10
+    addressBoost: 20
+    streetBoost: 20
+    stopPlaceBoost: 40
+    osmPoiFilterDefaultPriority: 10
+
+ingress:
+  enabled: true
+  loadBalancerIP: 35.195.223.29
+  domainName: .dev.entur.io
+monitoringEnabled: true

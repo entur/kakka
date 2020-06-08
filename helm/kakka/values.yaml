@@ -19,12 +19,12 @@ secretMount:
   secretName: ror-kakka-sa-key
   readOnly: true
 
-configMapMounts:
-  - name: application-config
-    mountPath: /etc/application-config
-    subPath: ""
-    configMap: kakka-config
-    readOnly: false
+configMapMount:
+  name: application-config
+  mountPath: /etc/application-config
+  subPath: ""
+  configMap: kakka-config
+  readOnly: false
 
 image:
   identifier: ${artifact.metadata.image}

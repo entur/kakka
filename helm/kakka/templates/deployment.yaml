@@ -62,7 +62,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: kakka-db-password
+                  key: ror-kakka-db-password
                   name: ror-kakka-secrets
             - name: KARTVERKET_PASSWORD
               valueFrom:

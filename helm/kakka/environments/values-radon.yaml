@@ -20,5 +20,5 @@ configMap:
 ingress:
   enabled: true
   loadBalancerIP: 35.195.146.93
-  domainName: .staging.entur.io
+  domainName: -staging.staging.entur.io
 monitoringEnabled: true

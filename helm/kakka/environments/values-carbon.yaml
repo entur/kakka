@@ -20,5 +20,5 @@ configMap:
 ingress:
   enabled: true
   loadBalancerIP: 35.195.223.29
-  domainName: .dev.entur.io
+  domainName: -dev.dev.entur.io
 monitoringEnabled: true

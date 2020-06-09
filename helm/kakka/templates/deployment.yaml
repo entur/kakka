@@ -48,7 +48,7 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
-            - mountPath: /etc/kakka-service-account
+            - mountPath: /etc/kakka
               name: {{ .Values.secretMount.name }}
         - env:
             - name: JAVA_OPTIONS

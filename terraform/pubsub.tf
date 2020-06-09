@@ -3,9 +3,8 @@
 module "pubsub_geocoder_queue" {
   source  = "terraform-google-modules/pubsub/google"
   version = "1.3.0"
-  # insert the 3 required variables here
   topic              = "GeoCoderQueue"
-  project_id         = var.cloudsql_project
+  project_id         = var.pubsub_project
   pull_subscriptions = [
     {
       name = "GeoCoderQueue"
@@ -17,12 +16,24 @@ module "pubsub_geocoder_queue" {
 module "pubsub_tiamatexport_queue" {
   source  = "terraform-google-modules/pubsub/google"
   version = "1.3.0"
-  # insert the 3 required variables here
   topic              = "TiamatExportQueue"
-  project_id         = var.cloudsql_project
+  project_id         = var.pubsub_project
   pull_subscriptions = [
     {
       name = "TiamatExportQueue"
+    }
+  ]
+  topic_labels = var.labels
+}
+
+module "pubsub_osm_queue" {
+  source  = "terraform-google-modules/pubsub/google"
+  version = "1.3.0"
+  topic              = "GeoCoderOsmUpdateNotificationQueue"
+  project_id         = var.pubsub_project
+  pull_subscriptions = [
+    {
+      name = "GeoCoderOsmUpdateNotificationQueue"
     }
   ]
   topic_labels = var.labels

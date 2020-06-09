@@ -11,6 +11,12 @@ resource "google_project_iam_member" "kakka_cloudsql_iam_member" {
   member = "serviceAccount:${google_service_account.kakka_service_account.email}"
 }
 
+resource "google_project_iam_member" "kakka_pubsub_iam_member" {
+  project = var.pubsub_project
+  role = var.service_account_pubsub_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
 resource "google_pubsub_topic_iam_member" "kakka_pubsub_tiamatexportqueue_iam_member" {
   project = var.pubsub_project
   topic = module.pubsub_tiamatexport_queue.topic
@@ -21,6 +27,13 @@ resource "google_pubsub_topic_iam_member" "kakka_pubsub_tiamatexportqueue_iam_me
 resource "google_pubsub_topic_iam_member" "kakka_pubsub_geocoderqueue_iam_member" {
   project = var.pubsub_project
   topic = module.pubsub_geocoder_queue.topic
+  role = var.service_account_pubsub_role
+  member = "serviceAccount:${google_service_account.kakka_service_account.email}"
+}
+
+resource "google_pubsub_topic_iam_member" "kakka_pubsub_osm_iam_member" {
+  project = var.pubsub_project
+  topic = module.pubsub_osm_queue.topic
   role = var.service_account_pubsub_role
   member = "serviceAccount:${google_service_account.kakka_service_account.email}"
 }

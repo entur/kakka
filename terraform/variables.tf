@@ -94,6 +94,11 @@ variable ror-kakka-db-password {
 variable "ror-kakka-kartverket-password" {
   default = "Kakka kartverket password"
 }
+
+variable "ror-kakka-keycloak-secret" {
+  default = "Kakka keycloak secret"
+}
+
 variable "db_tier" {
   description = "Database instance tier"
   default = "db-g1-small"

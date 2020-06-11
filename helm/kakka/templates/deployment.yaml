@@ -72,8 +72,8 @@ spec:
             - name: IAM_KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  key: password
-                  name: kakka-keycloak-secret
+                  key: ror-kakka-keycloak-secret
+                  name: ror-kakka-secrets
           image: {{ .Values.image.identifier }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           livenessProbe:

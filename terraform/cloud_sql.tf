@@ -1,4 +1,5 @@
 # Create database
+/*
 resource "google_sql_database_instance" "db_instance" {
   count = var.entur_env ? 1 : 0
   name = "kakka-db"
@@ -33,3 +34,4 @@ resource "google_sql_user" "db-user" {
   instance = google_sql_database_instance.db_instance.name
   password = var.ror-kakka-db-password
 }
+*/

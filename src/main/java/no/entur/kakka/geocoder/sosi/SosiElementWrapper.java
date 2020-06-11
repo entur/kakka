@@ -26,10 +26,13 @@ import no.vegvesen.nvdb.sosi.document.SosiRefIsland;
 import no.vegvesen.nvdb.sosi.document.SosiRefNumber;
 import no.vegvesen.nvdb.sosi.document.SosiValue;
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
             return geometry;
         }
         List<Coordinate> coordinateList = new ArrayList<>();
+        List<List<Coordinate>> holesCoordinates = new ArrayList<>();
 
         Optional<SosiElement> refElement = sosiElement.findSubElement(se -> "REF".equals(se.getName()));
         if (refElement.isPresent()) {
@@ -64,27 +68,17 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
 
                 if (ref instanceof SosiRefNumber) {
                     SosiRefNumber sosiRefNumber = (SosiRefNumber) ref;
-                    Long refId = sosiRefNumber.longValue();
-                    List<Coordinate> coordinatesForRef = coordinates.getForRef(refId);
-                    if (coordinatesForRef != null) {
-
-                        if (!coordinatesForRef.isEmpty()) {
-                            if (sosiRefNumber.isReversedOrder()) {
-                                coordinateList.addAll(Lists.reverse(coordinatesForRef));
-                            } else {
-                                coordinateList.addAll(coordinatesForRef);
-                            }
-
-                        } else {
-                            logger.info("Bad coord sequence for  SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
-                        }
-                    } else {
-                        logger.info("Ignore unknown SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
-                    }
+                    addCoordinatesForRefIdToList(sosiRefNumber, coordinateList);
                 } else if (ref instanceof SosiRefIsland) {
-                    logger.info("Ignore SosiRefIsland (enclave) for: " + getType() + ": " + getId() + ": " + getName());
+                    List<Coordinate> holeCoordinates = new ArrayList<>();
+                    holesCoordinates.add(holeCoordinates);
+                    SosiRefIsland sosiRefIsland = (SosiRefIsland) ref;
+                    sosiRefIsland.refNumbers().forEach(number -> {
+                        addCoordinatesForRefIdToList(number, holeCoordinates);
+                    });
+                } else {
+                    logger.info("Ignoring SosiValue instance (" + ref.getClass().getName() + ") for: " + getType() + ": " + getId() + ": " + getName());
                 }
-
             }
         }
 
@@ -92,8 +86,36 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
             return null;
         }
 
-        geometry = new GeometryFactory().createPolygon(coordinateList.toArray(new Coordinate[coordinateList.size()]));
-        return geometry;
+        if (!holesCoordinates.isEmpty()) {
+            LinearRing shell = new GeometryFactory().createLinearRing(coordinateList.toArray(Coordinate[]::new));
+            LinearRing[] holes = holesCoordinates.stream()
+                    .map(holeCoordinates -> new GeometryFactory().createLinearRing(holeCoordinates.toArray(Coordinate[]::new)))
+                    .toArray(LinearRing[]::new);
+            Polygon polygon = new GeometryFactory().createPolygon(shell, holes);
+            return new GeometryFactory().createMultiPolygon(new Polygon[]{polygon});
+        } else {
+            return new GeometryFactory().createPolygon(coordinateList.toArray(Coordinate[]::new));
+        }
+    }
+
+    private void addCoordinatesForRefIdToList(SosiRefNumber sosiRefNumber, List<Coordinate> coordinateList) {
+        Long refId = sosiRefNumber.longValue();
+        List<Coordinate> coordinatesForRef = coordinates.getForRef(refId);
+        if (coordinatesForRef != null) {
+
+            if (!coordinatesForRef.isEmpty()) {
+                if (sosiRefNumber.isReversedOrder()) {
+                    coordinateList.addAll(Lists.reverse(coordinatesForRef));
+                } else {
+                    coordinateList.addAll(coordinatesForRef);
+                }
+
+            } else {
+                logger.info("Bad coord sequence for  SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
+            }
+        } else {
+            logger.info("Ignore unknown SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
+        }
     }
 
     @Override

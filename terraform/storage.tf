@@ -1,4 +1,5 @@
 # Create bucket
+/*
 resource "google_storage_bucket" "kakka_storage_bucket" {
   count = var.entur_env ? 1 : 0
   name = "${var.labels.team}-${var.labels.app}-${var.bucket_instance_suffix}"
@@ -58,3 +59,4 @@ resource "google_storage_bucket_object" "tiamat" {
   content       = "Not really a directory, but it's empty."
   bucket        = google_storage_bucket.kakka_storage_bucket.name
 }
+*/

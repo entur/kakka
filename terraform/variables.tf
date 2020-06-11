@@ -92,11 +92,11 @@ variable ror-kakka-db-password {
 }
 
 variable "ror-kakka-kartverket-password" {
-  default = "Kakka kartverket password"
+  description = "Kakka kartverket password"
 }
 
 variable "ror-kakka-keycloak-secret" {
-  default = "Kakka keycloak secret"
+  description = "Kakka keycloak secret"
 }
 
 variable "db_tier" {
@@ -109,7 +109,7 @@ variable "db_backup_enabled" {
   default = false
 }
 variable "db_availability_type" {
-  default = "Database availability type"
+  description = "Database availability type"
 }
 
 variable entur_env {

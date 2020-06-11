@@ -1,6 +1,8 @@
 # Create pubsub config
-
+# Disabled intentional for migration
+/*
 module "pubsub_geocoder_queue" {
+
   source  = "terraform-google-modules/pubsub/google"
   version = "1.3.0"
   topic              = "GeoCoderQueue"
@@ -38,3 +40,4 @@ module "pubsub_osm_queue" {
   ]
   topic_labels = var.labels
 }
+*/

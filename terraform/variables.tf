@@ -106,3 +106,12 @@ variable "db_backup_enabled" {
 variable "db_availability_type" {
   default = "Database availability type"
 }
+
+variable entur_env {
+  description = "Whether deployment is to new entur environments"
+  default = false
+}
+
+variable "kakka_storage_bucket" {
+  description = "kakka storage bucket"
+}

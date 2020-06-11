@@ -1,5 +1,6 @@
 # Create database
 resource "google_sql_database_instance" "db_instance" {
+  count = var.entur_env ? 1 : 0
   name = "kakka-db"
   project = var.cloudsql_project
   region = "europe-west1"
@@ -19,12 +20,14 @@ resource "google_sql_database_instance" "db_instance" {
 }
 
 resource "google_sql_database" "db" {
+  count = var.entur_env ? 1 : 0
   name = "kakka"
   project = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
 }
 
 resource "google_sql_user" "db-user" {
+  count = var.entur_env ? 1 : 0
   name = "kakka"
   project = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name

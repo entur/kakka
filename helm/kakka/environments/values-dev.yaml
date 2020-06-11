@@ -1,10 +1,10 @@
 sql:
-  instance: entur-ror-dev:europe-west1:kakka-db=tcp:5432
+  instance: carbon-1287:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: ror-kakka-dev
-  blobstoreProjectId: entur-ror-dev
-  pubsubProjectId: entur-ror-dev
+  gcsBlobstore: marduk
+  blobstoreProjectId: carbon-1287
+  pubsubProjectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
   poiUpdateEnabled: true
   pelias:
@@ -19,6 +19,6 @@ configMap:
 
 ingress:
   enabled: true
-  loadBalancerIP: 35.195.223.29
-  domainName: .dev.entur.io
+  loadBalancerIP: 35.205.170.68
+  domainName: -dev.dev.entur.io
 monitoringEnabled: true

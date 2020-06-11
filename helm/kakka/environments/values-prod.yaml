@@ -1,10 +1,10 @@
 sql:
-  instance: entur-ror-prod:europe-west1:kakka-db=tcp:5432
+  instance: neon-1287:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: ror-kakka-production
-  blobstoreProjectId: entur-ror-prod
-  pubsubProjectId: entur-ror-prod
+  gcsBlobstore: marduk-production
+  blobstoreProjectId: neon-1287
+  pubsubProjectId: neon-1287
   keycloakUrl: https://auth.entur.org/auth
   poiUpdateEnabled: true
   pelias:
@@ -19,7 +19,7 @@ configMap:
 
 ingress:
   enabled: true
-  loadBalancerIP: 35.187.15.14
-  domainName: .entur.io
+  loadBalancerIP: 35.205.233.237
+  domainName: -production.entur.io
 monitoringEnabled: false
 

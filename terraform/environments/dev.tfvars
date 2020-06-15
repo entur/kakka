@@ -1,5 +1,5 @@
 gcp_project = "entur-ror-dev"
-cloudsql_project = "carbon-1287"
+cloudsql_project = "entur-ror-dev"
 pubsub_project = "carbon-1287"
 storage_project = "carbon-1287"
 kube_namespace = "dev"

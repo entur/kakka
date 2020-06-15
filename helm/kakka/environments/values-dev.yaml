@@ -1,5 +1,5 @@
 sql:
-  instance: carbon-1287:europe-west1:kakka-db-1=tcp:5432
+  instance: entur-ror-dev:europe-west1:kakka-db-11=tcp:5432
 
 configMap:
   gcsBlobstore: marduk

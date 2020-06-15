@@ -1,6 +1,6 @@
-gcp_project = "entur-dev-1287"
+gcp_project = "entur-ror-dev"
 cloudsql_project = "carbon-1287"
-pubsub_project = "entur-ror-dev"
+pubsub_project = "carbon-1287"
 storage_project = "carbon-1287"
 kube_namespace = "dev"
 bucket_instance_suffix = "dev"

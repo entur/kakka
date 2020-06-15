@@ -2,7 +2,7 @@
 resource "google_service_account" "kakka_service_account" {
   account_id = "${var.labels.team}-${var.labels.app}-sa"
   display_name = "${var.labels.team}-${var.labels.app} service account"
-  project = var.pubsub_project
+  project = var.gcp_project
 }
 
 resource "google_project_iam_member" "kakka_cloudsql_iam_member" {

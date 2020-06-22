@@ -33,4 +33,11 @@ rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["services", "pods", "configmaps", "endpoints"]
     verbs: ["get", "watch", "list"]
+  - apiGroups: ["batch"]
+      resources: ["cronjobs", "jobs"]
+      verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["extensions"]
+      resources: ["deployments"]
+      verbs: ["get", "list", "watch", "update", "patch"]
+
 {{- end }}

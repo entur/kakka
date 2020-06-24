@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.nabu.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.wololo.geojson.Geometry;
 import org.wololo.geojson.Polygon;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -32,11 +33,11 @@ public class AdministrativeZone {
 
     public String source;
 
-    public Polygon polygon;
+    public Geometry polygon;
 
     public AdministrativeZoneType type;
 
-    public AdministrativeZone(String codeSpace, String privateCode, String name, Polygon polygon, AdministrativeZoneType type, String source) {
+    public AdministrativeZone(String codeSpace, String privateCode, String name, Geometry polygon, AdministrativeZoneType type, String source) {
         this.codeSpace = codeSpace;
         this.privateCode = privateCode;
         this.name = name;
@@ -57,7 +58,7 @@ public class AdministrativeZone {
         return name;
     }
 
-    public Polygon getPolygon() {
+    public Geometry getPolygon() {
         return polygon;
     }
 

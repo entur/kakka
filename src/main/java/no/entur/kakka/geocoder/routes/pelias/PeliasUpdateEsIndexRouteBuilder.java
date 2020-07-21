@@ -58,6 +58,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
     private String elasticsearchScratchUrl;
 
+    @Value("${osm.pbf.blobstore.subdirectory:osm}")
+    private String blobStoreSubdirectoryForOsm;
+
     @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;
 
@@ -159,6 +162,16 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .to("direct:haltIfContentIsMissing")
                 .log(LoggingLevel.INFO, "Finished inserting addresses to ES")
                 .routeId("pelias-insert-addresses");
+
+        from("direct:insertPOIData")
+                .log(LoggingLevel.INFO,"Start inserting POI data to ES")
+                .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForOsm))
+                .setHeader(WORKING_DIRECTORY, simple( localWorkingDirectory + "/poi"))
+                .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromOSM"))
+                .setHeader(FILE_EXTENSION, constant("pbf"))
+                .to("direct:haltIfContentIsMissing")
+                .log(LoggingLevel.INFO, "Finished inserting POI data to ES")
+                .routeId("pelias-insert-poi-data");
 
         from("direct:insertTiamatData")
                 .log(LoggingLevel.INFO, "Start inserting Tiamat data to ES")
@@ -274,6 +287,12 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .bean("deliveryPublicationStreamToElasticsearchCommands", "transform")
                 .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands completed")
                 .routeId("pelias-convert-commands-from-tiamat");
+
+        from("direct:convertToPeliasCommandsFromOSM")
+                .log(LoggingLevel.INFO,"Transform pbf To Elasticsearch Commands")
+                .bean("pbfToElasticsearchCommands","transform")
+                .log(LoggingLevel.INFO,"Transform pbf To Elasticsearch Commands completed")
+                .routeId("pelias-convert-commands-from-pbf");
 
 
         from("direct:invokePeliasBulkCommand")

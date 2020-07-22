@@ -61,6 +61,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     @Value("${osm.pbf.blobstore.subdirectory:osm}")
     private String blobStoreSubdirectoryForOsm;
 
+    @Value("${osm.poi.update.enabled:false}")
+    private boolean routeEnabled;
+
     @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;
 
@@ -109,7 +112,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertGtfsStopPlaceData")
+                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData","direct:insertPOIData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)
@@ -164,6 +167,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-insert-addresses");
 
         from("direct:insertPOIData")
+                .choice()
+                .when(constant(routeEnabled))
                 .log(LoggingLevel.INFO,"Start inserting POI data to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForOsm))
                 .setHeader(WORKING_DIRECTORY, simple( localWorkingDirectory + "/poi"))
@@ -171,6 +176,10 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FILE_EXTENSION, constant("pbf"))
                 .to("direct:haltIfContentIsMissing")
                 .log(LoggingLevel.INFO, "Finished inserting POI data to ES")
+                .endChoice()
+                .otherwise()
+                .log(LoggingLevel.WARN, "PlaceOfInterest from OSM update route has been DISABLED. Will not update POIs")
+                .end()
                 .routeId("pelias-insert-poi-data");
 
         from("direct:insertTiamatData")

@@ -30,6 +30,7 @@ import org.junit.Test;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DeliveryPublicationStreamToElasticsearchCommandsTest {
@@ -43,7 +44,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
                 new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
-                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService);
+                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true);
 
         Collection<ElasticsearchCommand> commands = mapper
                                                             .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
@@ -69,6 +70,26 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
 
         // POI not matching filter should not be mapped
         assertNotMapped(commands, "NSR:TopographicPlace:725");
+    }
+
+    @Test
+    public void testPOIFilterProperty() throws Exception {
+        OSMPOIFilterRepository osmpoiFilterRepository = new OSMPOIFilterRepositoryStub();
+        OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
+        DeliveryPublicationStreamToElasticsearchCommands mapper =
+                new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
+                        POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, false);
+
+        Collection<ElasticsearchCommand> commands = mapper
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
+
+        Assert.assertEquals(15, commands.size());
+        commands.forEach(this::assertCommand);
+
+
+        final List<PeliasDocument> collect = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(p -> p.getCategory().contains("poi")).collect(Collectors.toList());
+
+        Assert.assertTrue(collect.isEmpty());
     }
 
     private PeliasDocument byId(Collection<ElasticsearchCommand> commands, String sourceId) {

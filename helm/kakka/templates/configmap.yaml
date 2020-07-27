@@ -76,8 +76,11 @@ data:
     pelias.download.directory=/tmp/tiamat/pelias
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
     tiamat.poi.update.directory=/tmp/tiamat/poi/update
-
     kakka.remote.kubernetes.namespace = {{.Values.env }}
+    # Convert POIs directly from osm file
+    osm.poi.update.enabled=true
+    # Exclude POIs from timat netex file
+    pelias.poi.include=false
 kind: ConfigMap
 metadata:
   name: {{ template "kakka.name" . }}-config

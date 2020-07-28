@@ -31,7 +31,7 @@ spec:
             - -instances={{ .Values.sql.instance }}
             - -credential_file=/etc/kakka/credentials.json
             - -log_debug_stdout
-          image: gcr.io/cloudsql-docker/gce-proxy:1.15
+          image: gcr.io/cloudsql-docker/gce-proxy:1.17
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:

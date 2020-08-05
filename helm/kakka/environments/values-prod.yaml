@@ -22,4 +22,5 @@ ingress:
   loadBalancerIP: 35.205.233.237
   domainName: -production.entur.io
 monitoringEnabled: false
-
+rbac:
+  enabled: true

@@ -22,3 +22,5 @@ ingress:
   loadBalancerIP: 130.211.80.129
   domainName: -staging.staging.entur.io
 monitoringEnabled: true
+rbac:
+  enabled: true

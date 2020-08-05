@@ -5,7 +5,7 @@ resource "kubernetes_secret" "kakka_service_account_credentials" {
     labels = var.labels
   }
   data = {
-    "credentials.json" = "${base64decode(google_service_account_key.kakka_service_account_key.private_key)}"
+    "credentials.json" = base64decode(google_service_account_key.kakka_service_account_key.private_key)
   }
 }
 resource "kubernetes_secret" "ror-kakka-secrets" {

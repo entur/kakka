@@ -14,9 +14,7 @@ variable "pubsub_project" {
 variable "storage_project" {
   description = "GCP project of pubsub topic"
 }
-variable "location" {
-  description = "GCP bucket location"
-}
+
 variable "kube_namespace" {
   description = "The Kubernetes namespace"
 }
@@ -30,35 +28,6 @@ variable "labels" {
     slack = "talk-ror"
     app = "kakka"
   }
-}
-
-variable "bucket_instance_suffix" {
-  description = "A suffix for the bucket instance, may be changed if environment is destroyed and then needed again (name collision workaround) - also bucket names must be globally unique"
-}
-
-variable "force_destroy" {
-  description = "(Optional, Default: false) When deleting a bucket, this boolean option will delete all contained objects. If you try to delete a bucket that contains objects, Terraform will fail that run"
-  default = false
-}
-
-variable "storage_class" {
-  description = "GCP storage class"
-  default = "REGIONAL"
-}
-
-variable "versioning" {
-  description = "The bucket's Versioning configuration."
-  default = "true"
-}
-
-variable "log_bucket" {
-  description = "The bucket's Access & Storage Logs configuration"
-  default = "false"
-}
-
-variable "bucket_policy_only" {
-  description = "Enables Bucket Policy Only access to a bucket"
-  default = "false"
 }
 
 variable "service_account_bucket_role" {
@@ -76,12 +45,6 @@ variable "service_account_pubsub_role" {
   default = "roles/pubsub.editor"
 }
 
-variable "prevent_destroy" {
-  description = "Prevent destruction of bucket"
-  type = bool
-  default = false
-}
-
 variable "load_config_file" {
   description = "Do not load kube config file"
   default = false
@@ -97,24 +60,6 @@ variable "ror-kakka-kartverket-password" {
 
 variable "ror-kakka-keycloak-secret" {
   description = "Kakka keycloak secret"
-}
-
-variable "db_tier" {
-  description = "Database instance tier"
-  default = "db-g1-small"
-}
-
-variable "db_backup_enabled" {
-  description = "Enabled automated db backup"
-  default = false
-}
-variable "db_availability_type" {
-  description = "Database availability type"
-}
-
-variable entur_env {
-  description = "Whether deployment is to new entur environments"
-  default = false
 }
 
 variable "kakka_storage_bucket" {

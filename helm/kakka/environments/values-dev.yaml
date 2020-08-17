@@ -2,8 +2,8 @@ sql:
   instance: entur-ror-dev:europe-west1:kakka-db-11=tcp:5432
 
 configMap:
-  gcsBlobstore: marduk
-  blobstoreProjectId: carbon-1287
+  gcsBlobstore: kakka-dev
+  blobstoreProjectId: entur-ror-dev
   pubsubProjectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
   poiUpdateEnabled: true

@@ -2,8 +2,8 @@ sql:
   instance: entur-ror-test:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: marduk-staging
-  blobstoreProjectId: radon-1287
+  gcsBlobstore: kakka-test
+  blobstoreProjectId: entur-ror-test
   pubsubProjectId: radon-1287
   keycloakUrl: https://kc-stage.devstage.entur.io/auth
   poiUpdateEnabled: false

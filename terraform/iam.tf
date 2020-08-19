@@ -19,7 +19,6 @@ resource "google_project_iam_member" "kakka_pubsub_iam_member" {
 
 resource "google_storage_bucket_iam_member" "kakka_storage_iam_member" {
   bucket = var.kakka_storage_bucket
-  project = var.gcp_project
   role = var.service_account_bucket_role
   member = "serviceAccount:${google_service_account.kakka_service_account.email}"
 }

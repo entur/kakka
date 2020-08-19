@@ -12,7 +12,7 @@ resource "google_project_iam_member" "kakka_cloudsql_iam_member" {
 }
 
 resource "google_project_iam_member" "kakka_pubsub_iam_member" {
-  project = var.gcp_project
+  project = var.pubsub_project
   role = var.service_account_pubsub_role
   member = "serviceAccount:${google_service_account.kakka_service_account.email}"
 }

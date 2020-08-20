@@ -1,6 +1,6 @@
 gcp_project = "entur-ror-dev"
 cloudsql_project = "entur-ror-dev"
-pubsub_project = "carbon-1287"
+pubsub_project = "entur-ror-dev"
 storage_project = "entur-ror-dev"
 kube_namespace = "dev"
 service_account_bucket_role = "roles/storage.objectAdmin"

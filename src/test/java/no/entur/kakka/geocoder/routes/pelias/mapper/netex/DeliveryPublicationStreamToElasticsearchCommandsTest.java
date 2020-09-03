@@ -106,6 +106,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals(StopPlaceToPeliasMapper.SOURCE_PARENT_STOP_PLACE, known.getSource());
         Assert.assertEquals(known.getCategory().size(), 2);
         Assert.assertTrue(known.getCategory().containsAll(Arrays.asList("airport", "onstreetBus")));
+        Assert.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport", "onstreetbus")));
         Assert.assertEquals("Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)", 5000, known.getPopularity().longValue());
     }
 
@@ -116,6 +117,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals("Parent label", known.getAliasMap().get("nor"));
         Assert.assertEquals(known.getCategory().size(), 1);
         Assert.assertTrue(known.getCategory().containsAll(Arrays.asList("airport")));
+        Assert.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport")));
         Assert.assertEquals("Expected popularity to be default (1000) boosted by stop type boosts (airport=3)", 3000, known.getPopularity().longValue());
     }
 
@@ -127,6 +129,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
         Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
         Assert.assertEquals(Arrays.asList("airport"), known.getCategory());
+        Assert.assertEquals(Arrays.asList("airport"), known.getCategoryFilter());
         Assert.assertEquals(68.490412, known.getCenterPoint().getLat(), 0.0001);
         Assert.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
         Assert.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
@@ -143,6 +146,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals("address", known.getLayer());
         Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
         Assert.assertEquals(Arrays.asList("GroupOfStopPlaces"), known.getCategory());
+        Assert.assertEquals(Arrays.asList("groupofstopplaces"), known.getCategoryFilter());
         Assert.assertEquals(60.002417, known.getCenterPoint().getLat(), 0.0001);
         Assert.assertEquals(10.272200, known.getCenterPoint().getLon(), 0.0001);
 
@@ -157,6 +161,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assert.assertEquals("address", known.getLayer());
         Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
         Assert.assertEquals(Arrays.asList("poi"), known.getCategory());
+        Assert.assertEquals(Arrays.asList("poi"), known.getCategoryFilter());
         Assert.assertEquals(62.308413, known.getCenterPoint().getLat(), 0.0001);
         Assert.assertEquals(6.947573, known.getCenterPoint().getLon(), 0.0001);
         Assert.assertEquals(POI_POPULARITY, known.getPopularity());

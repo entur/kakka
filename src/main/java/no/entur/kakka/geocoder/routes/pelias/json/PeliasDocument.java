@@ -25,6 +25,7 @@ import org.geojson.Polygon;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Document model stored in elasticsearch for Pelias
@@ -80,6 +81,9 @@ public class PeliasDocument {
 
     @JsonProperty("category")
     private List<String> category;
+
+    @JsonProperty("category_filter")
+    private List<String> categoryFilter;
 
     @JsonProperty("tariff_zones")
     private List<String> tariffZones;
@@ -271,7 +275,12 @@ public class PeliasDocument {
 
     public void setCategory(List<String> category) {
         this.category = category;
+        if (null != category) {
+            this.categoryFilter = category.stream().map(String::toLowerCase).collect(Collectors.toList());
+        }
     }
+
+    public List<String> getCategoryFilter() { return categoryFilter; }
 
     public List<String> getTariffZones() {
         return tariffZones;

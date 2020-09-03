@@ -4,7 +4,7 @@ sql:
 configMap:
   gcsBlobstore: kakka-dev
   blobstoreProjectId: entur-ror-dev
-  pubsubProjectId: entur-ror-dev
+  pubsubProjectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
   poiUpdateEnabled: true
   pelias:

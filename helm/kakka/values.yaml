@@ -6,9 +6,9 @@ rollingUpdate:
 
 
 resources:
-  cpuLimit: 4500m
+  cpuLimit: "3"
   memLimit: 9000Mi
-  cpuRequest: "1"
+  cpuRequest: "2"
   memRequest: 8500Mi
   xmx: 10g
 

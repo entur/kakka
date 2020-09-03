@@ -275,7 +275,9 @@ public class PeliasDocument {
 
     public void setCategory(List<String> category) {
         this.category = category;
-        this.categoryFilter = category.stream().map(String::toLowerCase).collect(Collectors.toList());
+        if (null != category) {
+            this.categoryFilter = category.stream().map(String::toLowerCase).collect(Collectors.toList());
+        }
     }
 
     public List<String> getCategoryFilter() { return categoryFilter; }

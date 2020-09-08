@@ -6,7 +6,7 @@ configMap:
   blobstoreProjectId: neon-1287
   pubsubProjectId: neon-1287
   keycloakUrl: https://auth.entur.org/auth
-  poiUpdateEnabled: true
+  poiUpdateEnabled: false
   pelias:
     gtfs: false
     placeBoost: 40
@@ -16,6 +16,7 @@ configMap:
     streetBoost: 20
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
+    poiInclude: true
 
 ingress:
   enabled: true

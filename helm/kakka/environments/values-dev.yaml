@@ -16,6 +16,7 @@ configMap:
     streetBoost: 20
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
+    poiInclude: false
 
 ingress:
   enabled: true

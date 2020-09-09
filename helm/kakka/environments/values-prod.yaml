@@ -1,5 +1,5 @@
 sql:
-  instance: neon-1287:europe-west1:kakka-db-1=tcp:5432
+  instance: entur-ror-prod:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
   gcsBlobstore: marduk-production
@@ -21,7 +21,7 @@ configMap:
 ingress:
   enabled: true
   loadBalancerIP: 35.205.233.237
-  domainName: -production.entur.io
+  domainName: .entur.io
 monitoringEnabled: false
 rbac:
   enabled: true

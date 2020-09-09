@@ -24,6 +24,6 @@
     </PreFlow>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://timetable-admin-v1-poi-filter-NAMESPACE.INGRESS_ENVIRONMENT/services/custom_configurations/poiFilter</URL>
+        <URL>https://timetable-admin-v1-poi-filter.INGRESS_ENVIRONMENT/services/custom_configurations/poiFilter</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

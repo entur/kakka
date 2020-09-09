@@ -24,6 +24,6 @@
     </PreFlow>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://timetable-admin-v1-geocoder-NAMESPACE.INGRESS_ENVIRONMENT/services/geocoder_admin</URL>
+        <URL>https://timetable-admin-v1-geocoder.INGRESS_ENVIRONMENT/services/geocoder_admin</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

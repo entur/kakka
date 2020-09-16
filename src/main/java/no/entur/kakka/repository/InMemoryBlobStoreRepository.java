@@ -96,6 +96,12 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void copyBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        byte[] sourceData = blobs.get(sourceObjectName);
+        blobs.put(targetObjectName, sourceData);
+    }
+
+    @Override
     public boolean delete(String objectName) {
         blobs.remove(objectName);
         return true;
@@ -108,6 +114,11 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void setContainerName(String containerName) {
+
+    }
+
+    @Override
+    public void setTargetContainerName(String targetContainerName) {
 
     }
 

@@ -161,9 +161,9 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_${header." + Constants.JOB_ID + "}_${date:now:yyyyMMddHHmmss}.zip"))
 
                 .to("direct:tiamatExportUploadFile")
-                .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_latest.zip"))
+                .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}_latest.zip"))
                 .process(e -> e.getIn().setBody(new File(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
-                .to("direct:tiamatExportUploadFile")
+                .to("direct:tiamatExportUploadFileExternal")
 
                 .to("direct:cleanUpLocalDirectory")
                 .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")

@@ -32,8 +32,10 @@ import org.springframework.stereotype.Repository;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 @Repository
 @Profile("gcs-blobstore")
@@ -46,6 +48,8 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     private String containerName;
 
+    private String targetContainerName;
+
 
     @Override
     public void setStorage(Storage storage) {
@@ -55,6 +59,11 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     @Override
     public void setContainerName(String containerName) {
         this.containerName = containerName;
+    }
+
+    @Override
+    public void setTargetContainerName(String targetContainerName) {
+        this.targetContainerName = targetContainerName;
     }
 
     @Override
@@ -104,6 +113,23 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     @Override
     public void uploadBlob(String name, InputStream inputStream, boolean makePublic, String contentType) {
         BlobStoreHelper.uploadBlobWithRetry(storage, containerName, name, inputStream, makePublic, contentType);
+    }
+
+    @Override
+    public void copyBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(containerName, sourceObjectName, targetContainerName, targetObjectName, makePublic);
+    }
+
+    public void copyBlob(String sourceContainerName, String sourceObjectName, String targetContainerName, String targetObjectName, boolean makePublic) {
+
+        List<Storage.BlobTargetOption> blobTargetOptions = makePublic ? List.of(Storage.BlobTargetOption.predefinedAcl(Storage.PredefinedAcl.PUBLIC_READ))
+                : Collections.emptyList();
+        Storage.CopyRequest request =
+                Storage.CopyRequest.newBuilder()
+                        .setSource(BlobId.of(sourceContainerName, sourceObjectName))
+                        .setTarget(BlobId.of(targetContainerName, targetObjectName), blobTargetOptions)
+                        .build();
+        storage.copy(request).getResult();
     }
 
     @Override

@@ -41,6 +41,9 @@ public class BlobStoreService {
 	@Value("${blobstore.gcs.container.name}")
 	String containerName;
 
+	@Value("${blobstore.gcs.target-container.name}")
+	String targetContainerName;
+
 	@PostConstruct
 	public void init() {
 		repository.setStorage(storage);
@@ -67,5 +70,11 @@ public class BlobStoreService {
 		ExchangeUtils.addHeadersAndAttachments(exchange);
 		return repository.delete(name);
 	}
+
+	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+		ExchangeUtils.addHeadersAndAttachments(exchange);
+		repository.copyBlob(sourceName, targetName, makePublic);
+	}
+
 
 }

@@ -22,6 +22,9 @@ public class Constants {
 
     public static final String FILE_HANDLE = "RutebankenFileHandle";
     public static final String FILE_NAME = "RutebankenFileName";
+    public static final String TARGET_FILE_HANDLE = "RutebankenTargetFileHandle";
+    public static final String TARGET_FILE_PARENT = "RutebankenTargetFileParent";
+    public static final String TARGET_CONTAINER = "RutebankenTargetContainer";
 
     public static final String JOB_URL = "RutebankenJobURL";
     public static final String JOB_ID = "RutebankenJobId";

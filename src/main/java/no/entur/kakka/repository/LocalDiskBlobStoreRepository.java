@@ -17,6 +17,7 @@ package no.entur.kakka.repository;
 
 import com.google.cloud.storage.Storage;
 import no.entur.kakka.domain.BlobStoreFiles;
+import no.entur.kakka.exceptions.KakkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,9 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Value("${blobstore.local.folder:files/blob}")
     private String baseFolder;
+
+    @Value("${blobstore.local.target-folder:files/blob}")
+    private String targetFolder;
 
     @Override
     public BlobStoreFiles listBlobs(String prefix) {
@@ -125,11 +129,43 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void copyBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        Path sourceLocalPath = Paths.get(sourceObjectName);
+        Path sourceFullPath = Paths.get(baseFolder).resolve(sourceLocalPath);
+        Path targetLocalPath = Paths.get(targetObjectName);
+        Path targetFullPath = Paths.get(targetFolder).resolve(targetLocalPath);
+        try {
+
+            // create target parent directories if missing
+            Path parentDirectory = targetLocalPath.getParent();
+            Path folder = parentDirectory == null ? Paths.get(targetFolder) : Paths.get(targetFolder).resolve(parentDirectory);
+            Files.createDirectories(folder);
+
+            Files.deleteIfExists(targetFullPath);
+
+            Files.copy(sourceFullPath, targetFullPath);
+        } catch (IOException e) {
+            throw new KakkaException(e.getMessage());
+        }
+
+    }
+
+    @Override
     public void setStorage(Storage storage) {
     }
 
     @Override
+    public void setTargetStorage(Storage targetStorage) {
+
+    }
+
+    @Override
     public void setContainerName(String containerName) {
+    }
+
+    @Override
+    public void setTargetContainerName(String targetContainerName) {
+
     }
 
     @Override

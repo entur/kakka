@@ -1,7 +1,7 @@
 gcp_project = "entur-ror-test"
 cloudsql_project = "entur-ror-test"
 pubsub_project = "radon-1287"
-storage_project = "entur-ror-test"
 kube_namespace = "staging"
 service_account_bucket_role = "roles/storage.objectAdmin"
 kakka_storage_bucket = "kakka-test"
+kakka_target_storage_bucket = "marduk-stage"

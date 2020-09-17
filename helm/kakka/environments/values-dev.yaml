@@ -3,7 +3,9 @@ sql:
 
 configMap:
   gcsBlobstore: kakka-dev
+  gcsTargetBlobstore: marduk
   blobstoreProjectId: entur-ror-dev
+  blobstoreTargetProjectId: carbon-1287
   pubsubProjectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
   poiUpdateEnabled: true

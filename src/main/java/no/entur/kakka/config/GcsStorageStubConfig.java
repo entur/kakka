@@ -35,6 +35,11 @@ public class GcsStorageStubConfig {
     }
 
     @Bean
+    public Storage targetStorage() {
+        return getStorage();
+    }
+
+    @Bean
     public Storage exchangeStorage() {
         return getStorage();
     }

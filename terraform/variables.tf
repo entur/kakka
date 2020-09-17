@@ -11,9 +11,6 @@ variable "pubsub_project" {
   description = "GCP project of pubsub topic"
 }
 
-variable "storage_project" {
-  description = "GCP project of pubsub topic"
-}
 
 variable "kube_namespace" {
   description = "The Kubernetes namespace"
@@ -64,4 +61,8 @@ variable "ror-kakka-keycloak-secret" {
 
 variable "kakka_storage_bucket" {
   description = "kakka storage bucket"
+}
+
+variable "kakka_target_storage_bucket" {
+  description = "kakka target storage bucket"
 }

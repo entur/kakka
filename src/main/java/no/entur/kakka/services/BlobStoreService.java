@@ -38,13 +38,21 @@ public class BlobStoreService {
 	@Autowired
 	Storage storage;
 
+	@Autowired
+	Storage targetStorage;
+
 	@Value("${blobstore.gcs.container.name}")
 	String containerName;
+
+	@Value("${blobstore.gcs.target-container.name}")
+	String targetContainerName;
 
 	@PostConstruct
 	public void init() {
 		repository.setStorage(storage);
+		repository.setTargetStorage(targetStorage);
 		repository.setContainerName(containerName);
+		repository.setTargetContainerName(targetContainerName);
 	}
 
 	public BlobStoreFiles listBlobsInFolder(@Header(value = Exchange.FILE_PARENT) String folder, Exchange exchange) {
@@ -67,5 +75,11 @@ public class BlobStoreService {
 		ExchangeUtils.addHeadersAndAttachments(exchange);
 		return repository.delete(name);
 	}
+
+	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+		ExchangeUtils.addHeadersAndAttachments(exchange);
+		repository.copyBlob(sourceName, targetName, makePublic);
+	}
+
 
 }

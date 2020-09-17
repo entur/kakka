@@ -34,9 +34,17 @@ public class GcsStorageConfig {
     @Value("${blobstore.gcs.project.id}")
     private String projectId;
 
+    @Value("${blobstore.gcs.target-project.id}")
+    private String targetProjectId;
+
     @Bean
     public Storage storage() {
         return BlobStoreHelper.getStorage(credentialPath, projectId);
+    }
+
+    @Bean
+    public Storage targetStorage() {
+        return BlobStoreHelper.getStorage(credentialPath, targetProjectId);
     }
 
 

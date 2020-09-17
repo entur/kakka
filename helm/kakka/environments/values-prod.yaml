@@ -2,8 +2,10 @@ sql:
   instance: entur-ror-prod:europe-west1:kakka-db-1=tcp:5432
 
 configMap:
-  gcsBlobstore: marduk-production
-  blobstoreProjectId: neon-1287
+  gcsBlobstore: kakka-production
+  gcsTargetBlobstore: marduk-production
+  blobstoreProjectId: entur-ror-prod
+  blobstoreTargetProjectId: neon-1287
   pubsubProjectId: neon-1287
   keycloakUrl: https://auth.entur.org/auth
   poiUpdateEnabled: false

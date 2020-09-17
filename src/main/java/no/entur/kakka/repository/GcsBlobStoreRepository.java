@@ -46,6 +46,8 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     private Storage storage;
 
+    private Storage targetStorage;
+
     private String containerName;
 
     private String targetContainerName;
@@ -54,6 +56,11 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     @Override
     public void setStorage(Storage storage) {
         this.storage = storage;
+    }
+
+    @Override
+    public void setTargetStorage(Storage targetStorage) {
+        this.targetStorage = targetStorage;
     }
 
     @Override

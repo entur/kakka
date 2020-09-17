@@ -38,6 +38,9 @@ public class BlobStoreService {
 	@Autowired
 	Storage storage;
 
+	@Autowired
+	Storage targetStorage;
+
 	@Value("${blobstore.gcs.container.name}")
 	String containerName;
 
@@ -47,7 +50,9 @@ public class BlobStoreService {
 	@PostConstruct
 	public void init() {
 		repository.setStorage(storage);
+		repository.setTargetStorage(targetStorage);
 		repository.setContainerName(containerName);
+		repository.setTargetContainerName(targetContainerName);
 	}
 
 	public BlobStoreFiles listBlobsInFolder(@Header(value = Exchange.FILE_PARENT) String folder, Exchange exchange) {

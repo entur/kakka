@@ -40,6 +40,8 @@ public interface BlobStoreRepository {
 
     void setStorage(Storage storage);
 
+    void setTargetStorage(Storage targetStorage);
+
     void setContainerName(String containerName);
 
     void setTargetContainerName(String targetContainerName);

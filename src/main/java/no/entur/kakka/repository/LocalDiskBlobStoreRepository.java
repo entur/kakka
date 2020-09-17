@@ -155,6 +155,11 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void setTargetStorage(Storage targetStorage) {
+
+    }
+
+    @Override
     public void setContainerName(String containerName) {
     }
 

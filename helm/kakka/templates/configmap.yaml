@@ -25,7 +25,9 @@ data:
     geocoder.place.type.whitelist=tettsteddel,bydel
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
+    blobstore.gcs.target-project.id={{ .Values.configMap.blobstoreTargetProjectId }}
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
+    blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
     blobstore.gcs.credential.path=/etc/kakka/credentials.json
     spring.datasource.username=kakka
     server.host=0.0.0.0

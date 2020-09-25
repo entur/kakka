@@ -3,9 +3,9 @@ sql:
 
 configMap:
   gcsBlobstore: kakka-test
-  gcsTargetBlobstore: marduk-stage
+  gcsTargetBlobstore: marduk-test
   blobstoreProjectId: entur-ror-test
-  blobstoreTargetProjectId: radon-1287
+  blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: radon-1287
   keycloakUrl: https://kc-stage.devstage.entur.io/auth
   poiUpdateEnabled: true

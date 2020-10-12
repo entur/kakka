@@ -5,7 +5,7 @@ configMap:
   gcsBlobstore: kakka-production
   gcsTargetBlobstore: marduk-production
   blobstoreProjectId: entur-ror-prod
-  blobstoreTargetProjectId: neon-1287
+  blobstoreTargetProjectId: entur-ror-prod
   pubsubProjectId: neon-1287
   keycloakUrl: https://auth.entur.org/auth
   poiUpdateEnabled: true

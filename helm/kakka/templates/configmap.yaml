@@ -1,7 +1,8 @@
 apiVersion: v1
 data:
   application.properties: |-
-    tiamat.poi.update.enabled={{ .Values.configMap.poiUpdateEnabled }}
+    tiamat.geocoder.export.autoStartup=true
+    tiamat.poi.update.enabled=false
     tiamat.url=http4://tiamat:80
     spring.datasource.driver-class-name=org.postgresql.Driver
     organisations.api.url=http://baba/services/organisations/

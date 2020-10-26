@@ -1,6 +1,6 @@
 gcp_project = "entur-ror-prod"
 cloudsql_project = "entur-ror-prod"
-pubsub_project = "neon-1287"
+pubsub_project = "entur-ror-prod"
 kube_namespace = "production"
 service_account_bucket_role = "roles/storage.objectAdmin"
 kakka_storage_bucket = "kakka-production"

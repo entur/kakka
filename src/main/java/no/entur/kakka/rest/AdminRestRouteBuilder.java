@@ -16,6 +16,7 @@
 
 package no.entur.kakka.rest;
 
+import no.entur.kakka.Constants;
 import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
@@ -23,6 +24,7 @@ import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -227,6 +229,19 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        rest("/map_admin")
+                .post("/download")
+                .description("Triggers downloading of the latest OSM data")
+                .consumes(PLAIN)
+                .produces(PLAIN)
+                .responseMessage().code(200).message("Command accepted").endResponseMessage()
+                .route()
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .log(LoggingLevel.INFO, "OSM update map data")
+                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
+                .to("direct:considerToFetchOsmMapOverNorway")
+                .routeId("admin-fetch-osm")
+                .endRest();
 
         rest("/export")
                 .post("/stop_places")

@@ -14,10 +14,10 @@ data:
     keycloak.auth-server-url={{.Values.configMap.keycloakUrl}}
     spring.profiles.active=gcs-blobstore
     spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
-    tiamat.publish.export.cron.schedule=0+0+23+*+*+?
+    tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
     tiamat.geocoder.export.autoStartup=true
-    tiamat.geocoder.export.cron.schedule=0+0+22+?+*+MON-FRI
+    tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
     quartz.enabled=true
     camel.springboot.name=kakka
     tiamat.export.max.retries=720

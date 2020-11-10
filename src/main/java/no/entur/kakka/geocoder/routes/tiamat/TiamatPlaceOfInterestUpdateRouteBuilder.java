@@ -17,7 +17,6 @@
 package no.entur.kakka.geocoder.routes.tiamat;
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.status.JobEvent;
@@ -26,7 +25,6 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.TokenService;
-import no.entur.kakka.services.CustomConfigurationService;
 import no.entur.kakka.services.OSMPOIFilterService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -37,8 +35,6 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static no.entur.kakka.geocoder.GeoCoderConstants.*;
@@ -82,8 +78,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private CustomConfigurationService customConfigurationService;
 
     @Autowired
     private OSMPOIFilterService osmpoiFilterService;
@@ -99,12 +93,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .setBody(constant(TIAMAT_PLACES_OF_INTEREST_UPDATE_START))
                 .inOnly("direct:geoCoderStart")
                 .routeId("tiamat-poi-update-quartz");
-
-        from("entur-google-pubsub:GeoCoderOsmUpdateNotificationQueue").transacted()
-                .log(LoggingLevel.INFO, "Received notification of updated OSM map --> triggering Tiamat update of place of interest.")
-                .setBody(constant(TIAMAT_PLACES_OF_INTEREST_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
-                .routeId("tiamat-poi-update-external");
 
         from(TIAMAT_PLACES_OF_INTEREST_UPDATE_START.getEndpoint())
                 .choice()

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 
 import static no.entur.kakka.Constants.FILE_HANDLE;
+import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
 
 
 /**
@@ -109,8 +110,8 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setBody(simple("File fetched, and blob store has been correctly updated"))
                 .setHeader(FINISHED, constant("true"))
                 .log(LoggingLevel.INFO, "Map was updated, therefore triggering Geocoder POI update")
-                .setBody(constant(null))
-                .inOnly("entur-google-pubsub:GeoCoderOsmUpdateNotificationQueue")
+                .setBody(constant(PELIAS_UPDATE_START))
+                .inOnly("direct:geoCoderStart")
                 .log(LoggingLevel.DEBUG, "Processing of OSM map finished")
                 .routeId("osm-fetch-map");
 

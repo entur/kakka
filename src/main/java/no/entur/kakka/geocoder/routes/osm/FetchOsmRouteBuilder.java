@@ -70,6 +70,10 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
+        onException(KakkaException.class)
+                .log(LoggingLevel.ERROR, "Failed while fetching OSM file.")
+                .handled(true);
+
         singletonFrom("quartz2://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{osm.download.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
@@ -78,9 +82,6 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Quartz processing done.")
                 .routeId("osm-trigger-fetching");
 
-        onException(KakkaException.class)
-                .log(LoggingLevel.ERROR, "Failed while fetching OSM file.")
-                .handled(true);
 
         from("direct:fetchOsmMapOverNorway")
                 .log(LoggingLevel.DEBUG, "Fetching OSM map over Norway.")

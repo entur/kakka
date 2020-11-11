@@ -17,7 +17,7 @@
 package no.entur.kakka.geocoder.geojson;
 
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opengis.feature.simple.SimpleFeature;
 
 public class KartverketLocality extends AbstractKartverketGeojsonAdapter {

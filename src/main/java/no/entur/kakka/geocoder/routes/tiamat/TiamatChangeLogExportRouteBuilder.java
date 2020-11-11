@@ -99,7 +99,7 @@ public class TiamatChangeLogExportRouteBuilder extends BaseRouteBuilder {
 
         from("direct:exportChangedStopPlaces")
                 .log(LoggingLevel.DEBUG, "Start Tiamat export for change log")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .setBody(constant(null))
                 .toD(tiamatUrl + changeLogPath + "/${header." + Constants.QUERY_STRING + "}")
                 .log(LoggingLevel.INFO, "Completed Tiamat export for change log")

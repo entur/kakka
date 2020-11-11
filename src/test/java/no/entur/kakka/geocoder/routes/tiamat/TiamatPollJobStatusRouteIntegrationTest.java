@@ -70,19 +70,15 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         statusQueueMock.reset();
         tiamatMock.reset();
         try {
-            context.getRouteDefinition("tiamat-get-job-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
-                            .skipSendToOriginalEndpoint().to("mock:tiamat");
-                }
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-get-job-status", a ->{
+                a.interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
+                        .skipSendToOriginalEndpoint().to("mock:tiamat");
             });
-            context.getRouteDefinition("tiamat-process-job-status-done").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint("direct:updateStatus")
-                            .skipSendToOriginalEndpoint().to("mock:statusQueue");
-                }
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-get-job-status-done", a ->{
+                a.interceptSendToEndpoint("direct:updateStatus")
+                        .skipSendToOriginalEndpoint().to("mock:statusQueue");
             });
 
         } catch (Exception e) {

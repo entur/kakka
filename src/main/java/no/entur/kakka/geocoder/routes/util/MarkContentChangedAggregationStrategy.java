@@ -18,8 +18,8 @@ package no.entur.kakka.geocoder.routes.util;
 
 
 import no.entur.kakka.Constants;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 /**
  * Aggregate CONTENT_CHANGED headers, marking aggregation as changed if at least on exchange is marked such.

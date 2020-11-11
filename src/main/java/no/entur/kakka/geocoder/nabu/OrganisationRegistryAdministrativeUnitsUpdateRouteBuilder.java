@@ -16,6 +16,7 @@
 
 package no.entur.kakka.geocoder.nabu;
 
+import org.apache.camel.http.common.HttpMethods;
 import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;
 import no.entur.kakka.Utils;
@@ -32,7 +33,6 @@ import no.entur.kakka.services.BlobStoreService;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.component.http4.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.commons.io.FileUtils;
@@ -153,7 +153,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
                 .split().body()
                 .setHeader("privateCode", simple("${body.privateCode}"))
                 .marshal().json(JsonLibrary.Jackson)
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_JSON))
                 .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
 

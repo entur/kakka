@@ -125,12 +125,9 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Test
 	public void testTimeout() throws Exception {
 
-		context.getRouteDefinition("geocoder-reschedule-task").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint("direct:updateStatus")
-						.skipSendToOriginalEndpoint().to("mock:statusQueue");
-			}
+		AdviceWithRouteBuilder.adviceWith(context, "geocoder-reschedule-task", a ->{
+			a.interceptSendToEndpoint("direct:updateStatus")
+					.skipSendToOriginalEndpoint().to("mock:statusQueue");
 		});
 		statusQueueMock
 				.whenExchangeReceived(1, e -> Assert.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));

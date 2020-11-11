@@ -21,7 +21,7 @@ import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.etcd.json.EtcdResponse;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.component.http4.HttpMethods;
+import org.apache.camel.http.common.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Value;

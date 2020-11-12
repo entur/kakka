@@ -76,7 +76,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .handled(true);
 
         singletonFrom("quartz2://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
-                .autoStartup("{{osm.download.autoStartup:false}}")
+                .autoStartup("{{osm.download.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers fetch of OSM map over Norway.")
                 .to("direct:considerToFetchOsmMapOverNorway")

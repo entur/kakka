@@ -31,7 +31,7 @@
 
         <keycloak.version>4.8.3.Final</keycloak.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.0.25</entur.helpers.version>
+        <entur.helpers.version>1.0.31</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
 
         <resteasy.version>3.6.1.Final</resteasy.version>
@@ -77,7 +77,7 @@
 
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>camel-entur-google-pubsub</artifactId>
+            <artifactId>camel3-entur-google-pubsub</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
 
@@ -265,7 +265,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>hazelcast-helper</artifactId>
+            <artifactId>hazelcast4-helper</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>

@@ -22,7 +22,6 @@ import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.repository.InMemoryBlobStoreRepository;
-import no.entur.kakka.routes.etcd.InMemoryEtcdRouteBuilder;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
@@ -51,14 +50,10 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
     @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
     private String blobStoreSubdirectoryForTiamatExport;
 
-    @Value("${tiamat.change.log.key.prefix:/v2/keys/dynamic/kakka/tiamat/change_log}")
-    private String etcdKeyPrefix;
 
     @Autowired
     private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
 
-    @Autowired
-    private InMemoryEtcdRouteBuilder inMemoryEtcdRouteBuilder;
 
     @Before
     public void setUp() {
@@ -79,7 +74,6 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
 
     @Test
     public void uploadBlobAndUpdateEtcdWhenContentIsChanged() throws Exception {
-        inMemoryEtcdRouteBuilder.clean();
         statusQueueMock.expectedMessageCount(1);
 
         changeLogExportMock.whenAnyExchangeReceived(e -> {
@@ -99,15 +93,12 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         statusQueueMock.assertIsSatisfied();
         changeLogExportMock.assertIsSatisfied();
         Assert.assertEquals(1, inMemoryBlobStoreRepository.listBlobsFlat(blobStoreSubdirectoryForTiamatExport + "/" + changeLogTask.getName()).getFiles().size());
-        Assert.assertEquals(1, inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_cnt"));
-        Assert.assertNotNull(inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to"));
+
     }
 
     @Test
     public void doNotUpdateEtcdCntWhenNoChanges() throws Exception {
         TiamatExportTask changeLogTask = new TiamatExportTask("testExport", "?queryParam=XXX", TiamatExportTaskType.CHANGE_LOG);
-        inMemoryEtcdRouteBuilder.clean();
-        inMemoryEtcdRouteBuilder.values.put(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to","PRE");
         statusQueueMock.expectedMessageCount(1);
 
 
@@ -128,8 +119,6 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         statusQueueMock.assertIsSatisfied();
         changeLogExportMock.assertIsSatisfied();
         Assert.assertEquals(0, inMemoryBlobStoreRepository.listBlobsFlat(blobStoreSubdirectoryForTiamatExport + "/" + changeLogTask.getName()).getFiles().size());
-        Assert.assertNull(inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_cnt"));
-        Assert.assertEquals("To value should be unchanged when no changes are found","PRE",inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to"));
     }
 
 }

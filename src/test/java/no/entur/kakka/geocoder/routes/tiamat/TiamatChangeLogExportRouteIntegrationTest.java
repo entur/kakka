@@ -77,8 +77,8 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         statusQueueMock.expectedMessageCount(1);
 
         changeLogExportMock.whenAnyExchangeReceived(e -> {
-            e.getOut().setBody("Content from Tiamat");
-            e.getOut().setHeaders(e.getIn().getHeaders());
+            e.getMessage().setBody("Content from Tiamat");
+            e.getMessage().setHeaders(e.getIn().getHeaders());
         });
 
         TiamatExportTask changeLogTask = new TiamatExportTask("testExport", "queryParam=XXX", TiamatExportTaskType.CHANGE_LOG);
@@ -104,8 +104,8 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
 
         changeLogExportMock.whenAnyExchangeReceived(e -> {
             Assert.assertTrue(e.getIn().getHeader(Constants.QUERY_STRING, String.class).startsWith(changeLogTask.getQueryString()));
-            e.getOut().setBody(null);
-            e.getOut().setHeaders(e.getIn().getHeaders());
+            e.getMessage().setBody(null);
+            e.getMessage().setHeaders(e.getIn().getHeaders());
         });
 
         context.start();

@@ -57,7 +57,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 	@MockBean
 	public KartverketService kartverketService;
 
-	@Produce(uri = "direct:uploadUpdatedFiles")
+	@Produce("direct:uploadUpdatedFiles")
 	protected ProducerTemplate uploadUpdatedFilesTemplate;
 
 	private String blobFolder = "blobTest";

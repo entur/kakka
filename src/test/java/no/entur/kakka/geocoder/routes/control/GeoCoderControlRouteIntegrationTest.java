@@ -39,13 +39,13 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Autowired
 	private ModelCamelContext context;
 
-	@EndpointInject(uri = "mock:destination")
+	@EndpointInject("mock:destination")
 	protected MockEndpoint destination;
 
-	@Produce(uri = "entur-google-pubsub:GeoCoderQueue")
+	@Produce("entur-google-pubsub:GeoCoderQueue")
 	protected ProducerTemplate geoCoderQueueTemplate;
 
-	@EndpointInject(uri = "mock:statusQueue")
+	@EndpointInject("mock:statusQueue")
 	protected MockEndpoint statusQueueMock;
 
 	@Value("${geocoder.max.retries:3000}")

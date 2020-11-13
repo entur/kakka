@@ -48,18 +48,18 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
     @Value("${tiamat.url}")
     private String tiamatUrl;
 
-    @EndpointInject(uri = "mock:tiamat")
+    @EndpointInject("mock:tiamat")
     protected MockEndpoint tiamatMock;
 
 
-    @EndpointInject(uri = "mock:complete")
+    @EndpointInject("mock:complete")
     protected MockEndpoint completeEndpointMock;
 
-    @EndpointInject(uri = "mock:statusQueue")
+    @EndpointInject("mock:statusQueue")
     protected MockEndpoint statusQueueMock;
 
 
-    @Produce(uri = "direct:checkTiamatJobStatus")
+    @Produce("direct:checkTiamatJobStatus")
     protected ProducerTemplate checkTiamatJobStatusTemplate;
 
     private static String JOB_URL = "/job/1234";

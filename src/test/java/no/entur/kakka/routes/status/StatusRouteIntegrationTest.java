@@ -30,7 +30,7 @@ import java.util.List;
 public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 
-    @Produce(uri = "direct:updateStatus")
+    @Produce("direct:updateStatus")
     protected ProducerTemplate updateStatus;
 
     @Test

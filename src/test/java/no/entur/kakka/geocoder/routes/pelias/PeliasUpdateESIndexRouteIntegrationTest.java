@@ -50,14 +50,14 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 	@Value("${kartverket.blobstore.subdirectory:kartverket}")
 	private String blobStoreSubdirectoryForKartverket;
 
-	@EndpointInject(uri = "mock:es-scratch")
+	@EndpointInject("mock:es-scratch")
 	protected MockEndpoint esScratchMock;
 
-	@EndpointInject(uri = "mock:es-scratch-admin-index")
+	@EndpointInject("mock:es-scratch-admin-index")
 	protected MockEndpoint esScratchAdminIndexMock;
 
 
-	@Produce(uri = "direct:insertElasticsearchIndexData")
+	@Produce("direct:insertElasticsearchIndexData")
 	protected ProducerTemplate insertESDataTemplate;
 	@Autowired
 	private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;

@@ -38,14 +38,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatChangeLogExportRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
 public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @EndpointInject(uri = "mock:changeLogExport")
+    @EndpointInject("mock:changeLogExport")
     protected MockEndpoint changeLogExportMock;
 
 
-    @EndpointInject(uri = "mock:updateStatus")
+    @EndpointInject("mock:updateStatus")
     protected MockEndpoint statusQueueMock;
 
-    @Produce(uri = "direct:processTiamatChangeLogExportTask")
+    @Produce("direct:processTiamatChangeLogExportTask")
     protected ProducerTemplate input;
 
     @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")

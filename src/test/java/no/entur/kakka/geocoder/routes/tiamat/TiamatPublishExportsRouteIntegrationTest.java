@@ -51,24 +51,24 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
     @Autowired
     private ModelCamelContext context;
 
-    @EndpointInject(uri = "mock:updateStatus")
+    @EndpointInject("mock:updateStatus")
     protected MockEndpoint statusQueueMock;
 
 
-    @EndpointInject(uri = "mock:tiamatExport")
+    @EndpointInject("mock:tiamatExport")
     protected MockEndpoint tiamatStartExportMock;
 
-    @EndpointInject(uri = "mock:tiamatPollJobStatus")
+    @EndpointInject("mock:tiamatPollJobStatus")
     protected MockEndpoint tiamatPollMock;
 
-    @EndpointInject(uri = "mock:TiamatExportQueue")
+    @EndpointInject("mock:TiamatExportQueue")
     protected MockEndpoint rescheduleMock;
 
-    @EndpointInject(uri = "mock:changeLogExportMock")
+    @EndpointInject("mock:changeLogExportMock")
     protected MockEndpoint changeLogExportMock;
 
 
-    @Produce(uri = "entur-google-pubsub:TiamatExportQueue")
+    @Produce("entur-google-pubsub:TiamatExportQueue")
     protected ProducerTemplate input;
 
     @Before

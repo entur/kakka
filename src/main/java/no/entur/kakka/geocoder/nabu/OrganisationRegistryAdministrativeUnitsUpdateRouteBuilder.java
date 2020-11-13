@@ -16,6 +16,7 @@
 
 package no.entur.kakka.geocoder.nabu;
 
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.http.common.HttpMethods;
 import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;
@@ -33,7 +34,6 @@ import no.entur.kakka.services.BlobStoreService;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;

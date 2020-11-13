@@ -117,7 +117,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 	private List<File> files(String... names) throws Exception {
 		List<File> files = Arrays.stream(names).map(n -> new File("target/files/" + n)).collect(Collectors.toList());
 		for (File file : files) {
-			FileUtils.writeStringToFile(file, file.getName());
+			FileUtils.writeStringToFile(file, file.getName(),(String) null);
 		}
 		return files;
 	}

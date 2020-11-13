@@ -48,18 +48,18 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
     @Value("${tiamat.url}")
     private String tiamatUrl;
 
-    @EndpointInject(uri = "mock:tiamat")
+    @EndpointInject("mock:tiamat")
     protected MockEndpoint tiamatMock;
 
 
-    @EndpointInject(uri = "mock:complete")
+    @EndpointInject("mock:complete")
     protected MockEndpoint completeEndpointMock;
 
-    @EndpointInject(uri = "mock:statusQueue")
+    @EndpointInject("mock:statusQueue")
     protected MockEndpoint statusQueueMock;
 
 
-    @Produce(uri = "direct:checkTiamatJobStatus")
+    @Produce("direct:checkTiamatJobStatus")
     protected ProducerTemplate checkTiamatJobStatusTemplate;
 
     private static String JOB_URL = "/job/1234";
@@ -70,19 +70,15 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         statusQueueMock.reset();
         tiamatMock.reset();
         try {
-            context.getRouteDefinition("tiamat-get-job-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
-                            .skipSendToOriginalEndpoint().to("mock:tiamat");
-                }
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-get-job-status", a ->{
+                a.interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
+                        .skipSendToOriginalEndpoint().to("mock:tiamat");
             });
-            context.getRouteDefinition("tiamat-process-job-status-done").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint("direct:updateStatus")
-                            .skipSendToOriginalEndpoint().to("mock:statusQueue");
-                }
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-get-job-status-done", a ->{
+                a.interceptSendToEndpoint("direct:updateStatus")
+                        .skipSendToOriginalEndpoint().to("mock:statusQueue");
             });
 
         } catch (Exception e) {

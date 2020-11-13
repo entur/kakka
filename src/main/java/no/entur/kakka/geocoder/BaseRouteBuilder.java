@@ -2,11 +2,13 @@ package no.entur.kakka.geocoder;
 
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExtendedCamelContext;
+import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.hazelcast.policy.HazelcastRoutePolicy;
 import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.spi.RouteContext;
 import org.apache.camel.spi.RoutePolicy;
 import org.apache.camel.spi.Synchronization;
 import org.apache.camel.spring.SpringRouteBuilder;
@@ -23,7 +25,7 @@ import static no.entur.kakka.Constants.SINGLETON_ROUTE_DEFINITION_GROUP_NAME;
 /**
  * Defines common route behavior.
  */
-public abstract class BaseRouteBuilder extends SpringRouteBuilder {
+public abstract class BaseRouteBuilder extends RouteBuilder {
 
     @Value("${kakka.camel.redelivery.max:3}")
     private int maxRedelivery;
@@ -75,7 +77,7 @@ public abstract class BaseRouteBuilder extends SpringRouteBuilder {
                 .map(m->m.getHeader(EnturGooglePubSubConstants.ACK_ID, BasicAcknowledgeablePubsubMessage.class))
                 .collect(Collectors.toList());
 
-        exchange.addOnCompletion(new Synchronization() {
+        exchange.adapt(ExtendedExchange.class).addOnCompletion(new Synchronization() {
 
             @Override
             public void onComplete(Exchange exchange) {
@@ -106,7 +108,7 @@ public abstract class BaseRouteBuilder extends SpringRouteBuilder {
     }
 
     protected boolean isStarted(String routeId) {
-        ServiceStatus status = getContext().getRouteStatus(routeId);
+        ServiceStatus status = getContext().getRouteController().getRouteStatus(routeId);
         return status != null && status.isStarted();
     }
 
@@ -117,8 +119,7 @@ public abstract class BaseRouteBuilder extends SpringRouteBuilder {
             return true;
         }
 
-        RouteContext routeContext = getContext().getRoute(routeId).getRouteContext();
-        List<RoutePolicy> routePolicyList = routeContext.getRoutePolicyList();
+        List<RoutePolicy> routePolicyList = getContext().getRoute(routeId).getRoutePolicyList();
         if (routePolicyList != null) {
             for (RoutePolicy routePolicy : routePolicyList) {
                 if (routePolicy instanceof HazelcastRoutePolicy) {

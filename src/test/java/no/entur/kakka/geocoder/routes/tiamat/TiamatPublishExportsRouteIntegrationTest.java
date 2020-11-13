@@ -51,24 +51,24 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
     @Autowired
     private ModelCamelContext context;
 
-    @EndpointInject(uri = "mock:updateStatus")
+    @EndpointInject("mock:updateStatus")
     protected MockEndpoint statusQueueMock;
 
 
-    @EndpointInject(uri = "mock:tiamatExport")
+    @EndpointInject("mock:tiamatExport")
     protected MockEndpoint tiamatStartExportMock;
 
-    @EndpointInject(uri = "mock:tiamatPollJobStatus")
+    @EndpointInject("mock:tiamatPollJobStatus")
     protected MockEndpoint tiamatPollMock;
 
-    @EndpointInject(uri = "mock:TiamatExportQueue")
+    @EndpointInject("mock:TiamatExportQueue")
     protected MockEndpoint rescheduleMock;
 
-    @EndpointInject(uri = "mock:changeLogExportMock")
+    @EndpointInject("mock:changeLogExportMock")
     protected MockEndpoint changeLogExportMock;
 
 
-    @Produce(uri = "entur-google-pubsub:TiamatExportQueue")
+    @Produce("entur-google-pubsub:TiamatExportQueue")
     protected ProducerTemplate input;
 
     @Before
@@ -79,43 +79,29 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         tiamatPollMock.reset();
         try {
 
-            context.getRouteDefinition("tiamat-publish-export-poll-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:tiamatPollJobStatus").replace().to("mock:tiamatPollJobStatus");
-                }
-            });
-            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:tiamatExport").replace().to("mock:tiamatExport");
-                }
-            });
-            context.getRouteDefinition("tiamat-publish-export").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("entur-google-pubsub:TiamatExportQueue").replace().to("mock:TiamatExportQueue");
-                }
-            });
-            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
-                }
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-publish-export-poll-status", a ->{
+                a.weaveByToUri("direct:tiamatPollJobStatus").replace().to("mock:tiamatPollJobStatus");
             });
 
-            context.getRouteDefinition("tiamat-publish-export-poll-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
-                }
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-publish-export-start-new", a ->{
+                a.weaveByToUri("direct:tiamatExport").replace().to("mock:tiamatExport");
             });
 
-            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:processTiamatChangeLogExportTask").replace().to("mock:changeLogExportMock");
-                }
+            AdviceWithRouteBuilder.adviceWith(context,"tiamat-publish-export", a -> {
+                a.weaveByToUri("entur-google-pubsub:TiamatExportQueue").replace().to("mock:TiamatExportQueue");
+            });
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-publish-export-start-new", a ->{
+                a.weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
+            });
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-publish-export-poll-status", a ->{
+                a.weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus");
+            });
+
+            AdviceWithRouteBuilder.adviceWith(context, "tiamat-publish-export-start-new", a ->{
+                a.weaveByToUri("direct:processTiamatChangeLogExportTask").replace().to("mock:changeLogExportMock");
             });
 
 

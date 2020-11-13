@@ -26,6 +26,7 @@ import no.entur.kakka.routes.file.FileUtils;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +76,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .autoStartup("{{tiamat.export.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat exports for publish ")
-                .inOnly("direct:startFullTiamatPublishExport")
+                .to(ExchangePattern.InOnly,"direct:startFullTiamatPublishExport")
                 .routeId("tiamat-publish-export-quartz");
 
         from("direct:startFullTiamatPublishExport")
@@ -85,7 +86,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .otherwise()
                 .setBody(constant(new TiamatExportTasks(exportTasks).toString()))
                 .log(LoggingLevel.INFO, "Starting Tiamat exports: ${body}")
-                .inOnly("entur-google-pubsub:TiamatExportQueue")
+                .to(ExchangePattern.InOnly,"entur-google-pubsub:TiamatExportQueue")
                 .end()
                 .routeId("tiamat-publish-export-start-full");
 

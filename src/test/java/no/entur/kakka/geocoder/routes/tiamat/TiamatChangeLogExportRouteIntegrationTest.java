@@ -22,7 +22,6 @@ import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.repository.InMemoryBlobStoreRepository;
-import no.entur.kakka.routes.etcd.InMemoryEtcdRouteBuilder;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
@@ -38,27 +37,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatChangeLogExportRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
 public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @EndpointInject(uri = "mock:changeLogExport")
+    @EndpointInject("mock:changeLogExport")
     protected MockEndpoint changeLogExportMock;
 
 
-    @EndpointInject(uri = "mock:updateStatus")
+    @EndpointInject("mock:updateStatus")
     protected MockEndpoint statusQueueMock;
 
-    @Produce(uri = "direct:processTiamatChangeLogExportTask")
+    @Produce("direct:processTiamatChangeLogExportTask")
     protected ProducerTemplate input;
 
     @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
     private String blobStoreSubdirectoryForTiamatExport;
 
-    @Value("${tiamat.change.log.key.prefix:/v2/keys/dynamic/kakka/tiamat/change_log}")
-    private String etcdKeyPrefix;
 
     @Autowired
     private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
 
-    @Autowired
-    private InMemoryEtcdRouteBuilder inMemoryEtcdRouteBuilder;
 
     @Before
     public void setUp() {
@@ -79,12 +74,11 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
 
     @Test
     public void uploadBlobAndUpdateEtcdWhenContentIsChanged() throws Exception {
-        inMemoryEtcdRouteBuilder.clean();
         statusQueueMock.expectedMessageCount(1);
 
         changeLogExportMock.whenAnyExchangeReceived(e -> {
-            e.getOut().setBody("Content from Tiamat");
-            e.getOut().setHeaders(e.getIn().getHeaders());
+            e.getMessage().setBody("Content from Tiamat");
+            e.getMessage().setHeaders(e.getIn().getHeaders());
         });
 
         TiamatExportTask changeLogTask = new TiamatExportTask("testExport", "queryParam=XXX", TiamatExportTaskType.CHANGE_LOG);
@@ -99,22 +93,19 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         statusQueueMock.assertIsSatisfied();
         changeLogExportMock.assertIsSatisfied();
         Assert.assertEquals(1, inMemoryBlobStoreRepository.listBlobsFlat(blobStoreSubdirectoryForTiamatExport + "/" + changeLogTask.getName()).getFiles().size());
-        Assert.assertEquals(1, inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_cnt"));
-        Assert.assertNotNull(inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to"));
+
     }
 
     @Test
     public void doNotUpdateEtcdCntWhenNoChanges() throws Exception {
         TiamatExportTask changeLogTask = new TiamatExportTask("testExport", "?queryParam=XXX", TiamatExportTaskType.CHANGE_LOG);
-        inMemoryEtcdRouteBuilder.clean();
-        inMemoryEtcdRouteBuilder.values.put(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to","PRE");
         statusQueueMock.expectedMessageCount(1);
 
 
         changeLogExportMock.whenAnyExchangeReceived(e -> {
             Assert.assertTrue(e.getIn().getHeader(Constants.QUERY_STRING, String.class).startsWith(changeLogTask.getQueryString()));
-            e.getOut().setBody(null);
-            e.getOut().setHeaders(e.getIn().getHeaders());
+            e.getMessage().setBody(null);
+            e.getMessage().setHeaders(e.getIn().getHeaders());
         });
 
         context.start();
@@ -128,8 +119,6 @@ public class TiamatChangeLogExportRouteIntegrationTest extends KakkaRouteBuilder
         statusQueueMock.assertIsSatisfied();
         changeLogExportMock.assertIsSatisfied();
         Assert.assertEquals(0, inMemoryBlobStoreRepository.listBlobsFlat(blobStoreSubdirectoryForTiamatExport + "/" + changeLogTask.getName()).getFiles().size());
-        Assert.assertNull(inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_cnt"));
-        Assert.assertEquals("To value should be unchanged when no changes are found","PRE",inMemoryEtcdRouteBuilder.values.get(etcdKeyPrefix + "/" + changeLogTask.getName() + "_to"));
     }
 
 }

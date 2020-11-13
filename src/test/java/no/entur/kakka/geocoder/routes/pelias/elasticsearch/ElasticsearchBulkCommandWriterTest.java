@@ -17,10 +17,10 @@
 package no.entur.kakka.geocoder.routes.pelias.elasticsearch;
 
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

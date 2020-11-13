@@ -18,15 +18,11 @@ package no.entur.kakka;
 
 public class Utils {
 
-    public static String getHttp4(String url) {
+    public static String getHttp(String url) {
         if (url == null) {
             throw new IllegalArgumentException("Url is null");
         }
-
-        if (url.contains("https")) {
-            return url.replaceFirst("https", "https4");
-        }
-        return url.replaceFirst("http", "http4");
+        return url;
     }
 
     public static Long getLastPathElementOfUrl(String url) {

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.0.9</version>
+        <version>1.0.16</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,7 +23,7 @@
     </scm>
     <properties>
 
-        <camel.version>2.25.1</camel.version>
+        <camel.version>3.4.4</camel.version>
 
         <geotools.version>20.1</geotools.version>
         <wololo.version>0.13.0</wololo.version>
@@ -31,7 +31,7 @@
 
         <keycloak.version>4.8.3.Final</keycloak.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.0.25</entur.helpers.version>
+        <entur.helpers.version>1.0.31</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
 
         <resteasy.version>3.6.1.Final</resteasy.version>
@@ -52,9 +52,9 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.apache.camel</groupId>
+                <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-dependencies</artifactId>
-                <version>${camel.version}</version>
+                <version>3.4.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -77,7 +77,7 @@
 
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>camel-entur-google-pubsub</artifactId>
+            <artifactId>camel3-entur-google-pubsub</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
 
@@ -199,7 +199,7 @@
 
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jetty9</artifactId>
+            <artifactId>camel-jetty</artifactId>
         </dependency>
 
         <dependency>
@@ -223,11 +223,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-http4</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring-boot</artifactId>
+            <artifactId>camel-http</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -235,7 +231,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-quartz2</artifactId>
+            <artifactId>camel-quartz</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -247,7 +243,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-netty4-http</artifactId>
+            <artifactId>camel-netty-http</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -269,7 +265,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>hazelcast-helper</artifactId>
+            <artifactId>hazelcast4-helper</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>

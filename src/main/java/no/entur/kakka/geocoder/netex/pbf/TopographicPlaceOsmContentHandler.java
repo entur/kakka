@@ -228,7 +228,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         try {
             centroid = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
         } catch (RuntimeException re) {
-            centroid = new GeometryFactory().createMultiPoint(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
+            centroid = new GeometryFactory().createMultiPointFromCoords(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
         }
         return toCentroid(centroid.getY(), centroid.getX());
     }

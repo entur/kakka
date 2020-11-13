@@ -39,13 +39,13 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Autowired
 	private ModelCamelContext context;
 
-	@EndpointInject(uri = "mock:destination")
+	@EndpointInject("mock:destination")
 	protected MockEndpoint destination;
 
-	@Produce(uri = "entur-google-pubsub:GeoCoderQueue")
+	@Produce("entur-google-pubsub:GeoCoderQueue")
 	protected ProducerTemplate geoCoderQueueTemplate;
 
-	@EndpointInject(uri = "mock:statusQueue")
+	@EndpointInject("mock:statusQueue")
 	protected MockEndpoint statusQueueMock;
 
 	@Value("${geocoder.max.retries:3000}")
@@ -125,12 +125,9 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Test
 	public void testTimeout() throws Exception {
 
-		context.getRouteDefinition("geocoder-reschedule-task").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint("direct:updateStatus")
-						.skipSendToOriginalEndpoint().to("mock:statusQueue");
-			}
+		AdviceWithRouteBuilder.adviceWith(context, "geocoder-reschedule-task", a ->{
+			a.interceptSendToEndpoint("direct:updateStatus")
+					.skipSendToOriginalEndpoint().to("mock:statusQueue");
 		});
 		statusQueueMock
 				.whenExchangeReceived(1, e -> Assert.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));

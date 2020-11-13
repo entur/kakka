@@ -28,6 +28,7 @@ import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.security.TokenService;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat update of administrative units.")
                 .setBody(constant(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .routeId("tiamat-admin-units-update-quartz");
 
         from(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
@@ -110,7 +111,7 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .routeId("tiamat-map-admin-units-sosi-to-netex");
 
         from("direct:updateAdministrativeUnitsInTiamat")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)

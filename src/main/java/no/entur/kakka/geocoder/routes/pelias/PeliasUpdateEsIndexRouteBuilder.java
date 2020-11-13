@@ -28,10 +28,10 @@ import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.PredicateBuilder;
-import org.apache.camel.component.http4.HttpMethods;
-import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpMethods;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
-import org.apache.camel.processor.validation.PredicateValidationException;
+import org.apache.camel.support.processor.PredicateValidationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
-    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
+    @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
     private String elasticsearchScratchUrl;
 
     @Value("${osm.pbf.blobstore.subdirectory:osm}")
@@ -133,7 +133,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:createPeliasIndex")
                 .to("direct:deletePeliasIndexIfExist")
                 .log(LoggingLevel.INFO, "Creating pelias index")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.PUT))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.PUT))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json; charset=utf-8"))
                 .process(e -> e.getIn().setBody(this.getClass().getResourceAsStream("/no/entur/kakka/routes/pelias/create_index.json")))
                 .convertBodyTo(String.class)
@@ -307,7 +307,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:invokePeliasBulkCommand")
                 .bean("peliasIndexValidCommandFilter")
                 .bean("peliasIndexParentInfoEnricher")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json; charset=utf-8"))
                 .split().exchange(e ->
                                           Lists.partition(e.getIn().getBody(List.class), insertBatchSize)).stopOnException()

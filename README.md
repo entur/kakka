@@ -36,8 +36,7 @@ logging.level.org.apache.camel.util=INFO
 spring.main.sources=no.entur.kakka
 spring.profiles.active=gcs-blobstore
 
-tiamat.url=http4://tiamat:1888
-babylon.url=http4://babylon:9030/rest
+tiamat.url=http://tiamat:1888
 
 kartverket.username=
 kartverket.password=

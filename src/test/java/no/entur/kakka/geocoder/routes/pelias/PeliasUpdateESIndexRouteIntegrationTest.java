@@ -50,14 +50,14 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 	@Value("${kartverket.blobstore.subdirectory:kartverket}")
 	private String blobStoreSubdirectoryForKartverket;
 
-	@EndpointInject(uri = "mock:es-scratch")
+	@EndpointInject("mock:es-scratch")
 	protected MockEndpoint esScratchMock;
 
-	@EndpointInject(uri = "mock:es-scratch-admin-index")
+	@EndpointInject("mock:es-scratch-admin-index")
 	protected MockEndpoint esScratchAdminIndexMock;
 
 
-	@Produce(uri = "direct:insertElasticsearchIndexData")
+	@Produce("direct:insertElasticsearchIndexData")
 	protected ProducerTemplate insertESDataTemplate;
 	@Autowired
 	private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
@@ -67,27 +67,21 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 	public void testInsertElasticsearchIndexDataSuccess() throws Exception {
 
 		// Stub for elastic search scratch instance
-		context.getRouteDefinition("pelias-delete-index-if-exists").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
-			}
-		});
-		context.getRouteDefinition("pelias-create-index").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
-			}
+
+		AdviceWithRouteBuilder.adviceWith(context, "pelias-delete-index-if-exists", a ->{
+			a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+					.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
 		});
 
-		context.getRouteDefinition("pelias-invoke-bulk-command").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch");
-			}
+		AdviceWithRouteBuilder.adviceWith(context, "pelias-create-index", a ->{
+			a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+					.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
+		});
+
+
+		AdviceWithRouteBuilder.adviceWith(context, "pelias-invoke-bulk-command", a ->{
+			a.interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
+					.skipSendToOriginalEndpoint().to("mock:es-scratch");
 		});
 
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",

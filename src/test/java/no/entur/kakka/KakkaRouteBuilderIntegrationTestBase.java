@@ -40,12 +40,10 @@ public abstract class KakkaRouteBuilderIntegrationTestBase {
 
 
     protected void replaceEndpoint(String routeId, String originalEndpoint, String replacementEndpoint) throws Exception {
-        context.getRouteDefinition(routeId).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                interceptSendToEndpoint(originalEndpoint)
-                        .skipSendToOriginalEndpoint().to(replacementEndpoint);
-            }
+
+        AdviceWithRouteBuilder.adviceWith(context, routeId, a ->{
+            a.interceptSendToEndpoint(originalEndpoint)
+                    .skipSendToOriginalEndpoint().to(replacementEndpoint);
         });
     }
 

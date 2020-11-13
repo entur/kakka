@@ -21,6 +21,7 @@ import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,7 @@ public class PlaceNamesDownloadRouteBuilder extends BaseRouteBuilder {
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers download of place names.")
                 .setBody(constant(GeoCoderConstants.KARTVERKET_PLACE_NAMES_DOWNLOAD))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .routeId("place-names-download-quartz");
 
         from(GeoCoderConstants.KARTVERKET_PLACE_NAMES_DOWNLOAD.getEndpoint())

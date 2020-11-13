@@ -22,6 +22,7 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.exceptions.Md5ChecksumValidationException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,7 +112,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FINISHED, constant("true"))
                 .log(LoggingLevel.INFO, "Map was updated, therefore triggering Geocoder POI update")
                 .setBody(constant(PELIAS_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .log(LoggingLevel.DEBUG, "Processing of OSM map finished")
                 .routeId("osm-fetch-map");
 
@@ -150,7 +151,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setBody(simple("No need to updated the map file, as the MD5 sum has not changed"))
                 .otherwise()
                 .log(LoggingLevel.INFO, "Need to update the map file. Calling the update map route")
-                .inOnly("direct:fetchOsmMapOverNorway")
+                .to(ExchangePattern.InOnly,"direct:fetchOsmMapOverNorway")
                 .setBody(simple("Need to fetch map file. Called update map route"))
                 .end()
                 .routeId("osm-check-for-newer-map");

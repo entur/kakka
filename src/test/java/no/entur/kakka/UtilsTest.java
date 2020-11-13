@@ -34,14 +34,14 @@ public class UtilsTest {
     }
 
     @Test
-    public void testGetHttp4() {
+    public void testGetHttp() {
         String url = "http://localhost:8180/chouette_iev/referentials/avinor";
-        assertEquals("http4://localhost:8180/chouette_iev/referentials/avinor", Utils.getHttp4(url));
+        assertEquals("http://localhost:8180/chouette_iev/referentials/avinor", Utils.getHttp(url));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetHttp4WithNull() {
-        Utils.getHttp4(null);
+    public void testGetHttpWithNull() {
+        Utils.getHttp(null);
     }
 }
 

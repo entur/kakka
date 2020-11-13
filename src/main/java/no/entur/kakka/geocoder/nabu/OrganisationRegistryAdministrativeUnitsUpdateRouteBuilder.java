@@ -175,7 +175,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
 
 
     private String getOrganisationRegistryUrl() {
-        return Utils.getHttp4(organisationRegistryUrl);
+        return Utils.getHttp(organisationRegistryUrl);
     }
 
     private File[] getGeojsonCountryFiles() {

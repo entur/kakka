@@ -55,7 +55,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
-    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
+    @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
     private String elasticsearchScratchUrl;
 
     @Value("${osm.pbf.blobstore.subdirectory:osm}")

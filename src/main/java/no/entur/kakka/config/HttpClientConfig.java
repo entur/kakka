@@ -20,7 +20,6 @@ import no.entur.kakka.Constants;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.component.http.HttpComponent;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +39,7 @@ public class HttpClientConfig {
 
     @Bean
     public HttpClientConfigurer httpClientConfigurer(@Autowired CamelContext camelContext) {
-        HttpComponent httpComponent = camelContext.getComponent("http4", HttpComponent.class);
+        HttpComponent httpComponent = camelContext.getComponent("http", HttpComponent.class);
         HttpClientConfigurer httpClientConfigurer = httpClientBuilder -> httpClientBuilder.setDefaultHeaders(Arrays.asList(new BasicHeader(Constants.ET_CLIENT_ID_HEADER, clientId), new BasicHeader(Constants.ET_CLIENT_NAME_HEADER, clientName)));
 
         httpComponent.setHttpClientConfigurer(httpClientConfigurer);

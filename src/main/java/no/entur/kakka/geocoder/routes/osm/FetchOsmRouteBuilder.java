@@ -59,7 +59,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
     @Value("${fetch.osm.cron.schedule:0+*+*/23+?+*+MON-FRI}")
     private String cronSchedule;
 
-    @Value("${fetch.osm.map.url:https4://download.geofabrik.de/europe/norway-latest.osm.pbf}")
+    @Value("${fetch.osm.map.url:https://download.geofabrik.de/europe/norway-latest.osm.pbf}")
     private String osmMapUrl;
 
     /**
@@ -76,7 +76,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while fetching OSM file.")
                 .handled(true);
 
-        singletonFrom("quartz2://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{osm.download.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers fetch of OSM map over Norway.")

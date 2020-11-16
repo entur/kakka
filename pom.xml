@@ -262,8 +262,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-hazelcast</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-hazelcast-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-sql-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
@@ -274,10 +278,6 @@
             <groupId>org.entur.helpers</groupId>
             <artifactId>organisation</artifactId>
             <version>${entur.helpers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-sql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

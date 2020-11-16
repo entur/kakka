@@ -38,6 +38,8 @@
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
+        <hazelcast.version>4.0.3</hazelcast.version>
+
     </properties>
 
     <repositories>

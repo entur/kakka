@@ -19,8 +19,8 @@ aliases:
 - &create-image-version
   name: Create new image version and store to env var and as file in workspace
   command: |
-    echo "export VERSION=$CIRCLE_BRANCH-v$CIRCLE_BUILD_NUM-$(echo -n $CIRCLE_SHA1 | tail -c 8)"  >> $BASH_ENV
-    echo "$CIRCLE_BRANCH-v$CIRCLE_BUILD_NUM-$(echo -n $CIRCLE_SHA1 | tail -c 8)" > version
+    echo "export VERSION=dev-v$CIRCLE_BUILD_NUM-$(echo -n $CIRCLE_SHA1 | tail -c 8)"  >> $BASH_ENV
+    echo "dev-v$CIRCLE_BUILD_NUM-$(echo -n $CIRCLE_SHA1 | tail -c 8)" > version
 - &read-image-version
   name: Read new image version from workspace
   command: |
@@ -104,4 +104,7 @@ workflows:
         - build
         filters:
           branches:
-            only: master
+            only:
+              - master
+              - Dependency-Update
+

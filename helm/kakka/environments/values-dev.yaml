@@ -22,7 +22,7 @@ configMap:
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
-
+    geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
 ingress:
   enabled: true
   loadBalancerIP: 35.205.170.68

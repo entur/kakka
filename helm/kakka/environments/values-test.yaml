@@ -22,6 +22,7 @@ configMap:
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
+    geocoderPlaceTypeWhitelist: tettsteddel,bydel
 
 ingress:
   enabled: true

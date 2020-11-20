@@ -25,7 +25,7 @@ data:
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     kartverket.username=erlendnils1
-    geocoder.place.type.whitelist=tettsteddel,bydel
+    geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
     blobstore.gcs.target-project.id={{ .Values.configMap.blobstoreTargetProjectId }}

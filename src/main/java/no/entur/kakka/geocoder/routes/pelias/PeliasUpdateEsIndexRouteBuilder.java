@@ -272,6 +272,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:convertToPeliasCommandsFromPlaceNames")
                 .process(e -> filterSosiFile(e))
                 .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
+                .bean("peliasIndexValidPlaceNameFilter")
                 .routeId("pelias-convert-commands-place_names");
 
 

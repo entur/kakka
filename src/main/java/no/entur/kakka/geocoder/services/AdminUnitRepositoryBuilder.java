@@ -28,7 +28,6 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.repository.BlobStoreRepository;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -37,6 +36,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.rutebanken.netex.model.Common_VersionFrameStructure;
+import org.rutebanken.netex.model.GroupOfStopPlaces;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
@@ -63,7 +63,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static javax.xml.bind.JAXBContext.newInstance;
@@ -92,7 +91,7 @@ public class AdminUnitRepositoryBuilder {
     public AdminUnitRepository build() throws IOException {
         RefreshCache refreshJob = new RefreshCache();
         refreshJob.buildNewCache();
-        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities, refreshJob.countries);
+        return new CacheAdminUnitRepository(refreshJob.tmpCache, refreshJob.localities, refreshJob.countries, refreshJob.groupOfStopPlaces);
     }
 
     private class CacheAdminUnitRepository implements AdminUnitRepository {
@@ -103,11 +102,19 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> countries;
 
-        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries) {
+        private List<GroupOfStopPlaces> groupOfStopPlaces;
+
+        public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries, List<GroupOfStopPlaces> groupOfStopPlaces) {
             this.idCache = idCache;
             this.localities = localities;
             this.countries = countries;
+            this.groupOfStopPlaces=groupOfStopPlaces;
 
+        }
+
+        @Override
+        public GroupOfStopPlaces getGroupOfStopPlaces(String name){
+            return groupOfStopPlaces.stream().filter(gosp -> gosp.getName().getValue().equals(name)).findFirst().orElse(null);
         }
 
         @Override
@@ -160,11 +167,15 @@ public class AdminUnitRepositoryBuilder {
 
         private List<TopographicPlaceAdapter> countries;
 
+        private List<GroupOfStopPlaces> groupOfStopPlaces;
+
         public void buildNewCache() throws IOException {
             BlobStoreFiles blobs = repository.listBlobs(blobStoreSubdirectoryForTiamatGeoCoderExport);
 
             localities = new ArrayList<>();
             countries = new ArrayList<>();
+            groupOfStopPlaces = new ArrayList<>();
+
             tmpCache = CacheBuilder.newBuilder().maximumSize(cacheMaxSize).build();
 
             for (BlobStoreFiles.File blob : blobs.getFiles()) {
@@ -180,9 +191,26 @@ public class AdminUnitRepositoryBuilder {
             }
             FileUtils.listFiles(
                     new File(localWorkingDirectory), new String[]{"xml"}, true)
-                    .forEach(f -> fromDeliveryPublicationStructure(f).forEach(this::addAdminUnit));
+                    .forEach(f -> {
+
+                        List<GroupOfStopPlaces> gosp = new ArrayList<>();
+
+                        List<TopographicPlace> tp = new ArrayList<>();
+                        fromDeliveryPublicationStructure(tp,gosp,f);
+
+                        if (!gosp.isEmpty()) {
+                            gosp.forEach(this::addGroupOfStopPlaces);
+                        }
+                        if (!tp.isEmpty()) {
+                            tp.forEach(this::addAdminUnit);
+                        }
+                    });
 
             FileUtils.deleteDirectory(new File(localWorkingDirectory));
+        }
+
+        private void addGroupOfStopPlaces(GroupOfStopPlaces gosp) {
+            groupOfStopPlaces.add(gosp);
         }
 
         private void addAdminUnit(TopographicPlace topographicPlace) {
@@ -213,7 +241,7 @@ public class AdminUnitRepositoryBuilder {
 
         }
 
-        private List<TopographicPlace> fromDeliveryPublicationStructure(File publicationDeliveryStream) {
+        private void fromDeliveryPublicationStructure(List<TopographicPlace> topographicPlaces, List<GroupOfStopPlaces> groupOfStopPlaces, File publicationDeliveryStream) {
             try {
                 PublicationDeliveryStructure deliveryStructure = unmarshall(new FileInputStream(publicationDeliveryStream));
                 for (JAXBElement<? extends Common_VersionFrameStructure> frameStructureElmt : deliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame()) {
@@ -221,7 +249,11 @@ public class AdminUnitRepositoryBuilder {
                     if (frameStructure instanceof Site_VersionFrameStructure) {
                         Site_VersionFrameStructure siteFrame = (Site_VersionFrameStructure) frameStructure;
                         if (siteFrame.getTopographicPlaces() != null) {
-                            return siteFrame.getTopographicPlaces().getTopographicPlace();
+                            topographicPlaces.addAll(siteFrame.getTopographicPlaces().getTopographicPlace());
+                        }
+
+                        if (siteFrame.getGroupsOfStopPlaces() != null) {
+                            groupOfStopPlaces.addAll(siteFrame.getGroupsOfStopPlaces().getGroupOfStopPlaces());
                         }
 
                     }
@@ -229,8 +261,6 @@ public class AdminUnitRepositoryBuilder {
             } catch (Exception e) {
                 throw new FileValidationException("Parsing of DeliveryPublications failed: " + e.getMessage(), e);
             }
-
-            return Collections.emptyList();
         }
 
         private PublicationDeliveryStructure unmarshall(InputStream in) throws Exception {

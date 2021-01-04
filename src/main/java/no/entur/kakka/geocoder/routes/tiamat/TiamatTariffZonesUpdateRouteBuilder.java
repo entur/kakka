@@ -21,14 +21,7 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
-import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.osm.OsmToNetexTransformer;
-import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
-import no.entur.kakka.routes.file.ZipFileUtils;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.security.TokenService;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
@@ -41,14 +34,13 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
 
-    @Value("${tiamat.countries.geojson.blobstore.subdirectory:tariffzones}")
+    @Value("${tiamat.tariffzones.blobstore.subdirectory:tariffzones}")
     private String blobStoreSubdirectory;
 
     @Value("${tiamat.url}")
@@ -60,8 +52,6 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
     @Value("${tiamat.tariffzones.update.directory:files/tiamat/tariffZones}")
     private String localWorkingDirectory;
 
-
-    //TODO TariffZone Converter like @Autowired TopographicPlaceConverter
 
     @Autowired
     private TokenService tokenService;

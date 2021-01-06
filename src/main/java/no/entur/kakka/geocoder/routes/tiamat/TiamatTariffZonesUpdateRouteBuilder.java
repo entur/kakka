@@ -53,16 +53,20 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
     private String localWorkingDirectory;
 
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
+
+    private final BlobStoreService blobStoreService;
+
+    private final OsmToNetexTransformer osmToNetexTransformer;
 
     @Autowired
-    private BlobStoreService blobStoreService;
-
-
-    @Autowired
-    private OsmToNetexTransformer osmToNetexTransformer;
-
+    public TiamatTariffZonesUpdateRouteBuilder(TokenService tokenService,
+                                               BlobStoreService blobStoreService,
+                                               OsmToNetexTransformer osmToNetexTransformer) {
+        this.tokenService = tokenService;
+        this.blobStoreService = blobStoreService;
+        this.osmToNetexTransformer = osmToNetexTransformer;
+    }
 
     @Override
     public void configure() throws Exception {

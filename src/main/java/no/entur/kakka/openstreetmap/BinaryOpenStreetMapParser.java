@@ -17,6 +17,8 @@ import crosby.binary.BinaryParser;
 import crosby.binary.Osmformat;
 import no.entur.kakka.openstreetmap.model.OSMNode;
 import no.entur.kakka.openstreetmap.model.OSMNodeRef;
+import no.entur.kakka.openstreetmap.model.OSMRelation;
+import no.entur.kakka.openstreetmap.model.OSMRelationMember;
 import no.entur.kakka.openstreetmap.model.OSMTag;
 import no.entur.kakka.openstreetmap.model.OSMWay;
 
@@ -30,13 +32,14 @@ import java.util.Map;
  * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
  */
 public class BinaryOpenStreetMapParser extends BinaryParser {
-    private OpenStreetMapContentHandler _handler;
-    private boolean _parseWays = true;
-    private boolean _parseNodes = true;
-    private Map<String, String> stringTable = new HashMap<String, String>();
+    private final OpenStreetMapContentHandler handler;
+    private boolean parseWays = true;
+    private boolean parseRelations = true;
+    private boolean parseNodes = true;
+    private final Map<String, String> stringTable = new HashMap<>();
 
     public BinaryOpenStreetMapParser(OpenStreetMapContentHandler handler) {
-        _handler = handler;
+        this.handler = handler;
     }
 
     // The strings are already being pulled from a string table in the PBF file,
@@ -58,7 +61,7 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
 
     @Override
     protected void parseNodes(List<Osmformat.Node> nodes) {
-        if (!_parseNodes) {
+        if (!parseNodes) {
             return;
         }
 
@@ -70,7 +73,6 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
 
             for (int j = 0; j < i.getKeysCount(); j++) {
                 String key = internalize(getStringById(i.getKeys(j)));
-                // if _handler.retain_tag(key) // TODO: filter tags
                 String value = internalize(getStringById(i.getVals(j)));
                 OSMTag tag = new OSMTag();
                 tag.setK(key);
@@ -78,7 +80,7 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
                 tmp.addTag(tag);
             }
 
-            _handler.addNode(tmp);
+            handler.addNode(tmp);
         }
     }
 
@@ -87,7 +89,7 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
         long lastId = 0, lastLat = 0, lastLon = 0;
         int j = 0; // Index into the keysvals array.
 
-        if (!_parseNodes) {
+        if (!parseNodes) {
             return;
         }
 
@@ -122,13 +124,13 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
                 j++; // Skip over the '0' delimiter.
             }
 
-            _handler.addNode(tmp);
+            handler.addNode(tmp);
         }
     }
 
     @Override
     protected void parseWays(List<Osmformat.Way> ways) {
-        if (!_parseWays) {
+        if (!parseWays) {
             return;
         }
 
@@ -154,39 +156,89 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
                 lastId = j + lastId;
             }
 
-            _handler.addWay(tmp);
+            handler.addWay(tmp);
         }
     }
 
     @Override
-    protected void parseRelations(List<Osmformat.Relation> rels) {
-// Ignored
+    protected void parseRelations(List<Osmformat.Relation> relations) {
+        if(!parseRelations) {
+            return;
+        }
+
+        for (Osmformat.Relation i : relations) {
+            OSMRelation tmp = new OSMRelation();
+            tmp.setId(i.getId());
+
+            for (int j = 0; j < i.getKeysCount(); j++) {
+                OSMTag tag = new OSMTag();
+                String key = internalize(getStringById(i.getKeys(j)));
+                String value = internalize(getStringById(i.getVals(j)));
+                tag.setK(key);
+                tag.setV(value);
+                tmp.addTag(tag);
+            }
+
+            long lastMid = 0;
+            for (int j = 0; j < i.getMemidsCount(); j++) {
+                OSMRelationMember relMember = new OSMRelationMember();
+                long mid = lastMid + i.getMemids(j);
+
+                relMember.setRef(mid);
+                lastMid = mid;
+
+                relMember.setRole(internalize(getStringById(i.getRolesSid(j))));
+
+                switch (i.getTypes(j)) {
+                    case NODE:
+                        relMember.setType("node");
+                        break;
+                    case WAY:
+                        relMember.setType("way");
+                        break;
+                    case RELATION:
+                        relMember.setType("relation");
+                        break;
+                    default:
+                        assert false;
+                        break;
+                }
+
+                tmp.addMember(relMember);
+            }
+
+            handler.addRelation(tmp);
+        }
+
+
     }
 
     @Override
     public void parse(Osmformat.HeaderBlock block) {
-        for (String s : block.getRequiredFeaturesList()) {
-            if (s.equals("OsmSchema-V0.6")) {
-                continue; // We can parse this.
-            }
-            if (s.equals("DenseNodes")) {
-                continue; // We can parse this.
-            }
+        block.getRequiredFeaturesList().stream().filter(s -> !s.equals("OsmSchema-V0.6")).filter(s -> !s.equals("DenseNodes")).forEach(s -> {
             throw new IllegalStateException("File requires unknown feature: " + s);
-        }
+        });
     }
 
     /**
      * Should relations be parsed
      */
+
+    public void setParseRelations(boolean parseRelations) {
+        this.parseRelations = parseRelations;
+    }
+
+    /**
+     * Should ways be parsed
+     */
     public void setParseWays(boolean parseWays) {
-        this._parseWays = parseWays;
+        this.parseWays = parseWays;
     }
 
     /**
      * Should nodes be parsed
      */
     public void setParseNodes(boolean parseNodes) {
-        _parseNodes = parseNodes;
+        this.parseNodes = parseNodes;
     }
 }

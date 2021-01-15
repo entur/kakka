@@ -17,6 +17,7 @@ package no.entur.kakka.openstreetmap;
 
 
 import no.entur.kakka.openstreetmap.model.OSMNode;
+import no.entur.kakka.openstreetmap.model.OSMRelation;
 import no.entur.kakka.openstreetmap.model.OSMWay;
 
 /**
@@ -37,9 +38,16 @@ public interface OpenStreetMapContentHandler {
      */
     void addWay(OSMWay way);
 
+
+    void addRelation(OSMRelation relation);
+
     /**
      * Called after the second phase, when all ways are loaded.
      */
     void doneSecondPhaseWays();
 
+    /**
+     * Called after the third and final phase, when all nodes are loaded.
+     */
+    void doneThirdPhaseNodes();
 }

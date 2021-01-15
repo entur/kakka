@@ -68,14 +68,25 @@ public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 			OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, osmpoiFilters, PARTICIPANT_REF, countryRef);
 			BinaryOpenStreetMapParser parser = new BinaryOpenStreetMapParser(contentHandler);
 
-			// Parse ways to collect nodes first
+
+			//Parse relations to collect ways first
+			parser.setParseWays(false);
 			parser.setParseNodes(false);
+
+			new BlockInputStream(new FileInputStream(file), parser).process();
+			parser.setParseRelations(false);
+
+
+
+			// Parse ways to collect nodes first
+			parser.setParseWays(true);
 			new BlockInputStream(new FileInputStream(file), parser).process();
 			contentHandler.doneSecondPhaseWays();
 
 			// Parse nodes and ways
 			parser.setParseNodes(true);
 			new BlockInputStream(new FileInputStream(file), parser).process();
+			contentHandler.doneThirdPhaseNodes();
 		}
 	}
 }

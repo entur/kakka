@@ -81,9 +81,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
     private final Set<Long> relationWayIds = new HashSet<>();
 
     private final Map<Long, OSMRelation> relationsById = new HashMap<>();
-
     private final Map<Long, OSMWay> waysById = new HashMap<>();
     private final Map<Long, OSMNode> nodesById = new HashMap<>();
+
     private boolean gatherNodesUsedInWaysPhase = true;
 
     public TopographicPlaceOsmContentHandler(BlockingQueue<TopographicPlace> topographicPlaceQueue,
@@ -115,7 +115,8 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         if (nodeRefsUsedInRel.contains(osmNode.getId())) {
             nodesById.put(osmNode.getId(), osmNode);
         }
-        if (nodesById.size() % 100000 == 0) {
+
+      if (nodesById.size() % 100000 == 0) {
             logger.debug(String.format("nodes=%d", nodesById.size()));
         }
     }
@@ -140,9 +141,6 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                     topographicPlaceQueue.add(topographicPlace);
                 }
             }
-
-            //waysById.put(wayId, osmWay);
-
         }
     }
 
@@ -197,7 +195,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        if (!checkPolygonProximity(outerPolygons)) {
+        if (!outerPolygons.isEmpty() && !checkPolygonProximity(outerPolygons)) {
             polygons.addAll(outerPolygons);
             polygons.addAll(innerPolygons);
 
@@ -208,6 +206,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                 return true;
             } catch (RuntimeException e) {
                 logger.warn("unable to add geometry" + e);
+                return false;
             }
         }
         return false;
@@ -254,19 +253,12 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         //check impossible cases
-        //List<Long> toRemove = new ArrayList<>();
-
         for (Long endpoint : waysByEndpoint.keySet()) {
             Collection<OSMWay> list = waysByEndpoint.get(endpoint);
             if (list.size() % 2 == 1) {
                 return Collections.emptyList();
             }
         }
-        /*
-        for (Long key : toRemove) {
-            waysByEndpoint.removeAll(key);
-        }
-        */
 
         List<Long> partialRing = new ArrayList<>();
         if (waysByEndpoint.isEmpty()) {
@@ -285,7 +277,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
             partialRing.addAll(nodeRefs);
             firstEndpoint = nodeRefs.get(0);
             otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
-            //break;
+            break;
         }
         waysByEndpoint.get(firstEndpoint).remove(firstWay);
         waysByEndpoint.get(otherEndpoint).remove(firstWay);
@@ -341,7 +333,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                     newRing.addAll(nodeRefs);
                     firstEndpoint = nodeRefs.get(0);
                     otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
-                    //break;
+                    break;
                 }
 
                 waysByEndpoint.remove(firstEndpoint, way);
@@ -380,6 +372,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
     }
 
     private void processMultipolygonRelations() {
+        var counter = 0;
         for (OSMRelation relation : relationsById.values()) {
             if (relation.isTag("type", "multipolygon") && matchesFilter(relation)) {
 
@@ -403,9 +396,11 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                 var topographicPlace = map(relation);
                 if (addGeometry(innerWays, outerWays, topographicPlace)) {
                     topographicPlaceQueue.add(topographicPlace);
+                    counter++;
                 }
             }
         }
+        logger.info("Total {} multipolygon POIs added.", counter);
     }
 
     boolean matchesFilter(OSMWithTags entity) {

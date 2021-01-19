@@ -68,6 +68,7 @@ import java.util.stream.Collectors;
 public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHandler {
     private static final Logger logger = LoggerFactory.getLogger(TopographicPlaceOsmContentHandler.class);
     private static final String TAG_NAME = "name";
+    private static final double MINIMUM_DISTANCE = 0.0002; // Minimum distance between outer polygons/rings in a relations, distance unit is min/sec
     private final BlockingQueue<TopographicPlace> topographicPlaceQueue;
     private final List<OSMPOIFilter> osmPoiFilters;
     private final String participantRef;
@@ -217,7 +218,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         boolean innerIgnorePolygons = false;
         for (var p : outerPolygons) {
             for (var q : outerPolygons) {
-                if (!p.isWithinDistance(q, 0.0002)) {
+                if (!p.isWithinDistance(q, MINIMUM_DISTANCE)) {
                     innerIgnorePolygons = true;
                     break;
                 }

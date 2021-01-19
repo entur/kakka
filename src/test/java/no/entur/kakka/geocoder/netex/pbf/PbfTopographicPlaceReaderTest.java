@@ -51,6 +51,44 @@ public class PbfTopographicPlaceReaderTest {
 
 	}
 
+	@Test
+	public void testParseMultiPolygonPbfFile() throws Exception {
+		PbfTopographicPlaceReader reader =
+				new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism","attraction")), IanaCountryTldEnumeration.NO,
+						new File("src/test/resources/no/entur/kakka/geocoder/pbf/opera.pbf"));
+
+		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+		reader.addToQueue(queue);
+
+		Assert.assertEquals(1, queue.size());
+
+		for (TopographicPlace tp : queue) {
+			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
+			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
+			Assert.assertNotNull(tp.getName());
+			Assert.assertNotNull(tp.getCentroid());
+			Assert.assertEquals("Operahuset i Oslo", tp.getName().getValue());
+		}
+
+	}
+
+
+	/*
+	* If distance between outer polygon is more den ca 20 m, POi should be ignored.
+	*/
+	@Test
+	public void testIgnoreMultiPolygons() throws Exception {
+		PbfTopographicPlaceReader reader =
+				new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism","attraction")), IanaCountryTldEnumeration.NO,
+						new File("src/test/resources/no/entur/kakka/geocoder/pbf/uib.pbf"));
+
+		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+		reader.addToQueue(queue);
+
+		Assert.assertEquals(0, queue.size());
+
+	}
+
 	private OSMPOIFilter createFilter(String key, String value) {
 		return OSMPOIFilter.fromKeyAndValue(key, value);
 	}

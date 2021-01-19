@@ -16,15 +16,17 @@
 
 package no.entur.kakka.geocoder.netex.pbf;
 
+import com.google.common.collect.ArrayListMultimap;
 import net.opengis.gml._3.PolygonType;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.netex.NetexGeoUtil;
-import no.entur.kakka.geocoder.netex.TopographicPlaceNetexWriter;
 import no.entur.kakka.openstreetmap.OpenStreetMapContentHandler;
+import no.entur.kakka.openstreetmap.Ring;
 import no.entur.kakka.openstreetmap.model.OSMNode;
+import no.entur.kakka.openstreetmap.model.OSMRelation;
+import no.entur.kakka.openstreetmap.model.OSMRelationMember;
 import no.entur.kakka.openstreetmap.model.OSMWay;
 import no.entur.kakka.openstreetmap.model.OSMWithTags;
-import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -43,14 +45,16 @@ import org.rutebanken.netex.model.TopographicPlaceTypeEnumeration;
 import org.rutebanken.netex.model.TopographicPlace_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
@@ -62,38 +66,37 @@ import java.util.stream.Collectors;
  * first to collect nodes ids referred by relevant ways and then to map relevant nodes and ways.
  */
 public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHandler {
-    private static final Logger logger = LoggerFactory.getLogger(TopographicPlaceNetexWriter.class);
-
-    private BlockingQueue<TopographicPlace> topographicPlaceQueue;
-
-    private List<OSMPOIFilter> osmpoiFilters;
-
-    private String participantRef;
-
-    private IanaCountryTldEnumeration countryRef;
-
+    private static final Logger logger = LoggerFactory.getLogger(TopographicPlaceOsmContentHandler.class);
     private static final String TAG_NAME = "name";
+    private static final double MINIMUM_DISTANCE = 0.0002; // Minimum distance between outer polygons/rings in a relations, distance unit is min/sec
+    private final BlockingQueue<TopographicPlace> topographicPlaceQueue;
+    private final List<OSMPOIFilter> osmPoiFilters;
+    private final String participantRef;
+    private final IanaCountryTldEnumeration countryRef;
+    private final Map<Long, OSMNode> nodes = new HashMap<>();
 
-    private Map<Long, OSMNode> nodes = new HashMap<>();
+    private final Set<Long> nodeRefsUsedInWays = new HashSet<>();
 
-    private Set<Long> nodeRefsUsedInWays = new HashSet<>();
+    private final Set<Long> nodeRefsUsedInRel = new HashSet<>();
+
+    private final Set<Long> relationWayIds = new HashSet<>();
+
+    private final Map<Long, OSMRelation> relationsById = new HashMap<>();
+    private final Map<Long, OSMWay> waysById = new HashMap<>();
+    private final Map<Long, OSMNode> nodesById = new HashMap<>();
 
     private boolean gatherNodesUsedInWaysPhase = true;
 
     public TopographicPlaceOsmContentHandler(BlockingQueue<TopographicPlace> topographicPlaceQueue,
-                                                    List<OSMPOIFilter> osmpoiFilters, String participantRef, IanaCountryTldEnumeration countryRef) {
+                                             List<OSMPOIFilter> osmPoiFilters,
+                                             String participantRef,
+                                             IanaCountryTldEnumeration countryRef) {
         this.topographicPlaceQueue = topographicPlaceQueue;
-        this.osmpoiFilters = osmpoiFilters;
+        this.osmPoiFilters = osmPoiFilters;
         this.participantRef = participantRef;
         this.countryRef = countryRef;
     }
 
-    private List<String> cleanFilter(List<String> rawFilter) {
-        if (CollectionUtils.isEmpty(rawFilter)) {
-            return new ArrayList<>();
-        }
-        return rawFilter.stream().filter(f -> !StringUtils.isEmpty(f)).map(String::trim).collect(Collectors.toList());
-    }
 
     @Override
     public void addNode(OSMNode osmNode) {
@@ -105,12 +108,32 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         if (nodeRefsUsedInWays.contains(osmNode.getId())) {
             nodes.put(osmNode.getId(), osmNode);
         }
+
+        if (nodesById.containsKey(osmNode.getId())) {
+            return;
+        }
+
+        if (nodeRefsUsedInRel.contains(osmNode.getId())) {
+            nodesById.put(osmNode.getId(), osmNode);
+        }
+
+      if (nodesById.size() % 100000 == 0) {
+            logger.debug(String.format("nodes=%d", nodesById.size()));
+        }
     }
 
     @Override
     public void addWay(OSMWay osmWay) {
-        if (matchesFilter(osmWay)) {
+        var wayId = osmWay.getId();
+        if (waysById.containsKey(wayId)) {
+            return;
+        }
+        if (relationWayIds.contains(wayId)) {
+            waysById.put(wayId, osmWay);
+            nodeRefsUsedInRel.addAll(osmWay.getNodeRefs());
+        }
 
+        if (matchesFilter(osmWay)) {
             if (gatherNodesUsedInWaysPhase) {
                 nodeRefsUsedInWays.addAll(osmWay.getNodeRefs());
             } else {
@@ -119,6 +142,19 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                     topographicPlaceQueue.add(topographicPlace);
                 }
             }
+        }
+    }
+
+    @Override
+    public void addRelation(OSMRelation osmRelation) {
+        if (!relationsById.containsKey(osmRelation.getId()) && osmRelation.isTag("type", "multipolygon") && matchesFilter(osmRelation)) {
+            var members = osmRelation.getMembers();
+            members.forEach(member -> {
+                if (member.getType().equals("way")) {
+                    relationWayIds.add(member.getRef());
+                }
+            });
+            relationsById.put(osmRelation.getId(), osmRelation);
         }
     }
 
@@ -144,9 +180,228 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         return true;
     }
 
+    private boolean addGeometry(ArrayList<OSMWay> innerWays, ArrayList<OSMWay> outerWays, TopographicPlace topographicPlace) {
+        List<Polygon> polygons = new ArrayList<>();
+
+
+        final List<List<Long>> outerRingNodes = constructRings(outerWays);
+        final List<List<Long>> innerRingNodes = constructRings(innerWays);
+
+        var outerPolygons = outerRingNodes.stream()
+                .map(ring -> new Ring(ring, nodesById).getPolygon())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        var innerPolygons = innerRingNodes.stream()
+                .map(ring -> new Ring(ring, nodesById).getPolygon())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (!outerPolygons.isEmpty() && !checkPolygonProximity(outerPolygons)) {
+            polygons.addAll(outerPolygons);
+            polygons.addAll(innerPolygons);
+
+            try {
+                var multiPolygon = new GeometryFactory().createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+                var interiorPoint = multiPolygon.getInteriorPoint();
+                topographicPlace.withCentroid(toCentroid(interiorPoint.getY(), interiorPoint.getX()));
+                return true;
+            } catch (RuntimeException e) {
+                logger.warn("unable to add geometry" + e);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkPolygonProximity(List<Polygon> outerPolygons) {
+        boolean outerIgnorePolygons = false;
+        boolean innerIgnorePolygons = false;
+        for (var p : outerPolygons) {
+            for (var q : outerPolygons) {
+                if (!p.isWithinDistance(q, MINIMUM_DISTANCE)) {
+                    innerIgnorePolygons = true;
+                    break;
+                }
+            }
+            if (innerIgnorePolygons) {
+                outerIgnorePolygons = true;
+                break;
+            }
+        }
+        return outerIgnorePolygons;
+    }
+
+    private List<List<Long>> constructRings(List<OSMWay> ways) {
+        if (ways.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<List<Long>> closedRings = new ArrayList<>();
+        ArrayListMultimap<Long, OSMWay> waysByEndpoint = ArrayListMultimap.create();
+        for (OSMWay way : ways) {
+            final List<Long> refs = way.getNodeRefs();
+
+            var start = refs.get(0);
+            var end = refs.get(refs.size() - 1);
+
+            if (start.equals(end)) {
+                ArrayList<Long> ring = new ArrayList<>(refs);
+                closedRings.add(ring);
+            } else {
+                waysByEndpoint.put(start, way);
+                waysByEndpoint.put(end, way);
+            }
+        }
+
+        //check impossible cases
+        for (Long endpoint : waysByEndpoint.keySet()) {
+            Collection<OSMWay> list = waysByEndpoint.get(endpoint);
+            if (list.size() % 2 == 1) {
+                return Collections.emptyList();
+            }
+        }
+
+        List<Long> partialRing = new ArrayList<>();
+        if (waysByEndpoint.isEmpty()) {
+            return closedRings;
+        }
+
+        long firstEndpoint = 0;
+        long otherEndpoint = 0;
+
+        OSMWay firstWay = null;
+
+        for (Long endpoint : waysByEndpoint.keySet()) {
+            final List<OSMWay> list = waysByEndpoint.get(endpoint);
+            firstWay = list.get(0);
+            final List<Long> nodeRefs = firstWay.getNodeRefs();
+            partialRing.addAll(nodeRefs);
+            firstEndpoint = nodeRefs.get(0);
+            otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+            break;
+        }
+        waysByEndpoint.get(firstEndpoint).remove(firstWay);
+        waysByEndpoint.get(otherEndpoint).remove(firstWay);
+
+        if (constructRingsRecursive(waysByEndpoint, partialRing, closedRings, firstEndpoint)) {
+            return closedRings;
+        } else {
+            return Collections.emptyList();
+        }
+
+    }
+
+    private boolean constructRingsRecursive(ArrayListMultimap<Long, OSMWay> waysByEndpoint, List<Long> ring, List<List<Long>> closedRings, long endpoint) {
+        List<OSMWay> ways = new ArrayList<>(waysByEndpoint.get(endpoint));
+        for (OSMWay way : ways) {
+            //remove this way from the map
+            List<Long> nodeRefs = way.getNodeRefs();
+            long firstEndpoint = nodeRefs.get(0);
+            long otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+
+            waysByEndpoint.remove(firstEndpoint, way);
+            waysByEndpoint.remove(otherEndpoint, way);
+
+            ArrayList<Long> newRing = new ArrayList<>(ring.size() + nodeRefs.size());
+            long newFirstEndpoint;
+            if (firstEndpoint == endpoint) {
+                for (int i = nodeRefs.size() - 1; i >= 1; --i) {
+                    newRing.add(nodeRefs.get(i));
+                }
+                newRing.addAll(ring);
+                newFirstEndpoint = otherEndpoint;
+            } else {
+                newRing.addAll(nodeRefs.subList(0, nodeRefs.size() - 1));
+                newRing.addAll(ring);
+                newFirstEndpoint = firstEndpoint;
+            }
+
+            if (newRing.get(newRing.size() - 1).equals(newRing.get(0))) {
+                //Closing ring
+                closedRings.add(newRing);
+                //out of endpoints done parsing
+                if (waysByEndpoint.size() == 0) {
+                    return true;
+                }
+
+                //otherwise start new partial ring
+                newRing = new ArrayList<>();
+                OSMWay firstWay = null;
+                for (Long entry : waysByEndpoint.keySet()) {
+                    final List<OSMWay> list = waysByEndpoint.get(entry);
+                    firstWay = list.get(0);
+                    nodeRefs = firstWay.getNodeRefs();
+                    newRing.addAll(nodeRefs);
+                    firstEndpoint = nodeRefs.get(0);
+                    otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+                    break;
+                }
+
+                waysByEndpoint.remove(firstEndpoint, way);
+                waysByEndpoint.remove(otherEndpoint, way);
+
+                if (constructRingsRecursive(waysByEndpoint, newRing, closedRings, firstEndpoint)) {
+                    return true;
+                }
+
+                waysByEndpoint.remove(firstEndpoint, firstWay);
+                waysByEndpoint.remove(otherEndpoint, firstWay);
+
+            } else {
+                // Continue with ring
+                if (waysByEndpoint.get(newFirstEndpoint) != null) {
+                    return constructRingsRecursive(waysByEndpoint, newRing, closedRings, newFirstEndpoint);
+                }
+            }
+            if (firstEndpoint == endpoint) {
+                waysByEndpoint.put(otherEndpoint, way);
+            } else {
+                waysByEndpoint.put(firstEndpoint, way);
+            }
+        }
+        return false;
+    }
+
     @Override
     public void doneSecondPhaseWays() {
         gatherNodesUsedInWaysPhase = false;
+    }
+
+    @Override
+    public void doneThirdPhaseNodes() {
+        processMultipolygonRelations();
+    }
+
+    private void processMultipolygonRelations() {
+        var counter = 0;
+        for (OSMRelation relation : relationsById.values()) {
+            if (relation.isTag("type", "multipolygon") && matchesFilter(relation)) {
+
+                var innerWays = new ArrayList<OSMWay>();
+                var outerWays = new ArrayList<OSMWay>();
+
+                for (OSMRelationMember member : relation.getMembers()) {
+                    final String role = member.getRole();
+                    final OSMWay way = waysById.get(member.getRef());
+
+                    if (way != null) {
+                        if (role.equals("inner")) {
+                            innerWays.add(way);
+                        } else if (role.equals("outer")) {
+                            outerWays.add(way);
+                        } else {
+                            logger.warn("Unexpected role " + role + " in multipolygon");
+                        }
+                    }
+                }
+                var topographicPlace = map(relation);
+                if (addGeometry(innerWays, outerWays, topographicPlace)) {
+                    topographicPlaceQueue.add(topographicPlace);
+                    counter++;
+                }
+            }
+        }
+        logger.info("Total {} multipolygon POIs added.", counter);
     }
 
     boolean matchesFilter(OSMWithTags entity) {
@@ -155,7 +410,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         for (Map.Entry<String, String> tag : entity.getTags().entrySet()) {
-            if (osmpoiFilters.stream().anyMatch(f -> (tag.getKey().equals(f.getKey()) && tag.getValue().startsWith(f.getValue())))) {
+            if (osmPoiFilters.stream().anyMatch(f -> (tag.getKey().equals(f.getKey()) && tag.getValue().startsWith(f.getValue())))) {
                 return true;
             }
         }
@@ -164,24 +419,24 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
     TopographicPlace map(OSMWithTags entity) {
         return new TopographicPlace()
-                       .withVersion("any")
-                       .withModification(ModificationEnumeration.NEW)
-                       .withName(multilingualString(entity.getAssumedName()))
-                       .withAlternativeDescriptors(mapAlternativeDescriptors(entity))
-                       .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(entity.getAssumedName())))
-                       .withTopographicPlaceType(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST)
-                       .withCountryRef(new CountryRef().withRef(countryRef))
-                       .withId(prefix(entity.getId()))
-                       .withKeyList(new KeyListStructure().withKeyValue(mapKeyValues(entity)));
+                .withVersion("any")
+                .withModification(ModificationEnumeration.NEW)
+                .withName(multilingualString(entity.getAssumedName()))
+                .withAlternativeDescriptors(mapAlternativeDescriptors(entity))
+                .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(entity.getAssumedName())))
+                .withTopographicPlaceType(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST)
+                .withCountryRef(new CountryRef().withRef(countryRef))
+                .withId(prefix(entity.getId()))
+                .withKeyList(new KeyListStructure().withKeyValue(mapKeyValues(entity)));
     }
 
     TopographicPlace_VersionStructure.AlternativeDescriptors mapAlternativeDescriptors(OSMWithTags entity) {
 
         List<TopographicPlaceDescriptor_VersionedChildStructure> descriptors = entity.getTags().entrySet().stream().filter(e -> !e.getKey().equals("name") && e.getKey().startsWith("name:") && e.getValue() != null)
-                                                                                       .map(e -> new TopographicPlaceDescriptor_VersionedChildStructure()
-                                                                                                         .withName(new MultilingualString().withValue(e.getValue()).withLang(e.getKey().replaceFirst("name:", "")))).collect(Collectors.toList());
+                .map(e -> new TopographicPlaceDescriptor_VersionedChildStructure()
+                        .withName(new MultilingualString().withValue(e.getValue()).withLang(e.getKey().replaceFirst("name:", "")))).collect(Collectors.toList());
 
-        if (descriptors.size() == 0) {
+        if (descriptors.isEmpty()) {
             return null;
         }
 
@@ -190,9 +445,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
     List<KeyValueStructure> mapKeyValues(OSMWithTags entity) {
         return entity.getTags().entrySet().stream()
-                       .filter(e -> !TAG_NAME.equals(e.getKey()))
-                       .map(e -> new KeyValueStructure().withKey(e.getKey()).withValue(e.getValue()))
-                       .collect(Collectors.toList());
+                .filter(e -> !TAG_NAME.equals(e.getKey()))
+                .map(e -> new KeyValueStructure().withKey(e.getKey()).withValue(e.getValue()))
+                .collect(Collectors.toList());
     }
 
     protected String prefix(long id) {
@@ -228,7 +483,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         try {
             centroid = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
         } catch (RuntimeException re) {
-            centroid = new GeometryFactory().createMultiPoint(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
+            centroid = new GeometryFactory().createMultiPointFromCoords(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
         }
         return toCentroid(centroid.getY(), centroid.getX());
     }
@@ -236,9 +491,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
     SimplePoint_VersionStructure toCentroid(double latitude, double longitude) {
         return new SimplePoint_VersionStructure().withLocation(
-                new LocationStructure().withLatitude(new BigDecimal(latitude))
-                        .withLongitude(new BigDecimal(longitude)));
+                new LocationStructure().withLatitude(BigDecimal.valueOf(latitude))
+                        .withLongitude(BigDecimal.valueOf(longitude)));
     }
-
-
 }

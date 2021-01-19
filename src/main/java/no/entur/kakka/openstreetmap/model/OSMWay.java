@@ -24,22 +24,22 @@ import java.util.List;
  */
 public class OSMWay extends OSMWithTags {
 
-    private List<Long> _nodes = new ArrayList<Long>();
+    private final List<Long> nodes = new ArrayList<>();
 
     public void addNodeRef(OSMNodeRef nodeRef) {
-        _nodes.add(nodeRef.getRef());
+        nodes.add(nodeRef.getRef());
     }
 
     public void addNodeRef(long nodeRef) {
-        _nodes.add(nodeRef);
+        nodes.add(nodeRef);
     }
 
     public void addNodeRef(long nodeRef, int index) {
-        _nodes.add(index, nodeRef);
+        nodes.add(index, nodeRef);
     }
 
     public List<Long> getNodeRefs() {
-        return _nodes;
+        return nodes;
     }
 
     public String toString() {

@@ -21,13 +21,17 @@ import no.entur.kakka.domain.OSMPOIFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
+import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.rutebanken.netex.model.TopographicPlaceTypeEnumeration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.stream.Collectors;
 
 public class PbfTopographicPlaceReaderTest {
 
@@ -53,8 +57,9 @@ public class PbfTopographicPlaceReaderTest {
 
 	@Test
 	public void testParseMultiPolygonPbfFile() throws Exception {
+		final List<OSMPOIFilter> osmPoiFilters = Arrays.asList(createFilter("tourism", "attraction"),createFilter("amenity", "theatre"));
 		PbfTopographicPlaceReader reader =
-				new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism","attraction")), IanaCountryTldEnumeration.NO,
+				new PbfTopographicPlaceReader(osmPoiFilters, IanaCountryTldEnumeration.NO,
 						new File("src/test/resources/no/entur/kakka/geocoder/pbf/opera.pbf"));
 
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
@@ -62,7 +67,22 @@ public class PbfTopographicPlaceReaderTest {
 
 		Assert.assertEquals(1, queue.size());
 
+		List<String> categories = new ArrayList<>();
+
 		for (TopographicPlace tp : queue) {
+			final List<KeyValueStructure> keyValue = tp.getKeyList().getKeyValue();
+			for (KeyValueStructure keyValueStructure : keyValue) {
+				var key = keyValueStructure.getKey();
+				var value = keyValueStructure.getValue();
+				var category= osmPoiFilters.stream()
+						.filter(f -> key.equals(f.getKey()) && value.equals(f.getValue()))
+						.map(OSMPOIFilter::getValue)
+						.findFirst();
+				category.ifPresent(categories::add);
+			}
+
+			Assert.assertEquals(2,categories.size());
+
 			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
 			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
 			Assert.assertNotNull(tp.getName());

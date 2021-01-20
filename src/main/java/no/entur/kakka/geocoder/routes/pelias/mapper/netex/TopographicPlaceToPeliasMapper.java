@@ -20,12 +20,12 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 
+import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -55,10 +55,25 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
 
         if (PLACE_OF_INTEREST.equals(place.getTopographicPlaceType())) {
             document.setPopularity(popularity * getPopularityBoost(place));
-            document.setCategory(Arrays.asList("poi"));
+            setPOICategories(document,place.getKeyList().getKeyValue());
         } else {
             document.setPopularity(popularity);
         }
+    }
+
+    private void setPOICategories(PeliasDocument document, List<KeyValueStructure> keyValue) {
+        List<String> categories = new ArrayList<>();
+        categories.add("poi");
+            for (KeyValueStructure keyValueStructure : keyValue) {
+                var key = keyValueStructure.getKey();
+                var value = keyValueStructure.getValue();
+                var category= osmpoiFilters.stream()
+                        .filter(f -> key.equals(f.getKey()) && value.equals(f.getValue()))
+                        .map(OSMPOIFilter::getValue)
+                        .findFirst();
+                category.ifPresent(categories::add);
+            }
+        document.setCategory(categories);
     }
 
     private int getPopularityBoost(TopographicPlace place) {

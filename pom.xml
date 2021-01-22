@@ -37,6 +37,7 @@
         <resteasy.version>3.6.1.Final</resteasy.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
 
     </properties>
 
@@ -441,6 +442,12 @@
             <groupId>org.openstreetmap.osmosis</groupId>
             <artifactId>osmosis-osm-binary</artifactId>
             <version>0.47.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons-fileupload.version}</version>
         </dependency>
 
     </dependencies>

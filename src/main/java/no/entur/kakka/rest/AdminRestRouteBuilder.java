@@ -17,12 +17,14 @@
 package no.entur.kakka.rest;
 
 import no.entur.kakka.Constants;
+import no.entur.kakka.domain.BlobStoreFiles;
+import no.entur.kakka.domain.BlobStoreFiles.File;
 import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
+import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -43,6 +45,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+
 /**
  * REST interface for backdoor triggering of messages
  */
@@ -50,7 +54,8 @@ import java.util.stream.Collectors;
 public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
     private static final String PLAIN = "text/plain";
-
+    private static final String PROVIDER_ID = "ProviderId";
+    public static final String FILE_HANDLE = "FileHandle";
     @Value("${server.admin.port:8080}")
     public String port;
 
@@ -265,6 +270,26 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        rest("/tariff_zone_admin/{providerId}")
+                .post("/files")
+                .description("Upload tariff zone netex file for import into Tiamat")
+                .param().name("providerId").type(RestParamType.path).description("Tariff zone Provider id e.g RUT,AKT,KOL").dataType("string").endParam()
+                .consumes(MULTIPART_FORM_DATA)
+                .produces(PLAIN)
+                .bindingMode(RestBindingMode.off)
+                .responseMessage().code(200).endResponseMessage()
+                .responseMessage().code(500).message("Invalid providerId").endResponseMessage()
+                .route()
+                .streamCaching()
+                .setHeader(PROVIDER_ID, header("providerId"))
+                .to("direct:authorizeEditorRequest")
+                .to("direct:validateProvider")
+                .log(LoggingLevel.INFO, "Upload files and start import pipeline")
+                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
+                .to("direct:uploadFilesAndStartImport")
+                .routeId("admin-tariff-zone-upload-file")
+                .endRest();
+
         from("direct:update-configuration")
                 .to("bean:customConfigurationService?method=updateCustomConfiguration")
                 .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
@@ -281,7 +306,12 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
         return typeStrings.stream().map(s -> GeoCoderTaskType.valueOf(s)).collect(Collectors.toSet());
     }
 
-
+    public static class ImportFilesSplitter {
+        public List<String> splitFiles(@Body BlobStoreFiles files) {
+            return files.getFiles().stream().map(File::getName).collect(Collectors.toList());
+        }
+    }
 }
+
 
 

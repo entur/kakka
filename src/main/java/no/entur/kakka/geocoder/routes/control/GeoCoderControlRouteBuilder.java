@@ -119,9 +119,9 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 				.routeId("geocoder-dehydrate-task");
 
 		from("direct:geoCoderRescheduleTask")
-				.process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, (Integer) e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
+				.process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
 				.choice()
-				.when(simple("${header." + Constants.LOOP_COUNTER + "} > " + maxRetries))
+				.when(e -> e.getIn().getHeader(Constants.LOOP_COUNTER,Integer.class) > maxRetries)
 				.log(LoggingLevel.WARN, getClass().getName(), "${header." + GeoCoderConstants.GEOCODER_CURRENT_TASK + "} timed out. Config should probably be tweaked. Not rescheduling.")
 				.process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.TIMEOUT).build()).to("direct:updateStatus")
 				.otherwise()

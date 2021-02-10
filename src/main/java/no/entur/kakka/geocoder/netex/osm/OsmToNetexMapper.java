@@ -26,11 +26,16 @@ import org.openstreetmap.osm.Way;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.ValidBetween;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import java.util.Map;
@@ -58,7 +63,8 @@ public class OsmToNetexMapper<T extends Zone_VersionStructure> {
     public static final String REFERENCE = "reference";
     public static final String ZONE_TYPE = "zone_type";
     public static final String DEFAULT_VERSION = "1";
-    private static final Logger logger = LoggerFactory.getLogger(OsmToNetexTransformer.class);
+    public static final String VALID_FROM = "valid_from_date";
+    private static final Logger logger = LoggerFactory.getLogger(OsmToNetexMapper.class);
     private static final net.opengis.gml._3.ObjectFactory openGisObjectFactory = new net.opengis.gml._3.ObjectFactory();
     private final NetexHelper netexHelper;
 
@@ -128,6 +134,19 @@ public class OsmToNetexMapper<T extends Zone_VersionStructure> {
                 KeyValueStructure keyValueStructure = new KeyValueStructure().withKey(keyName).withValue(value);
                 KeyListStructure keyListStructure = new KeyListStructure().withKeyValue(keyValueStructure);
                 zone.setKeyList(keyListStructure);
+            } else if (tag.getK().equals(VALID_FROM)) {
+                var validFrom = tag.getV();
+                tagValueNotNull(VALID_FROM,validFrom);
+
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    var  instant = sdf.parse(validFrom).toInstant();
+                    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                    zone.withValidBetween(new ValidBetween().withFromDate(localDateTime));
+                } catch (ParseException e) {
+                    logger.info("Unable to parse and set valid from date: {}",e.getMessage());
+                }
+
             }
         }
 

@@ -64,6 +64,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
     @Autowired
     private AuthorizationService authorizationService;
+    @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
+    private List<String> tariffZoneProviders;
 
     @Override
     public void configure() throws Exception {
@@ -282,7 +284,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .route()
                 .streamCaching()
                 .setHeader(PROVIDER_ID, header("providerId"))
-                .to("direct:authorizeEditorRequest")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("direct:validateProvider")
                 .log(LoggingLevel.INFO, "Upload files and start import pipeline")
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
@@ -299,6 +301,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("bean:customConfigurationService?method=saveCustomConfiguration")
                 .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
                 .setBody(constant(""));
+
+        from("direct:validateProvider")
+                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
+                .routeId("admin-validate-provider");
 
     }
 

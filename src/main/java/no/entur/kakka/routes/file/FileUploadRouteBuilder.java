@@ -1,5 +1,6 @@
 package no.entur.kakka.routes.file;
 
+import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import org.apache.camel.Exchange;
@@ -22,7 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static no.entur.kakka.Constants.FILE_HANDLE;
 import static no.entur.kakka.Constants.FILE_NAME;
@@ -33,8 +37,6 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadRouteBuilder.class);
 
     private static final String FILE_CONTENT_HEADER = "FileContent";
-    //TODO: TariffZone Providers Setup
-    private String PROVIDER_ID="providerId";
 
     @Override
     public void configure() throws Exception {
@@ -45,8 +47,17 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
         from("direct:uploadFilesAndStartImport")
                 .process(this::convertBodyToFileItems)
                 .split().body()
-                .setHeader(FILE_NAME, simple("${body.name}"))
-                .setHeader(FILE_HANDLE, simple("inbound/received/${header." + PROVIDER_ID + "}/${header." + FILE_NAME + "}"))
+                .log(LoggingLevel.INFO,"Upload files and  start Import file name: ${header." + FILE_NAME +  "}")
+                .choice()
+                .when(header(Constants.FILE_NAME).endsWith("xml"))
+                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) +".xml"))
+                .setHeader(FILE_HANDLE, simple("tariffzones/netex/${header.providerId}/${header." + FILE_NAME + "}"))
+                .when(header(Constants.FILE_NAME).endsWith("osm"))
+                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) +".osm"))
+                .setHeader(FILE_HANDLE, simple("tariffzones/osm/${header.providerId}/${header." + FILE_NAME + "}"))
+                .otherwise()
+                .log(LoggingLevel.INFO,"Invalid file upload")
+                .end()
                 .process(e -> e.getIn().setHeader(FILE_CONTENT_HEADER, new CloseShieldInputStream(e.getIn().getBody(FileItem.class).getInputStream())))
                 .to("direct:uploadFileAndStartImport")
                 .routeId("files-upload");
@@ -58,7 +69,6 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .log(LoggingLevel.INFO,  "Uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(header(FILE_CONTENT_HEADER))
                 .setHeader(Exchange.FILE_NAME, header(FILE_NAME))
-                .to("direct:filterDuplicateFile")
                 .to("direct:uploadBlob")
                 .log(LoggingLevel.INFO,  "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(constant(null))
@@ -81,12 +91,14 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
             LOGGER.debug("Received a multipart request (size: {} bytes) with content type {} ", content.length, contentType);
             SimpleUploadContext uploadContext = new SimpleUploadContext(StandardCharsets.UTF_8, contentType, content);
             List<FileItem> fileItems = upload.parseRequest(uploadContext);
-            if (LOGGER.isDebugEnabled()) {
+
+            Optional<String> fileName = fileItems.stream().map(f -> f.getName()).findFirst();
                 LOGGER.debug("The multipart request contains {} file(s)", fileItems.size());
                 for (FileItem fileItem : fileItems) {
                     LOGGER.debug("Received file {} (size: {})", fileItem.getName(), fileItem.getSize());
+
                 }
-            }
+            fileName.ifPresent(s -> e.getIn().setHeader(FILE_NAME, s));
             e.getIn().setBody(fileItems);
         } catch (Exception ex) {
             throw new KakkaException("Failed to parse multipart content: " + ex.getMessage());

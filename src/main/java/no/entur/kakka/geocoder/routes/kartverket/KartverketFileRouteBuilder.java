@@ -85,7 +85,7 @@ public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
 
 	private void deleteNoLongerActiveFiles(Exchange e) {
 		List<File> activeFiles = e.getIn().getBody(List.class);
-		Set<String> activeFileNames = activeFiles.stream().map(f -> f.getName()).collect(Collectors.toSet());
+		Set<String> activeFileNames = activeFiles.stream().map(File::getName).collect(Collectors.toSet());
 		BlobStoreFiles blobs = blobStoreService.listBlobsInFolder(e.getIn().getHeader(Constants.FOLDER_NAME, String.class), e);
 
 		blobs.getFiles().stream().filter(b -> !activeFileNames.contains(Paths.get(b.getName()).getFileName().toString())).forEach(b -> deleteNoLongerActiveBlob(b, e));

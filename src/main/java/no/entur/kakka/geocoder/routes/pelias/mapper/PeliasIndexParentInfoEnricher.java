@@ -43,7 +43,7 @@ public class PeliasIndexParentInfoEnricher {
 
     private static final Logger logger= LoggerFactory.getLogger(PeliasIndexParentInfoEnricher.class);
 
-    private GeometryFactory geometryFactory = new GeometryFactory();
+    private final GeometryFactory geometryFactory = new GeometryFactory();
 
     /**
      * Enrich indexing commands with parent info if missing.

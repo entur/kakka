@@ -86,6 +86,9 @@ data:
     osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # Include POIs from tiamat netex file
     pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
+
+    # TariffZone Import valid providers/authority
+    tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
 kind: ConfigMap
 metadata:
   name: {{ template "kakka.name" . }}-config

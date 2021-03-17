@@ -273,6 +273,13 @@
             <version>${resteasy.version}</version>
         </dependency>
 
+        <!-- Auth0 -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>auth0</artifactId>
+            <version>${auth0.version}</version>
+        </dependency>
+
         <!-- Other -->
         <dependency>
             <groupId>org.geotools</groupId>
@@ -390,14 +397,6 @@
             <artifactId>commons-fileupload</artifactId>
             <version>${commons-fileupload.version}</version>
         </dependency>
-
-        <!-- Auth0 -->
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>auth0</artifactId>
-            <version>${auth0.version}</version>
-        </dependency>
-
 
         <!-- testing -->
         <dependency>

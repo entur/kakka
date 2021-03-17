@@ -30,6 +30,7 @@
         <jskdata.version>1.0.15</jskdata.version>
 
         <keycloak.version>4.8.3.Final</keycloak.version>
+        <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.0.25</entur.helpers.version>
         <guava.version>28.1-jre</guava.version>
@@ -394,6 +395,14 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+
+        <!-- Auth0 -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>auth0</artifactId>
+            <version>${auth0.version}</version>
+        </dependency>
+
 
         <!-- testing -->
         <dependency>

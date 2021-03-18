@@ -1,106 +1,67 @@
-
-/*
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by
- * the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- *
- *   https://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
- *
- */
-
 package no.entur.kakka.config;
 
-import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
-import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
-import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.entur.oauth2.MultiIssuerAuthenticationManagerResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter.AUTHORIZATION_HEADER;
+import java.util.Arrays;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration
+/**
+ * Authentication and authorization configuration for Nabu.
+ * All requests must be authenticated except for the Swagger and Actuator endpoints.
+ * The Oauth2 ID-provider (Keycloak or Auth0) is identified thanks to {@link MultiIssuerAuthenticationManagerResolver}.
+ */
+@Profile("!test")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
-public class KakkaSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+@Component
+public class KakkaSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final Logger logger = LoggerFactory.getLogger(KakkaSecurityConfig.class);
+    private final MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver;
 
-    /**
-     * Registers the KeycloakAuthenticationProvider with the authentication
-     * manager.
-     */
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(keycloakAuthenticationProvider());
+    public KakkaSecurityConfig(MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver) {
+        this.multiIssuerAuthenticationManagerResolver = multiIssuerAuthenticationManagerResolver;
     }
 
-    /**
-     * Defines the session authentication strategy.
-     */
     @Bean
-    @Override
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedHeaders(Arrays.asList("Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "x-correlation-id"));
+        configuration.addAllowedOrigin("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
-    /**
-     * Override KeycloakAuthenticationProcessingFilter to support token as query param.
-     *
-     * Must:
-     * - Add request matcher to enable the filter for requests that contain 'access_token' query parameter
-     * - Treat such requests as those containing token as Authorization header. Thus is (somewhat dirty) achieved by overriding method
-     * for checking whether request is of bearer token type to include query param token requests.
-     *
-     */
     @Override
-    @Bean
-    protected KeycloakAuthenticationProcessingFilter keycloakAuthenticationProcessingFilter() throws Exception {
-        final RegexRequestMatcher tokenQueryParamMatcher = new RegexRequestMatcher("(.*?)access_token=(.*?)", null);
-        RequestMatcher requestMatcher =
-                new OrRequestMatcher(new RequestHeaderRequestMatcher(AUTHORIZATION_HEADER), tokenQueryParamMatcher);
-
-        KeycloakAuthenticationProcessingFilter filter = new KeycloakAuthenticationProcessingFilter(authenticationManagerBean(), requestMatcher);
-
-        filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
-        return filter;
-    }
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
-
-        logger.info("Configuring HttpSecurity");
-
-        http.csrf().disable()
+    public void configure(HttpSecurity http) throws Exception {
+        http.cors(withDefaults())
+                .csrf().disable()
                 .authorizeRequests()
-                .anyRequest()
-                .permitAll();
+                .antMatchers("/services/swagger.json").permitAll()
+                // exposed internally only, on a different port (pod-level)
+                .antMatchers("/actuator/prometheus").permitAll()
+                .antMatchers("/actuator/health").permitAll()
+                .antMatchers("/actuator/health/liveness").permitAll()
+                .antMatchers("/actuator/health/readiness").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .oauth2ResourceServer().authenticationManagerResolver(this.multiIssuerAuthenticationManagerResolver)
+                .and()
+                .oauth2Client();
+
     }
 
 }
-

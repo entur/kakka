@@ -7,7 +7,12 @@ configMap:
   blobstoreProjectId: entur-ror-test
   blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: entur-ror-test
-  keycloakUrl: https://kc-stage.devstage.entur.io/auth
+  keycloak:
+    url:  https://kc-stage.devstage.entur.io/auth
+  auth0:
+    ror:
+      url: https://ror-entur-staging.eu.auth0.com/
+      audience: https://ror.api.staging.entur.io
   tiamatExportSchedule: 0+0+20+*+*+?
   gecoderExportSchedule: 0+0+04+*+*+?
   poiUpdateEnabled: true

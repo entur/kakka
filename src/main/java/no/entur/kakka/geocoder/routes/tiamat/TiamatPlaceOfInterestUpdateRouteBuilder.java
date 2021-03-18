@@ -24,7 +24,7 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.security.TokenService;
+import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.OSMPOIFilterService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -74,9 +74,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private TopographicPlaceConverter topographicPlaceConverter;
-
-    @Autowired
-    private TokenService tokenService;
 
 
     @Autowired
@@ -134,7 +131,7 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .setHeader(Exchange.HTTP_QUERY, simple("eraseTopographicPlaceWithIdPrefixAndType=" + eraseTopographicPlaceWithIdPrefixAndTypeValue))
-                .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
+                .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-poi-update-start");
 

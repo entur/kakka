@@ -97,16 +97,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .transform(exceptionMessage());
 
         restConfiguration()
-                .component("jetty")
+                .component("servlet")
                 .bindingMode(RestBindingMode.json)
-                .endpointProperty("filtersRef", "keycloakPreAuthActionsFilter,keycloakAuthenticationProcessingFilter")
-                .endpointProperty("sessionSupport", "true")
                 .endpointProperty("matchOnUriPrefix", "true")
-                .endpointProperty("enablemulti-partFilter", "true")
-                .enableCORS(true)
                 .dataFormatProperty("prettyPrint", "true")
-                .host(host)
-                .port(port)
                 .apiContextPath("/swagger.json")
                 .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0")
                 .contextPath("/services");
@@ -118,10 +112,6 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .post().route().routeId("admin-route-authorize-post").throwException(new NotFoundException()).endRest()
                 .put().route().routeId("admin-route-authorize-put").throwException(new NotFoundException()).endRest()
                 .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
-
-
-        String commonApiDocEndpoint = "rest:get:/services/swagger.json?bridgeEndpoint=true";
-
 
         rest("/geocoder_admin")
                 .post("/idempotentfilter/clean")
@@ -151,14 +141,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
                 .inOnly("direct:geoCoderStartBatch")
                 .setBody(constant(null))
-                .endRest()
-
-                .get("/swagger.json")
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
                 .endRest();
+
 
         rest("/custom_configurations")
                 .description("Custom configuration REST service")
@@ -227,14 +211,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:updateAdminUnitsInOrgReg")
                 .setBody(simple("done"))
                 .routeId("admin-org-reg-import-admin-zones")
-                .endRest()
-
-                .get("/swagger.json")
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
                 .endRest();
+
 
         rest("/map_admin")
                 .post("/download")
@@ -263,14 +241,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:startFullTiamatPublishExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full")
-                .endRest()
-
-                .get("/swagger.json")
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
                 .endRest();
+
 
         rest("/tariff_zone_admin/{providerId}")
                 .post("/files")

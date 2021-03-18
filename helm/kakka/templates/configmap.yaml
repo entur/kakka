@@ -15,11 +15,9 @@ data:
     spring.flyway.baseline-version=1
     spring.flyway.table=flyway_schema_history
     #spring.flyway.enabled=true
-    server.port=8081
-    server.admin.port=8080
-    server.host=0.0.0.0
-    server.admin.host=0.0.0.0
+    server.port=8080
     camel.springboot.name=kakka
+    camel.component.servlet.mapping.context-path=/services/*
 
     # Tiamat
     tiamat.geocoder.export.autoStartup=true
@@ -67,11 +65,20 @@ data:
     blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
     blobstore.gcs.credential.path=/etc/kakka/credentials.json
 
-    # Keycloak
-    keycloak.realm=rutebanken
-    keycloak.auth-server-url={{.Values.configMap.keycloakUrl}}
-    keycloak.bearer-only=true
-    keycloak.resource=kakka
+    # OAuth2 Resource Server
+    kakka.oauth2.resourceserver.keycloak.jwt.issuer-uri={{ .Values.keycloak.url }}/realms/rutebanken
+    kakka.oauth2.resourceserver.keycloak.jwt.jwkset-uri={{ .Values.keycloak.url }}/realms/rutebanken/protocol/openid-connect/certs
+    kakka.oauth2.resourceserver.keycloak.jwt.audience=account
+
+    kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri={{ .Values.auth0.ror.url }}/
+    kakka.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.auth0.ror.audience }}
+    kakka.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
+
+    # OAuth2 Client
+    spring.security.oauth2.client.registration.kakka.authorization-grant-type=client_credentials
+    spring.security.oauth2.client.registration.kakka.client-id={{ .Values.oauth2.client.id }}
+    spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.oauth2.client.url }}
+    kakka.oauth2.client.audience={{ .Values.oauth2.client.audience }}
 
     # PubSub
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}

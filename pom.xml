@@ -43,6 +43,13 @@
         <!-- HSQLDB version compatible with GeoTools 20.3 -->
         <hsqldb.version>2.4.1</hsqldb.version>
 
+        <!-- TODO temporary fix for incompatibility between Swagger and Jackson. Fixed in Camel 3.6+
+             https://issues.apache.org/jira/browse/CAMEL-15588
+        -->
+        <swagger-java-parser-version>1.0.51</swagger-java-parser-version>
+        <swagger-java-version>1.6.2</swagger-java-version>
+
+
     </properties>
 
     <repositories>
@@ -201,6 +208,16 @@
                     <groupId>javax.ws.rs</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger-java-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${swagger-java-parser-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>

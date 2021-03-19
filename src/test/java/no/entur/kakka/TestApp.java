@@ -14,28 +14,24 @@
  *
  */
 
-package no.entur.kakka.test;
+package no.entur.kakka;
 
-import no.entur.kakka.App;
-import no.entur.kakka.config.KakkaSecurityConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import no.entur.kakka.security.KakkaWebSecurityConfigurerAdapter;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @ComponentScan(excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = KakkaSecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = KakkaWebSecurityConfigurerAdapter.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
 })
 public class TestApp extends App {
-
-    private static Logger logger = LoggerFactory.getLogger(TestApp.class);
-
-    public static void main(String... args) {
-        App.main(args);
+    public static void main(String[] args) {
+        SpringApplication.run(TestApp.class, args);
     }
+
 
 }

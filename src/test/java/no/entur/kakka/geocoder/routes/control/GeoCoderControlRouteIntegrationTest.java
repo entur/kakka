@@ -18,6 +18,7 @@ package no.entur.kakka.geocoder.routes.control;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import org.apache.camel.EndpointInject;
@@ -33,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = GeoCoderControlRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 	@Autowired

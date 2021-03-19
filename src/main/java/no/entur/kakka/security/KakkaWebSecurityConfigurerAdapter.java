@@ -1,4 +1,4 @@
-package no.entur.kakka.config;
+package no.entur.kakka.security;
 
 import org.entur.oauth2.MultiIssuerAuthenticationManagerResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
- * Authentication and authorization configuration for Nabu.
+ * Authentication and authorization configuration for Kakka.
  * All requests must be authenticated except for the Swagger and Actuator endpoints.
  * The Oauth2 ID-provider (Keycloak or Auth0) is identified thanks to {@link MultiIssuerAuthenticationManagerResolver}.
  */
@@ -26,11 +26,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Component
-public class KakkaSecurityConfig extends WebSecurityConfigurerAdapter {
+public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
     private final MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver;
 
-    public KakkaSecurityConfig(MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver) {
+    public KakkaWebSecurityConfigurerAdapter(MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver) {
         this.multiIssuerAuthenticationManagerResolver = multiIssuerAuthenticationManagerResolver;
     }
 

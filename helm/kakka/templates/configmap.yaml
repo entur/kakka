@@ -66,19 +66,19 @@ data:
     blobstore.gcs.credential.path=/etc/kakka/credentials.json
 
     # OAuth2 Resource Server
-    kakka.oauth2.resourceserver.keycloak.jwt.issuer-uri={{ .Values.keycloak.url }}/realms/rutebanken
-    kakka.oauth2.resourceserver.keycloak.jwt.jwkset-uri={{ .Values.keycloak.url }}/realms/rutebanken/protocol/openid-connect/certs
+    kakka.oauth2.resourceserver.keycloak.jwt.issuer-uri={{ .Values.configMap.keycloak.url }}/realms/rutebanken
+    kakka.oauth2.resourceserver.keycloak.jwt.jwkset-uri={{ .Values.configMap.keycloak.url }}/realms/rutebanken/protocol/openid-connect/certs
     kakka.oauth2.resourceserver.keycloak.jwt.audience=account
 
-    kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri={{ .Values.auth0.ror.url }}/
-    kakka.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.auth0.ror.audience }}
+    kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri={{ .Values.configMap.auth0.ror.url }}/
+    kakka.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.configMap.auth0.ror.audience }}
     kakka.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
 
     # OAuth2 Client
     spring.security.oauth2.client.registration.kakka.authorization-grant-type=client_credentials
-    spring.security.oauth2.client.registration.kakka.client-id={{ .Values.oauth2.client.id }}
-    spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.oauth2.client.url }}
-    kakka.oauth2.client.audience={{ .Values.oauth2.client.audience }}
+    spring.security.oauth2.client.registration.kakka.client-id={{ .Values.configMap.oauth2.client.id }}
+    spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.configMap.oauth2.client.url }}
+    kakka.oauth2.client.audience={{ .Values.configMap.oauth2.client.audience }}
 
     # PubSub
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}

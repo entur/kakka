@@ -13,6 +13,11 @@ configMap:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/
       audience: https://ror.api.dev.entur.io
+  oauth2:
+    client:
+      id: kakka
+      url: https://kc-dev.devstage.entur.io/auth/realms/rutebanken/protocol/openid-connect/token
+      audience: account
   tiamatExportSchedule: 0+0+23+*+*+?
   gecoderExportSchedule: 0+0+22+*+*+?
   poiUpdateEnabled: true

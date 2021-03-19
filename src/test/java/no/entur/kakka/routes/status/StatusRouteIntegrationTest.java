@@ -18,6 +18,7 @@ package no.entur.kakka.routes.status;
 
 import com.google.pubsub.v1.PubsubMessage;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.junit.Assert;
@@ -26,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = StatusRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 

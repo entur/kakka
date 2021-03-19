@@ -16,6 +16,7 @@
 
 package no.entur.kakka.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -26,13 +27,16 @@ public class OAuth2TokenService implements TokenService {
 
     private final AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientServiceReactiveOAuth2AuthorizedClientManager;
 
+    @Value("${spring.security.oauth2.client.registration.kakka.client-id}")
+    private String clientId;
+
     public OAuth2TokenService(AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientServiceReactiveOAuth2AuthorizedClientManager) {
         this.authorizedClientServiceReactiveOAuth2AuthorizedClientManager = authorizedClientServiceReactiveOAuth2AuthorizedClientManager;
     }
 
     @Override
     public String getToken() {
-        OAuth2AuthorizeRequest oAuth2AuthorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("kakka").principal("kakka").build();
+        OAuth2AuthorizeRequest oAuth2AuthorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("kakka").principal(clientId).build();
         OAuth2AuthorizedClient authorizedClient = authorizedClientServiceReactiveOAuth2AuthorizedClientManager.authorize(oAuth2AuthorizeRequest).block();
         return authorizedClient.getAccessToken().getTokenValue();
     }

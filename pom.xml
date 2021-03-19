@@ -32,7 +32,7 @@
         <keycloak.version>4.8.3.Final</keycloak.version>
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.0.41-SNAPSHOT</entur.helpers.version>
+        <entur.helpers.version>1.0.41</entur.helpers.version>
         <guava.version>30.0-jre</guava.version>
 
         <resteasy.version>3.6.1.Final</resteasy.version>

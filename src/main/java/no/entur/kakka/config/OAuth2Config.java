@@ -16,16 +16,16 @@
 
 package no.entur.kakka.config;
 
-import org.entur.oauth2.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManagerBuilder;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.MultiIssuerAuthenticationManagerResolver;
+import org.entur.oauth2.OAuth2TokenService;
 import org.entur.oauth2.RorAuth0RolesClaimAdapter;
+import org.entur.oauth2.TokenService;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
 
 /**
  * Configure Spring Beans for OAuth2 resource server and OAuth2 client security.
@@ -34,10 +34,11 @@ import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiv
 public class OAuth2Config {
 
     @Bean
-    AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientServiceReactiveOAuth2AuthorizedClientManager(OAuth2ClientProperties properties, @Value("${kakka.oauth2.client.audience}") String audience) {
-        return new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManagerBuilder()
+    TokenService tokenService(OAuth2ClientProperties properties, @Value("${kakka.oauth2.client.audience}") String audience) {
+        return new OAuth2TokenService.Builder()
                 .withOAuth2ClientProperties(properties)
                 .withAudience(audience)
+                .withClientRegistrationId("kakka")
                 .build();
     }
 

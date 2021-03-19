@@ -56,10 +56,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
     private static final String PLAIN = "text/plain";
     private static final String PROVIDER_ID = "ProviderId";
     public static final String FILE_HANDLE = "FileHandle";
-    @Value("${server.admin.port:8080}")
+    @Value("${server.port:8080}")
     public String port;
 
-    @Value("${server.admin.host:0.0.0.0}")
+    @Value("${server.host:0.0.0.0}")
     public String host;
 
     @Autowired
@@ -113,6 +113,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .put().route().routeId("admin-route-authorize-put").throwException(new NotFoundException()).endRest()
                 .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
 
+
+        String commonApiDocEndpoint = "http4:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
+
+
         rest("/geocoder_admin")
                 .post("/idempotentfilter/clean")
                 .description("Clean Idempotent repo for downloads")
@@ -141,8 +145,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
                 .inOnly("direct:geoCoderStartBatch")
                 .setBody(constant(null))
-                .endRest();
+                .endRest()
 
+                .get("/swagger.json")
+                .apiDocs(false)
+                .bindingMode(RestBindingMode.off)
+                .route()
+                .to(commonApiDocEndpoint)
+                .endRest();
 
         rest("/custom_configurations")
                 .description("Custom configuration REST service")
@@ -211,8 +221,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:updateAdminUnitsInOrgReg")
                 .setBody(simple("done"))
                 .routeId("admin-org-reg-import-admin-zones")
-                .endRest();
+                .endRest()
 
+                .get("/swagger.json")
+                .apiDocs(false)
+                .bindingMode(RestBindingMode.off)
+                .route()
+                .to(commonApiDocEndpoint)
+                .endRest();
 
         rest("/map_admin")
                 .post("/download")
@@ -241,8 +257,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:startFullTiamatPublishExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full")
-                .endRest();
+                .endRest()
 
+                .get("/swagger.json")
+                .apiDocs(false)
+                .bindingMode(RestBindingMode.off)
+                .route()
+                .to(commonApiDocEndpoint)
+                .endRest();
 
         rest("/tariff_zone_admin/{providerId}")
                 .post("/files")

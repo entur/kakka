@@ -51,6 +51,7 @@ public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/services/swagger.json").permitAll()
+                .antMatchers("/services/*/swagger.json").permitAll()
                 // exposed internally only, on a different port (pod-level)
                 .antMatchers("/actuator/prometheus").permitAll()
                 .antMatchers("/actuator/health").permitAll()

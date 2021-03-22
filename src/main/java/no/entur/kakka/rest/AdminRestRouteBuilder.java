@@ -57,10 +57,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
     private static final String PROVIDER_ID = "ProviderId";
     public static final String FILE_HANDLE = "FileHandle";
     @Value("${server.port:8080}")
-    public String port;
+    private String port;
 
     @Value("${server.host:0.0.0.0}")
-    public String host;
+    private String host;
 
     @Autowired
     private AuthorizationService authorizationService;

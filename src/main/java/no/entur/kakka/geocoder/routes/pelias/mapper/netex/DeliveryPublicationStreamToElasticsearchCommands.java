@@ -73,15 +73,20 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private final boolean mapPOIFromNetex;
 
+    private final boolean ignoreRailReplacementBus;
+
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
                                                             @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService,@Value("${pelias.poi.include:true}") boolean mapPOIFromNetex) {
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService,@Value("${pelias.poi.include:true}") boolean mapPOIFromNetex,
+                                                            @Value("${pelias.ignore-rail-replacement-bus:true}") boolean ignoreRailReplacementBus
+    ) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
         this.gosInclude = gosInclude;
         this.osmpoiFilterService = osmpoiFilterService;
         this.mapPOIFromNetex = mapPOIFromNetex;
+        this.ignoreRailReplacementBus = ignoreRailReplacementBus;
         if (poiFilter != null) {
             this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
             logger.info("pelias poiFilter is set to: " + poiFilter );
@@ -183,7 +188,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private List<ElasticsearchCommand> addStopPlaceCommands(List<StopPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
-            StopPlaceToPeliasMapper mapper = new StopPlaceToPeliasMapper(stopPlaceBoostConfiguration);
+            StopPlaceToPeliasMapper mapper = new StopPlaceToPeliasMapper(stopPlaceBoostConfiguration, ignoreRailReplacementBus);
 
             Set<PlaceHierarchy<StopPlace>> stopPlaceHierarchies = toPlaceHierarchies(places);
 

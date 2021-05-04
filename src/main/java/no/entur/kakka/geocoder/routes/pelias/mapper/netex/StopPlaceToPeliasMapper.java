@@ -46,16 +46,19 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
     public static final String SOURCE_CHILD_STOP_PLACE = "geonames";
 
     private StopPlaceBoostConfiguration boostConfiguration;
+    private boolean ignoreRailReplacementBus;
 
-    public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration) {
+    public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration, boolean ignoreRailReplacementBus) {
         super();
         this.boostConfiguration = boostConfiguration;
+        this.ignoreRailReplacementBus = ignoreRailReplacementBus;
     }
 
     @Override
     protected boolean isValid(StopPlace place) {
+
         // Ignore rail replacement bus
-        if (VehicleModeEnumeration.BUS.equals(place.getTransportMode()) && BusSubmodeEnumeration.RAIL_REPLACEMENT_BUS.equals(place.getBusSubmode())) {
+        if (ignoreRailReplacementBus && VehicleModeEnumeration.BUS.equals(place.getTransportMode()) && BusSubmodeEnumeration.RAIL_REPLACEMENT_BUS.equals(place.getBusSubmode())) {
             return false;
         }
 

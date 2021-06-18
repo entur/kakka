@@ -54,6 +54,7 @@ public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
                 .antMatchers("/services/geocoder_admin/swagger.json").permitAll()
                 .antMatchers("/services/organisation_admin/swagger.json").permitAll()
                 .antMatchers("/services/export/swagger.json").permitAll()
+                .antMatchers("/services/osmpoifilter").permitAll()
                 // exposed internally only, on a different port (pod-level)
                 .antMatchers("/actuator/prometheus").permitAll()
                 .antMatchers("/actuator/health").permitAll()

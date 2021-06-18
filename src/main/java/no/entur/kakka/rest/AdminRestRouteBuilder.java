@@ -154,6 +154,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        //TODO: deprecated , removed this endpoint , instead use osmpoifilter
         rest("/custom_configurations")
                 .description("Custom configuration REST service")
                 .consumes("application/json")
@@ -199,14 +200,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .description("OSM POI Filters REST service")
                 .consumes("application/json")
                 .produces("application/json")
-
                 .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
-
                 .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
                 .param().name("body").type(RestParamType.body).description("List of filters").endParam()
                 .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
+                .route().routeId("poi-filter-v2-delete-route")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("bean:osmpoifilterService?method=updateFilters");
 
         rest("/organisation_admin")

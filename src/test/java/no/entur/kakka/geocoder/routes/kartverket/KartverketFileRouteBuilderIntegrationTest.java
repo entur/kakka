@@ -19,6 +19,7 @@ package no.entur.kakka.geocoder.routes.kartverket;
 import com.amazonaws.util.StringInputStream;
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.services.KartverketService;
 import no.entur.kakka.repository.InMemoryBlobStoreRepository;
 import org.apache.camel.Exchange;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = KartverketFileRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 	@Autowired
 	private ModelCamelContext context;

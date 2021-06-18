@@ -16,6 +16,7 @@
 
 package no.entur.kakka.geocoder.nabu;
 
+import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;
 import no.entur.kakka.Utils;
@@ -27,7 +28,6 @@ import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.sosi.SosiTopographicPlaceAdapterReader;
 import no.entur.kakka.routes.file.ZipFileUtils;
-import no.entur.kakka.security.TokenService;
 import no.entur.kakka.services.BlobStoreService;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import org.apache.camel.Exchange;
@@ -82,8 +82,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
 
     private GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
 
-    @Autowired
-    private TokenService tokenService;
+
 
     @Autowired
     private BlobStoreService blobStoreService;
@@ -155,8 +154,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
                 .marshal().json(JsonLibrary.Jackson)
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_JSON))
-                .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
-
+                .process("authorizationHeaderProcessor")
                 .doTry()
                 .toD(getOrganisationRegistryUrl() + "administrative_zones")
 

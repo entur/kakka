@@ -27,7 +27,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @RunWith(CamelSpringBootRunner.class)
-@ActiveProfiles({"default", "in-memory-blobstore", "google-pubsub-emulator"})
+@ActiveProfiles({"default", "in-memory-blobstore", "google-pubsub-emulator", "test"})
 @UseAdviceWith
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class KakkaRouteBuilderIntegrationTestBase {

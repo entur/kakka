@@ -1,75 +1,51 @@
 apiVersion: v1
 data:
   application.properties: |-
-    tiamat.geocoder.export.autoStartup=true
-    tiamat.poi.update.enabled=false
-    tiamat.url=http4://tiamat:80
-    spring.datasource.driver-class-name=org.postgresql.Driver
-    organisations.api.url=http://baba/services/organisations/
-    spring.jmx.unique-names=true
-    keycloak.realm=rutebanken
-    server.port=8081
-    server.admin.port=8080
-    geocoder.max.retries=600
-    keycloak.auth-server-url={{.Values.configMap.keycloakUrl}}
+    # Spring
     spring.profiles.active=gcs-blobstore
-    spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
-    tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
-    tiamat.publish.localworkdir=/tmp/tiamat/publish
-    tiamat.geocoder.export.autoStartup=true
-    tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
-    quartz.enabled=true
-    camel.springboot.name=kakka
-    tiamat.export.max.retries=720
-    tiamat.change.log.download.directory=/tmp/tiamat/changelog
-    tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
-    tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
-    kartverket.username=erlendnils1
-    geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
-    kartverket.download.directory=/tmp/tiamat/files/kartverket
-    blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
-    blobstore.gcs.target-project.id={{ .Values.configMap.blobstoreTargetProjectId }}
-    blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
-    blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
-    blobstore.gcs.credential.path=/etc/kakka/credentials.json
-    spring.datasource.username=kakka
-    server.host=0.0.0.0
-    server.admin.host=0.0.0.0
-    tiamat.publish.export={{.Values.configMap.tiamatExport}}
-    keycloak.bearer-only=true
     spring.main.sources=no.entur.kakka
-    keycloak.resource=kakka
-    #geocoder.autoStartup=true
     spring.main.allow-bean-definition-overriding=true
-
-    ## TODO remove when keycloack spring sec adapter is fixed
-    spring.main.allow-bean-definition-overriding=true
-
+    spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
+    spring.datasource.driver-class-name=org.postgresql.Driver
+    spring.datasource.username=kakka
+    spring.jmx.unique-names=true
     ## Flyway configuration
-
     spring.flyway.baseline-description=<< Flyway Baseline >>
     spring.flyway.baseline-on-migrate=true
     spring.flyway.baseline-version=1
     spring.flyway.table=flyway_schema_history
+    #spring.flyway.enabled=true
+    server.port=8080
+    camel.springboot.name=kakka
+    camel.component.servlet.mapping.context-path=/services/*
+
+    # Tiamat
+    tiamat.geocoder.export.autoStartup=true
+    tiamat.poi.update.enabled=false
+    tiamat.url=http4://tiamat:80
+    tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
+    tiamat.publish.localworkdir=/tmp/tiamat/publish
+    tiamat.geocoder.export.autoStartup=true
+    tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
+    tiamat.export.max.retries=720
+    tiamat.change.log.download.directory=/tmp/tiamat/changelog
+    tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
+    tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
+    tiamat.publish.export={{.Values.configMap.tiamatExport}}
+    tiamat.poi.update.directory=/tmp/tiamat/poi/update
+
+    # Kartverket
+    kartverket.username=erlendnils1
+    kartverket.download.directory=/tmp/tiamat/files/kartverket
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
-    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
-    spring.cloud.gcp.pubsub.credentials.location=file:/etc/kakka/credentials.json
-    spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
-    spring.cloud.gcp.pubsub.subscriber.executor-threads=30
-    spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
-    entur.pubsub.subscriber.autocreate=false
-    management.server.port=9001
-    management.endpoints.enabled-by-default=false
-    management.endpoint.info.enabled=true
-    management.endpoint.health.enabled=true
-    management.endpoint.prometheus.enabled=true
-    management.endpoints.web.exposure.include=info,health,prometheus
 
-    #spring.flyway.enabled=true
+    # Geocoder
+    geocoder.max.retries=600
+    geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
+    #geocoder.autoStartup=true
 
-    # Pelias config
-
+    # Pelias
     pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
     pelias.gos.include=true
     pelias.place.boost= {{.Values.configMap.pelias.placeBoost}}
@@ -79,16 +55,59 @@ data:
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
     pelias.download.directory=/tmp/tiamat/pelias
-    osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
-    tiamat.poi.update.directory=/tmp/tiamat/poi/update
-    kakka.remote.kubernetes.namespace = {{.Values.env }}
-    # Convert POIs directly from osm file
-    osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # Include POIs from tiamat netex file
     pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
 
+    # Blob store
+    blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
+    blobstore.gcs.target-project.id={{ .Values.configMap.blobstoreTargetProjectId }}
+    blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
+    blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
+    blobstore.gcs.credential.path=/etc/kakka/credentials.json
+
+    # OAuth2 Resource Server
+    kakka.oauth2.resourceserver.keycloak.jwt.issuer-uri={{ .Values.configMap.keycloak.url }}/realms/rutebanken
+    kakka.oauth2.resourceserver.keycloak.jwt.jwkset-uri={{ .Values.configMap.keycloak.url }}/realms/rutebanken/protocol/openid-connect/certs
+    kakka.oauth2.resourceserver.keycloak.jwt.audience=account
+
+    kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri={{ .Values.configMap.auth0.ror.url }}
+    kakka.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.configMap.auth0.ror.audience }}
+    kakka.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
+
+    # OAuth2 Client
+    spring.security.oauth2.client.registration.kakka.authorization-grant-type=client_credentials
+    spring.security.oauth2.client.registration.kakka.client-id={{ .Values.configMap.oauth2.client.id }}
+    spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.configMap.oauth2.client.url }}
+    kakka.oauth2.client.audience={{ .Values.configMap.oauth2.client.audience }}
+
+    # PubSub
+    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
+    spring.cloud.gcp.pubsub.credentials.location=file:/etc/kakka/credentials.json
+    spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
+    spring.cloud.gcp.pubsub.subscriber.executor-threads=30
+    spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
+    entur.pubsub.subscriber.autocreate=false
+
+    # Actuator
+    management.server.port=9001
+    management.endpoints.enabled-by-default=false
+    management.endpoint.info.enabled=true
+    management.endpoint.health.enabled=true
+    management.endpoint.prometheus.enabled=true
+    management.endpoints.web.exposure.include=info,health,prometheus
+
+    # Other
+    quartz.enabled=true
+    organisations.api.url=http://baba/services/organisations/
+    osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
+    kakka.remote.kubernetes.namespace = {{.Values.env }}
+    # Convert POIs directly from osm file
+    osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # TariffZone Import valid providers/authority
     tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
+
+    ## TODO remove when keycloack spring sec adapter is fixed
+    spring.main.allow-bean-definition-overriding=true
 kind: ConfigMap
 metadata:
   name: {{ template "kakka.name" . }}-config

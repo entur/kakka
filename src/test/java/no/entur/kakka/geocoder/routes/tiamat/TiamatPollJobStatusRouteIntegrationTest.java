@@ -18,6 +18,7 @@ package no.entur.kakka.geocoder.routes.tiamat;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import no.entur.kakka.routes.status.JobEvent;
@@ -39,7 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.apache.camel.builder.Builder.constant;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TiamatPollJobStatusRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
     @Autowired

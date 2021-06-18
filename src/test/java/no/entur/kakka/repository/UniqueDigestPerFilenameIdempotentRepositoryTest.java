@@ -17,6 +17,7 @@
 package no.entur.kakka.repository;
 
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import no.entur.kakka.config.IdempotentRepositoryConfig;
 import no.entur.kakka.domain.FileNameAndDigest;
 import org.junit.Assert;
@@ -24,7 +25,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = IdempotentRepositoryConfig.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class UniqueDigestPerFilenameIdempotentRepositoryTest extends KakkaRouteBuilderIntegrationTestBase {
 
 	@Autowired

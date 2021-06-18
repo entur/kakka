@@ -56,11 +56,11 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
     private static final String PLAIN = "text/plain";
     private static final String PROVIDER_ID = "ProviderId";
     public static final String FILE_HANDLE = "FileHandle";
-    @Value("${server.admin.port:8080}")
-    public String port;
+    @Value("${server.port:8080}")
+    private String port;
 
-    @Value("${server.admin.host:0.0.0.0}")
-    public String host;
+    @Value("${server.host:0.0.0.0}")
+    private String host;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -97,16 +97,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .transform(exceptionMessage());
 
         restConfiguration()
-                .component("jetty")
+                .component("servlet")
                 .bindingMode(RestBindingMode.json)
-                .endpointProperty("filtersRef", "keycloakPreAuthActionsFilter,keycloakAuthenticationProcessingFilter")
-                .endpointProperty("sessionSupport", "true")
                 .endpointProperty("matchOnUriPrefix", "true")
-                .endpointProperty("enablemulti-partFilter", "true")
-                .enableCORS(true)
                 .dataFormatProperty("prettyPrint", "true")
-                .host(host)
-                .port(port)
                 .apiContextPath("/swagger.json")
                 .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0")
                 .contextPath("/services");
@@ -120,7 +114,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
 
 
-        String commonApiDocEndpoint = "rest:get:/services/swagger.json?bridgeEndpoint=true";
+        String commonApiDocEndpoint = "http4:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
 
 
         rest("/geocoder_admin")
@@ -160,6 +154,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to(commonApiDocEndpoint)
                 .endRest();
 
+        //TODO: deprecated , removed this endpoint , instead use osmpoifilter
         rest("/custom_configurations")
                 .description("Custom configuration REST service")
                 .consumes("application/json")
@@ -205,14 +200,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .description("OSM POI Filters REST service")
                 .consumes("application/json")
                 .produces("application/json")
-
                 .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
-
                 .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
                 .param().name("body").type(RestParamType.body).description("List of filters").endParam()
                 .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
+                .route().routeId("poi-filter-v2-delete-route")
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .to("bean:osmpoifilterService?method=updateFilters");
 
         rest("/organisation_admin")

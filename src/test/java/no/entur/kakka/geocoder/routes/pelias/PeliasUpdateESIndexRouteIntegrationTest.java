@@ -17,6 +17,7 @@
 package no.entur.kakka.geocoder.routes.pelias;
 
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
+import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.repository.InMemoryBlobStoreRepository;
 import org.apache.camel.EndpointInject;
@@ -35,7 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.io.FileInputStream;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = PeliasUpdateEsIndexRouteBuilder.class, properties = "spring.main.sources=no.entur.kakka.test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 	@Autowired

@@ -23,7 +23,7 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 
 import no.entur.kakka.geocoder.netex.TariffZoneConverter;
-import no.entur.kakka.security.TokenService;
+import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -60,8 +60,6 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
     private String localWorkingDirectory;
 
 
-    private final TokenService tokenService;
-
     private final BlobStoreService blobStoreService;
 
     private final TariffZoneConverter tariffZoneConverter;
@@ -69,11 +67,9 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
 
     @Autowired
-    public TiamatTariffZonesUpdateRouteBuilder(TokenService tokenService,
-                                               BlobStoreService blobStoreService,
+    public TiamatTariffZonesUpdateRouteBuilder(BlobStoreService blobStoreService,
                                                TariffZoneConverter tariffZoneConverter
                                                ) {
-        this.tokenService = tokenService;
         this.blobStoreService = blobStoreService;
         this.tariffZoneConverter = tariffZoneConverter;
     }
@@ -140,7 +136,7 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 })
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
-                .process(e -> e.getIn().setHeader("Authorization", "Bearer " + tokenService.getToken()))
+                .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-tariff-zones-update-start");
 

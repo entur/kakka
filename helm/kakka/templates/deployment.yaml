@@ -78,7 +78,7 @@ spec:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKKA_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  key: ror-kakka-keycloak-secret
+                  key: ror-kakka-auth0-secret
                   name: ror-kakka-secrets
           image: {{ .Values.image.identifier }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}

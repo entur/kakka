@@ -28,6 +28,7 @@ data:
     tiamat.geocoder.export.autoStartup=true
     tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
     tiamat.export.max.retries=720
+    tiamat.export.retry.delay=25000
     tiamat.change.log.download.directory=/tmp/tiamat/changelog
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries

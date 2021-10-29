@@ -37,7 +37,7 @@ public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
 
     public static final Logger logger= LoggerFactory.getLogger(TiamatPollJobStatusRouteBuilder.class);
 
-    @Value("${tiamat.url}")
+    @Value("${tiamat-exporter.url}")
     private String tiamatUrl;
 
     @Override

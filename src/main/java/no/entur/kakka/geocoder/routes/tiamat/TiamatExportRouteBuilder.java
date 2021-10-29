@@ -36,7 +36,7 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_POLL;
 public class TiamatExportRouteBuilder extends BaseRouteBuilder {
 
 
-    @Value("${tiamat.url}")
+    @Value("${tiamat-exporter.url}")
     private String tiamatUrl;
 
     @Value("${tiamat.publication.delivery.path:/services/stop_places/netex}")

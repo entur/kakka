@@ -46,7 +46,7 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
     @Autowired
     private ModelCamelContext context;
 
-    @Value("${tiamat.url}")
+    @Value("${tiamat-exporter.url}")
     private String tiamatUrl;
 
     @EndpointInject(uri = "mock:tiamat")

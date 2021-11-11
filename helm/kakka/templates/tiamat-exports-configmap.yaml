@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "common.labels" . | indent 4 }}
 data:
-  subscriptions.yml: |-{{ range .Files.Lines .Values.configMap.tiamatExportConfig}}
+  tiamat-exports.yml: |-{{ range .Files.Lines .Values.configMap.tiamatExportConfig}}
     {{ . }}{{ end }}

@@ -255,7 +255,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .removeHeaders("CamelHttp*")
                 .removeHeaders("Authorization")
-                .to("startFullTiamatLegacyPublishExport")
+                .to("direct:startFullTiamatPublishExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full")
                 .endRest()

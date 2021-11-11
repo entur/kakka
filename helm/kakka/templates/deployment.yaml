@@ -147,6 +147,6 @@ spec:
             defaultMode: 420
         - name: tiamat-export-config
           configMap:
-            name: { { .Values.configMapMount.tiamatExportName } }
+            name: {{ .Values.configMapMount.tiamatExportName }}
             defaultMode: 420
 

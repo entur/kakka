@@ -44,7 +44,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
         from("direct:startFullKinguPublishExport")
                 .log(LoggingLevel.INFO, "Starting Tiamat export")
                 .process(e -> taskGenerator.addExportTasks(e))
-                .routeId("tiamat-publish-export-start-full");
+                .routeId("kingu-publish-export-start-full");
 
         from(outGoingNetexExport)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")

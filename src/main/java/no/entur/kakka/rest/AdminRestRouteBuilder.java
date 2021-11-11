@@ -280,14 +280,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:startFullKinguPublishExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full-v2")
-                .endRest()
-
-                .get("/swagger.json")
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
                 .endRest();
+
 
         rest("/tariff_zone_admin/{providerId}")
                 .post("/files")

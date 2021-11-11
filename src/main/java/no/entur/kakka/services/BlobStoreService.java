@@ -76,7 +76,10 @@ public class BlobStoreService {
 		return repository.delete(name);
 	}
 
-	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+	public void copyBlob(@Header(value = Constants.SOURCE_CONTAINER_NAME) String sourceContainer,@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+		if (sourceContainer != null && !sourceContainer.isEmpty()) {
+			repository.setContainerName(sourceContainer);
+		}
 		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyBlob(sourceName, targetName, makePublic);
 	}

@@ -1,0 +1,7 @@
+tiamat:
+    export-jobs:
+      -
+        name: 03_Oslo
+        countyReferences: KVE:TopographicPlace:03
+        stopPlaceSearch:
+          versionValidity: CURRENT

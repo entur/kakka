@@ -33,10 +33,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Files;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_POLL;
 /**
  * Routes for triggering regular exports of different datasets for backup and publish.
  * <p>
@@ -130,7 +131,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:pollForTiamatExportStatus")
-                .to("direct:tiamatPollJobStatus")
+                .to(TIAMAT_EXPORT_POLL.getEndpoint())
                 .choice()
                 .when(simple(String.format("${exchangeProperty.%s}", GeoCoderConstants.GEOCODER_RESCHEDULE_TASK)))
                 .choice()

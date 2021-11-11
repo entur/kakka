@@ -21,6 +21,7 @@ secretMount:
 
 configMapMount:
   name: kakka-config
+  tiamatExportName: kakka-tiamat-export-config
 
 image:
   identifier: ${artifact.metadata.image}

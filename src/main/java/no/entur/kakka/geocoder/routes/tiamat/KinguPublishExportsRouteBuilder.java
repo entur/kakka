@@ -1,0 +1,47 @@
+package no.entur.kakka.geocoder.routes.tiamat;
+
+import no.entur.kakka.Constants;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.services.TaskGenerator;
+import org.apache.camel.LoggingLevel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
+
+    @Value("${kingu.outgoing.camel.route.topic.netex.export}")
+    private String outGoingNetexExport;
+
+    @Value("${blobstore.gcs.source.container.name}")
+    private String sourceContainerName;
+
+    @Value("${tiamat.publish.export.source.blobstore.subdirectory:export}")
+    private String blobStoreSourceSubdirectoryForTiamatExport;
+
+    @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
+    private String blobStoreSubdirectoryForTiamatExport;
+
+    @Autowired
+    TaskGenerator taskGenerator;
+
+    @Override
+    public void configure() throws Exception {
+        super.configure();
+
+        from("direct:startFullKinguPublishExport")
+                .log(LoggingLevel.INFO, "Starting Tiamat export")
+                .process(e -> taskGenerator.addExportTasks(e))
+                .routeId("tiamat-publish-export-start-full");
+
+        from(outGoingNetexExport)
+                .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
+                .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
+                .setHeader(Constants.SOURCE_CONTAINER_NAME,header(sourceContainerName))
+                .setHeader(Constants.FILE_HANDLE,header(blobStoreSourceSubdirectoryForTiamatExport+"exportLocation"))
+                .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/03_Oslo_latest.zip"))
+                .to("direct:tiamatExportUploadFileExternal")
+                .routeId("from-tiamat-export-queue-processed");
+    }
+}

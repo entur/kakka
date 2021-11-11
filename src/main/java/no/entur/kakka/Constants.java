@@ -51,5 +51,7 @@ public class Constants {
 
     public static final String FILE_TARGET_MD5 = "RutebankenMd5SumRecordedForTargetFile" ;
     public static final String CAMEL_ALL_HTTP_HEADERS = "CamelHttp*" ;
+
+    public static final String SOURCE_CONTAINER_NAME= "sourceContainerName";
 }
 

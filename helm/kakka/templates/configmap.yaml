@@ -35,6 +35,7 @@ data:
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     tiamat.publish.export={{.Values.configMap.tiamatExport}}
     tiamat.poi.update.directory=/tmp/tiamat/poi/update
+    tiamat.exports.config.path=/etc/application-config/tiamat-exports.yml
 
     # Kartverket
     kartverket.username=erlendnils1
@@ -66,6 +67,7 @@ data:
     blobstore.gcs.container.name={{ .Values.configMap.gcsBlobstore }}
     blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
     blobstore.gcs.credential.path=/etc/kakka/credentials.json
+    blobstore.gcs.source.container.name={{ .Values.configMap.gcsSourceBlobstore }}
 
     # OAuth2 Resource Server
     kakka.oauth2.resourceserver.keycloak.jwt.issuer-uri={{ .Values.configMap.keycloak.url }}/realms/rutebanken
@@ -89,6 +91,9 @@ data:
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
     entur.pubsub.subscriber.autocreate=false
+    kingu.incoming.camel.route.topic.netex.export=entur-google-pubsub:TiamatExportIncomingQueue
+    kingu.outgoing.camel.route.topic.netex.export=entur-google-pubsub:TiamatExportOutgoingQueue
+
 
     # Actuator
     management.server.port=9001

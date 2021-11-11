@@ -127,6 +127,9 @@ spec:
             - mountPath: /etc/application-config
               name: application-config
               readOnly: true
+            - mountPath: /etc/application-config
+              name: tiamat-export-config
+              readOnly: true
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -141,5 +144,9 @@ spec:
         - name: application-config
           configMap:
             name: {{ .Values.configMapMount.name }}
+            defaultMode: 420
+        - name: tiamat-export-config
+          configMap:
+            name: { { .Values.configMapMount.tiamatExportName } }
             defaultMode: 420
 

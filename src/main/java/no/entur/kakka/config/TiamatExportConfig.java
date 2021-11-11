@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import java.util.List;
 
 
-@PropertySource(value = "${tiamat.exports.config.path}", factory = YamlPropertySourceFactory.class)
+@PropertySource(value = "${tiamat.exports.config.path:/etc/tiamat-config/tiamat-exports.yml}", factory = YamlPropertySourceFactory.class)
 @ConfigurationProperties(prefix = "tiamat")
 @Configuration
 public class TiamatExportConfig {

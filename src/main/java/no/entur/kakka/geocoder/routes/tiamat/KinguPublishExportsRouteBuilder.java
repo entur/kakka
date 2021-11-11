@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
+    @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
+    private String cronSchedule;
+
     @Value("${kingu.outgoing.camel.route.topic.netex.export}")
     private String outGoingNetexExport;
 
@@ -29,6 +32,14 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
     @Override
     public void configure() throws Exception {
         super.configure();
+
+        singletonFrom("quartz2://kakka/kinguPublishExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+                .autoStartup("{{kingu.export.autoStartup:false}}")
+                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .log(LoggingLevel.INFO, "Quartz triggers Kingu exports for publish ")
+                .inOnly("direct:startFullKinguPublishExport")
+                .routeId("kingu-publish-export-quartz");
+
 
         from("direct:startFullKinguPublishExport")
                 .log(LoggingLevel.INFO, "Starting Tiamat export")

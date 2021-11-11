@@ -127,7 +127,7 @@ spec:
             - mountPath: /etc/application-config
               name: application-config
               readOnly: true
-            - mountPath: /etc/application-config
+            - mountPath: /etc/tiamat-config
               name: tiamat-export-config
               readOnly: true
       dnsPolicy: ClusterFirst

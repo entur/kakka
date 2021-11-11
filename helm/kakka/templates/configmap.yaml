@@ -35,7 +35,7 @@ data:
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     tiamat.publish.export={{.Values.configMap.tiamatExport}}
     tiamat.poi.update.directory=/tmp/tiamat/poi/update
-    tiamat.exports.config.path=/etc/application-config/tiamat-exports.yml
+    tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml
 
     # Kartverket
     kartverket.username=erlendnils1

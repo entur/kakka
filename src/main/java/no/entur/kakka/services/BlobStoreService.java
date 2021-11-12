@@ -22,6 +22,8 @@ import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.repository.BlobStoreRepository;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ import java.io.InputStream;
 
 @Service
 public class BlobStoreService {
+
+	public static final Logger logger= LoggerFactory.getLogger(BlobStoreService.class);
 
 	@Autowired
     BlobStoreRepository repository;
@@ -77,6 +81,9 @@ public class BlobStoreService {
 	}
 
 	public void copyBlob(@Header(value = Constants.SOURCE_CONTAINER_NAME) String sourceContainer,@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+
+		logger.info("sourceContainer : {}, sourceName: {}, targetName: {}",sourceContainer,sourceName,targetName);
+
 		if (sourceContainer != null && !sourceContainer.isEmpty()) {
 			repository.setContainerName(sourceContainer);
 		}

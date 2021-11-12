@@ -49,8 +49,8 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
         from(outGoingNetexExport)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
-                .setHeader(Constants.SOURCE_CONTAINER_NAME,header(sourceContainerName))
-                .setHeader(Constants.FILE_HANDLE,header(blobStoreSourceSubdirectoryForTiamatExport +"/" + simple("{in.header.exportLocation}") ))
+                .setHeader(Constants.SOURCE_CONTAINER_NAME,simple(sourceContainerName))
+                .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/" + simple("{in.header.exportLocation}") ))
                 .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/03_Oslo_latest.zip"))
                 .to("direct:tiamatExportUploadFileExternal")
                 .routeId("from-tiamat-export-queue-processed");

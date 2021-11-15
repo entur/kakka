@@ -17,9 +17,6 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
     @Value("${kingu.outgoing.camel.route.topic.netex.export}")
     private String outGoingNetexExport;
 
-    @Value("${blobstore.gcs.source.container.name}")
-    private String sourceContainerName;
-
     @Value("${tiamat.publish.export.source.blobstore.subdirectory:export}")
     private String blobStoreSourceSubdirectoryForTiamatExport;
 
@@ -50,10 +47,9 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
-                .setHeader(Constants.SOURCE_CONTAINER_NAME,simple(sourceContainerName))
                 .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/${in.header.exportLocation}"))
                 .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${in.header.exportJobName}_latest.zip"))
-                .to("direct:tiamatExportUploadFileExternal")
+                .to("direct:kinguExportUploadFileExternal")
                 .routeId("from-tiamat-export-queue-processed");
     }
 }

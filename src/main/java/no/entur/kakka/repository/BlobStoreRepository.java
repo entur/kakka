@@ -38,11 +38,15 @@ public interface BlobStoreRepository {
 
     void copyBlob(String sourceObjectName, String targetObjectName, boolean makePublic);
 
+    void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic);
+
     void setStorage(Storage storage);
 
     void setTargetStorage(Storage targetStorage);
 
     void setContainerName(String containerName);
+
+    void setKinguContainerName(String kinguContainerName);
 
     void setTargetContainerName(String targetContainerName);
 

@@ -48,6 +48,9 @@ public class BlobStoreService {
 	@Value("${blobstore.gcs.container.name}")
 	String containerName;
 
+	@Value("${blobstore.gcs.source.container.name}")
+	private String sourceContainerName;
+
 	@Value("${blobstore.gcs.target-container.name}")
 	String targetContainerName;
 
@@ -56,6 +59,7 @@ public class BlobStoreService {
 		repository.setStorage(storage);
 		repository.setTargetStorage(targetStorage);
 		repository.setContainerName(containerName);
+		repository.setKinguContainerName(sourceContainerName);
 		repository.setTargetContainerName(targetContainerName);
 	}
 
@@ -80,16 +84,16 @@ public class BlobStoreService {
 		return repository.delete(name);
 	}
 
-	public void copyBlob(@Header(value = Constants.SOURCE_CONTAINER_NAME) String sourceContainer,@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
 
-		logger.info("sourceContainer : {}, sourceName: {}, targetName: {}",sourceContainer,sourceName,targetName);
-
-		if (sourceContainer != null && !sourceContainer.isEmpty()) {
-			repository.setContainerName(sourceContainer);
-		}
 		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyBlob(sourceName, targetName, makePublic);
 	}
 
+	public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+
+		ExchangeUtils.addHeadersAndAttachments(exchange);
+		repository.copyKinguBlob(sourceName, targetName, makePublic);
+	}
 
 }

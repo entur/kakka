@@ -151,6 +151,11 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(sourceObjectName,targetObjectName,makePublic);
+    }
+
+    @Override
     public void setStorage(Storage storage) {
     }
 
@@ -161,6 +166,11 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void setContainerName(String containerName) {
+    }
+
+    @Override
+    public void setKinguContainerName(String kinguContainerName) {
+
     }
 
     @Override

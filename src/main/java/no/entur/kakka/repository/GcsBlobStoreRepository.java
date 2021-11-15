@@ -50,6 +50,8 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     private String containerName;
 
+    private String kinguContainerName;
+
     private String targetContainerName;
 
 
@@ -66,6 +68,11 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     @Override
     public void setContainerName(String containerName) {
         this.containerName = containerName;
+    }
+
+    @Override
+    public void setKinguContainerName(String kinguContainerName){
+        this.kinguContainerName =kinguContainerName;
     }
 
     @Override
@@ -125,6 +132,11 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     @Override
     public void copyBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
         copyBlob(containerName, sourceObjectName, targetContainerName, targetObjectName, makePublic);
+    }
+
+    @Override
+    public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(kinguContainerName,sourceObjectName,targetContainerName,targetObjectName,makePublic);
     }
 
     public void copyBlob(String sourceContainerName, String sourceObjectName, String targetContainerName, String targetObjectName, boolean makePublic) {

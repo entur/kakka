@@ -58,6 +58,17 @@ public class BlobStoreRoute extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO,  "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
                 .routeId("blobstore-copy");
 
+        from("direct:copyKinguBlob")
+                .to("log:" + getClass().getName() + "?level=DEBUG&showAll=true&multiline=true")
+                .choice()
+                .when(header(Constants.BLOBSTORE_MAKE_BLOB_PUBLIC).isNull())
+                .setHeader(Constants.BLOBSTORE_MAKE_BLOB_PUBLIC, constant(false))     //defaulting to false if not specified
+                .end()
+                .bean("blobStoreService", "copyKinguBlob")
+                .to("log:" + getClass().getName() + "?level=DEBUG&showAll=true&multiline=true")
+                .log(LoggingLevel.INFO,  "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
+                .routeId("blobstore-kingu-copy");
+
 
     }
 }

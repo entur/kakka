@@ -102,6 +102,11 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(sourceObjectName,targetObjectName,makePublic);
+    }
+
+    @Override
     public boolean delete(String objectName) {
         blobs.remove(objectName);
         return true;
@@ -119,6 +124,11 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void setContainerName(String containerName) {
+
+    }
+
+    @Override
+    public void setKinguContainerName(String kinguContainerName) {
 
     }
 

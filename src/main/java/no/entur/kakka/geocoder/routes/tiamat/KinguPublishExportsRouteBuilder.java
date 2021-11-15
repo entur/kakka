@@ -47,11 +47,12 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .routeId("kingu-publish-export-start-full");
 
         from(outGoingNetexExport)
+                .filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
                 .setHeader(Constants.SOURCE_CONTAINER_NAME,simple(sourceContainerName))
                 .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/${in.header.exportLocation}"))
-                .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/03_Oslo_latest.zip"))
+                .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${in.header.exportJobName}_latest.zip"))
                 .to("direct:tiamatExportUploadFileExternal")
                 .routeId("from-tiamat-export-queue-processed");
     }

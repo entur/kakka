@@ -45,7 +45,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         from(outGoingNetexExport)
                 .log(LoggingLevel.INFO,"Incoming message from kingu export")
-                .filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
+                //.filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
                 .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/${in.header.exportLocation}"))

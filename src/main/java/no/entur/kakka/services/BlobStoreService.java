@@ -91,7 +91,7 @@ public class BlobStoreService {
 	}
 
 	public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
-
+		logger.info("Copying kingu file to marduk bucket");
 		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyKinguBlob(sourceName, targetName, makePublic);
 	}

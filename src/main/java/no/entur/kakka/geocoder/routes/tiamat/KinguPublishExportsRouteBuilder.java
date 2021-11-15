@@ -44,6 +44,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .routeId("kingu-publish-export-start-full");
 
         from(outGoingNetexExport)
+                .log(LoggingLevel.INFO,"Incoming message from kingu export")
                 .filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")

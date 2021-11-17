@@ -1,7 +1,91 @@
 tiamat:
     export-jobs:
       -
+        name: Full
+        serviceFrameExportMode: ALL
+        tariffZoneExportMode: ALL
+        fareZoneExportMode: ALL
+        topographicPlaceExportMode: ALL
+        stopPlaceSearch:
+          versionValidity: ALL
+      -
+        name: CurrentAndFuture
+        serviceFrameExportMode: ALL
+        tariffZoneExportMode: ALL
+        fareZoneExportMode: ALL
+        stopPlaceSearch:
+          versionValidity: CURRENT_FUTURE
+      -
+        name: Current
+        serviceFrameExportMode: ALL
+        tariffZoneExportMode: ALL
+        fareZoneExportMode: ALL
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: CurrentwithServiceFrame
+        serviceFrameExportMode: ALL
+        tariffZoneExportMode: ALL
+        fareZoneExportMode: ALL
+        stopPlaceSearch:
+          versionValidity: CURRENT_FUTURE
+      -
+        name: RailStations
+        stopPlaceSearch:
+          versionValidity: CURRENT
+          stopTypeEnumerations: RAIL_STATION
+      -
         name: 03_Oslo
         countyReferences: KVE:TopographicPlace:03
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 11_Rogaland
+        countyReferences: KVE:TopographicPlace:11
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 15_More og Romsdal
+        countyReferences: KVE:TopographicPlace:15
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 18_Nordland
+        countyReferences: KVE:TopographicPlace:18
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 30_Viken
+        countyReferences: KVE:TopographicPlace:30
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 34_Innlandet
+        countyReferences: KVE:TopographicPlace:34
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 38_Vestfold_Telemark
+        countyReferences: KVE:TopographicPlace:38
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 42_Agder
+        countyReferences: KVE:TopographicPlace:42
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 46_Vestland
+        countyReferences: KVE:TopographicPlace:46
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 50_Trondelag
+        countyReferences: KVE:TopographicPlace:50
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
+        name: 54_Troms_Finnmark
+        countyReferences: KVE:TopographicPlace:54
         stopPlaceSearch:
           versionValidity: CURRENT

@@ -121,6 +121,10 @@ public class StopPlaceSearch {
         return stopTypeEnumerations;
     }
 
+    public void setStopTypeEnumerations(List<StopTypeEnumeration> stopTypeEnumerations) {
+        this.stopTypeEnumerations = stopTypeEnumerations;
+    }
+
     public String getSubmode() {
         return submode;
     }

@@ -66,6 +66,10 @@ variable "kakka_storage_bucket" {
   description = "kakka storage bucket"
 }
 
+variable "kingu_storage_bucket" {
+  description = "kingu storage bucket"
+}
+
 variable "kakka_target_storage_bucket" {
   description = "kakka target storage bucket"
 }

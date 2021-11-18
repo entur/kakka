@@ -23,6 +23,9 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
     @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
     private String blobStoreSubdirectoryForTiamatExport;
 
+    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
+    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
+
     @Autowired
     TaskGenerator taskGenerator;
 
@@ -49,8 +52,14 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
                 .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
                 .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/${in.header.exportLocation}"))
+                .choice()
+                .when(header(Constants.EXPORT_JOB_NAME).isEqualTo("tiamat_export_geocoder"))
+                .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat_export_geocoder_latest.zip"))
+                .to("direct:copyGeoCoderBlob")
+                .otherwise()
                 .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatExport + "/${in.header.exportJobName}_latest.zip"))
                 .to("direct:kinguExportUploadFileExternal")
+                .end()
                 .routeId("from-tiamat-export-queue-processed");
     }
 }

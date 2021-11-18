@@ -1,6 +1,11 @@
 tiamat:
     export-jobs:
       -
+        name: tiamat_export_geocoder
+        topographicPlaceExportMode: ALL
+        stopPlaceSearch:
+          versionValidity: CURRENT_FUTURE
+      -
         name: Full
         serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL

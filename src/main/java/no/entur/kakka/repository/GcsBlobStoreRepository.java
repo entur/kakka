@@ -139,6 +139,11 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
         copyBlob(kinguContainerName,sourceObjectName,targetContainerName,targetObjectName,makePublic);
     }
 
+    @Override
+    public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(kinguContainerName,sourceObjectName,containerName,targetObjectName,makePublic);
+    }
+
     public void copyBlob(String sourceContainerName, String sourceObjectName, String targetContainerName, String targetObjectName, boolean makePublic) {
 
         List<Storage.BlobTargetOption> blobTargetOptions = makePublic ? List.of(Storage.BlobTargetOption.predefinedAcl(Storage.PredefinedAcl.PUBLIC_READ))

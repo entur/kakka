@@ -40,6 +40,8 @@ public interface BlobStoreRepository {
 
     void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic);
 
+    void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic);
+
     void setStorage(Storage storage);
 
     void setTargetStorage(Storage targetStorage);

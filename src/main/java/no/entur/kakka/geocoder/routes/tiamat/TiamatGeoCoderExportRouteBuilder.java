@@ -50,10 +50,10 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
                 .autoStartup("{{tiamat.geocoder.export.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat export.")
-                .setBody(constant(GeoCoderConstants.TIAMAT_EXPORT_START))
+                .setBody(constant(GeoCoderConstants.PELIAS_UPDATE_START))
                 .inOnly("direct:geoCoderStart")
                 .routeId("tiamat-geocoder-export-quartz");
-
+        //todo: remove this route
         from(GeoCoderConstants.TIAMAT_EXPORT_START.getEndpoint())
                 .process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.TIAMAT_EXPORT).build()).to("direct:updateStatus")
                 .setHeader(Constants.JOB_STATUS_ROUTING_DESTINATION, constant("direct:processTiamatGeoCoderExportResults"))
@@ -63,12 +63,10 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
                 .end()
                 .routeId("tiamat-geocoder-export");
 
-
+        //todo: remove this route
         from("direct:processTiamatGeoCoderExportResults")
                 .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatGeoCoderExport + "/" + TIAMAT_EXPORT_LATEST_FILE_NAME))
                 .to("direct:tiamatExportMoveFileToBlobStore")
-                .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")
-                .setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_UPDATE_START))
                 .routeId("tiamat-geocoder-export-results");
 
     }

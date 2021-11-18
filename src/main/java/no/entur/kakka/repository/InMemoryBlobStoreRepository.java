@@ -107,6 +107,11 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
+    public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
+        copyBlob(sourceObjectName,targetObjectName,makePublic);
+    }
+
+    @Override
     public boolean delete(String objectName) {
         blobs.remove(objectName);
         return true;

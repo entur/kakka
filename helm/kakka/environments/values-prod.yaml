@@ -7,6 +7,7 @@ configMap:
   blobstoreProjectId: entur-ror-prod
   blobstoreTargetProjectId: entur-ror-prod
   pubsubProjectId: entur-ror-prod
+  gcsSourceBlobstore: kingu-production
   keycloak:
     url:  https://auth.entur.org/auth
   auth0:

@@ -7,6 +7,7 @@ configMap:
   blobstoreProjectId: entur-ror-test
   blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: entur-ror-test
+  gcsSourceBlobstore: kingu-test
   keycloak:
     url:  https://kc-stage.devstage.entur.io/auth
   auth0:

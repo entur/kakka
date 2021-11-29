@@ -7,7 +7,6 @@ tiamat:
           versionValidity: CURRENT_FUTURE
       -
         name: Full
-        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         topographicPlaceExportMode: ALL
@@ -15,14 +14,12 @@ tiamat:
           versionValidity: ALL
       -
         name: CurrentAndFuture
-        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT_FUTURE
       -
         name: Current
-        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         stopPlaceSearch:

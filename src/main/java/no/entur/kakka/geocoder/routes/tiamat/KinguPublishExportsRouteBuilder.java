@@ -14,6 +14,9 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
     @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
     private String cronSchedule;
 
+    @Value("${tiamat.publish.export.cron.schedule.mid.day:0+0+12+*+*+?}")
+    private String cronScheduleMidDay;
+
     @Value("${kingu.outgoing.camel.route.topic.netex.export}")
     private String outGoingNetexExport;
 
@@ -39,6 +42,13 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Quartz triggers Kingu exports for publish ")
                 .inOnly("direct:startFullKinguPublishExport")
                 .routeId("kingu-publish-export-quartz");
+
+        singletonFrom("quartz2://kakka/kinguPublishExportMidday?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
+                .autoStartup("{{kingu.export.mid.day.autoStartup:false}}")
+                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .log(LoggingLevel.INFO, "Quartz triggers mid day Kingu exports for publish ")
+                .inOnly("direct:startFullKinguPublishExport")
+                .routeId("kingu-publish-export-mid-day-quartz");
 
 
         from("direct:startFullKinguPublishExport")

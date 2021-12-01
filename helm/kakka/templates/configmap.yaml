@@ -25,9 +25,12 @@ data:
     tiamat.url=http4://tiamat:80
     tiamat-exporter.url=http4://tiamat-exporter:80
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
+    tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
     tiamat.geocoder.export.autoStartup=true
+    tiamat.geocoder.export.mid.day.autoStartup=true
     tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
+    tiamat.geocoder.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
     tiamat.export.max.retries=720
     tiamat.export.retry.delay=25000
     tiamat.change.log.download.directory=/tmp/tiamat/changelog
@@ -38,6 +41,7 @@ data:
     tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml
     tiamat.export.autoStartup = false
     kingu.export.autoStartup = true
+    kingu.export.mid.day.autoStartup =true
 
     # Kartverket
     kartverket.username=erlendnils1

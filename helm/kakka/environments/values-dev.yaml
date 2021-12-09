@@ -8,8 +8,6 @@ configMap:
   blobstoreTargetProjectId: entur-ror-dev
   pubsubProjectId: entur-ror-dev
   gcsSourceBlobstore: kingu-dev
-  keycloak:
-    url: https://kc-dev.devstage.entur.io/auth
   auth0:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/

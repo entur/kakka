@@ -29,7 +29,6 @@
         <wololo.version>0.14.3</wololo.version>
         <jskdata.version>1.0.15</jskdata.version>
 
-        <keycloak.version>4.8.3.Final</keycloak.version>
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.0.59</entur.helpers.version>

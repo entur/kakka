@@ -1,7 +1,5 @@
 package no.entur.kakka.security;
 
-import org.entur.oauth2.MultiIssuerAuthenticationManagerResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,7 +18,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 /**
  * Authentication and authorization configuration for Kakka.
  * All requests must be authenticated except for the Swagger and Actuator endpoints.
- * The Oauth2 ID-provider (Keycloak or Auth0) is identified thanks to {@link MultiIssuerAuthenticationManagerResolver}.
+ * The Oauth2 ID-provider (Auth0) is identified thanks to {@link MultiIssuerAuthenticationManagerResolver}.
  */
 @Profile("!test")
 @EnableWebSecurity

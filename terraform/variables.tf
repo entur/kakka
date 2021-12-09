@@ -55,10 +55,6 @@ variable "ror-kakka-kartverket-password" {
   description = "Kakka kartverket password"
 }
 
-variable "ror-kakka-keycloak-secret" {
-  description = "Kakka keycloak secret"
-}
-
 variable "ror-kakka-auth0-secret" {
   description = "Auth0 secret"
 }

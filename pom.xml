@@ -34,7 +34,6 @@
         <entur.helpers.version>1.0.59</entur.helpers.version>
         <guava.version>30.0-jre</guava.version>
 
-        <resteasy.version>3.6.1.Final</resteasy.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.4</commons-fileupload.version>

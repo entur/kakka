@@ -1,6 +1,7 @@
 package no.entur.kakka.geocoder;
 
 
+import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
@@ -13,7 +14,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.entur.pubsub.camel.EnturGooglePubSubConstants;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gcp.pubsub.support.BasicAcknowledgeablePubsubMessage;
+
 
 import java.util.List;
 import java.util.stream.Collectors;

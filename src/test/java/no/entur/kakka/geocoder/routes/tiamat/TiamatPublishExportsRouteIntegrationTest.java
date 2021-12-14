@@ -21,7 +21,6 @@ import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
-import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
@@ -63,9 +62,6 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
 
     @EndpointInject(uri = "mock:TiamatExportQueue")
     protected MockEndpoint rescheduleMock;
-
-    @EndpointInject(uri = "mock:changeLogExportMock")
-    protected MockEndpoint changeLogExportMock;
 
 
     @Produce(uri = "entur-google-pubsub:TiamatExportQueue")
@@ -111,13 +107,6 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
                 }
             });
 
-            context.getRouteDefinition("tiamat-publish-export-start-new").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    weaveByToUri("direct:processTiamatChangeLogExportTask").replace().to("mock:changeLogExportMock");
-                }
-            });
-
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -136,21 +125,6 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
 
         tiamatStartExportMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
-        rescheduleMock.assertIsSatisfied();
-    }
-
-    @Test
-    public void newChangeLogExportCompletedSynchronously() throws Exception {
-        tiamatStartExportMock.expectedMessageCount(0);
-        rescheduleMock.expectedMessageCount(0);
-        changeLogExportMock.expectedMessageCount(1);
-
-        context.start();
-
-        input.sendBody(new TiamatExportTasks(new TiamatExportTask("TaskName", "?query=something", TiamatExportTaskType.CHANGE_LOG)).toString());
-
-        tiamatStartExportMock.assertIsSatisfied();
-        changeLogExportMock.assertIsSatisfied();
         rescheduleMock.assertIsSatisfied();
     }
 

@@ -117,16 +117,9 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                     JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.TIAMAT).action("EXPORT").fileName(name).state(JobEvent.State.STARTED).newCorrelationId().build();
                 }).to("direct:updateStatus")
                 .log(LoggingLevel.INFO, "Start Tiamat publish export: ${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.name}")
-
-                .choice()
-                .when(simple("${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.type.name} == '" + TiamatExportTaskType.CHANGE_LOG.name() + "'"))
-                .to("direct:processTiamatChangeLogExportTask")
-                .to("direct:removeCurrentTask")
-                .otherwise()
                 .setHeader(Constants.JOB_STATUS_ROUTING_DESTINATION, constant("direct:processTiamatPublishExportResults"))
                 .setHeader(Constants.QUERY_STRING, simple("${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".currentTask.queryString}"))
                 .to("direct:tiamatExport")
-                .end()
                 .routeId("tiamat-publish-export-start-new");
 
 

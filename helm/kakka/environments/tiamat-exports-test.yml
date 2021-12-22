@@ -3,6 +3,7 @@ tiamat:
       -
         name: tiamat_export_geocoder
         topographicPlaceExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT_FUTURE
       -
@@ -11,6 +12,7 @@ tiamat:
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         topographicPlaceExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: ALL
       -
@@ -18,6 +20,7 @@ tiamat:
         serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT_FUTURE
       -
@@ -25,6 +28,7 @@ tiamat:
         serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT
       -
@@ -32,6 +36,7 @@ tiamat:
         serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT_FUTURE
       -

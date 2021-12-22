@@ -163,31 +163,4 @@ public class OSMPOIFilterRepositoryStub implements OSMPOIFilterRepository {
     public <S extends OSMPOIFilter> boolean exists(Example<S> example) {
         return false;
     }
-    /*
-    @Override
-    public OSMPOIFilter getById(Long id) {
-        return null;
-    }
-
-    @Override
-    public void deleteAllByIdInBatch(Iterable<Long> longs) {
-
-    }
-
-    @Override
-    public void deleteAllInBatch(Iterable<OSMPOIFilter> entities) {
-
-    }
-
-    @Override
-    public <S extends OSMPOIFilter> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return null;
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> longs) {
-
-    }
-
-     */
 }

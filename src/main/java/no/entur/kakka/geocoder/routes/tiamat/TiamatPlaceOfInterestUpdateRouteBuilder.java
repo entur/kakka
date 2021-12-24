@@ -19,11 +19,11 @@ package no.entur.kakka.geocoder.routes.tiamat;
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.services.OSMPOIFilterService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -36,7 +36,9 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.List;
 
-import static no.entur.kakka.geocoder.GeoCoderConstants.*;
+import static no.entur.kakka.geocoder.GeoCoderConstants.GEOCODER_NEXT_TASK;
+import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_START;
+import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_PLACES_OF_INTEREST_UPDATE_START;
 
 // TODO specific per source?
 @Component

@@ -41,7 +41,7 @@ public class RoleAssignmentListBuilder {
 
     public RoleAssignmentListBuilder withRoleForProvider(String role, String providerXmlns) {
         RoleAssignment roleForProvider = RoleAssignment.builder().withRole(role)
-                                                 .withOrganisation(providerXmlns).build();
+                .withOrganisation(providerXmlns).build();
 
         roleAssignments.add(roleForProvider);
         return this;

@@ -17,10 +17,10 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.coordinates;
 
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -52,6 +52,13 @@ public class GeometryTransformer {
         return getInstance().transformFromUTM(coordinate, utmZone);
     }
 
+    private static GeometryTransformer getInstance() throws FactoryException {
+        if (instance == null) {
+            instance = new GeometryTransformer();
+        }
+        return instance;
+    }
+
     private <T extends Geometry> T transformFromUTM(T geometry, String utmZone) throws FactoryException, TransformException {
         return (T) JTS.transform(geometry, getMathTransform(utmZone));
     }
@@ -69,18 +76,9 @@ public class GeometryTransformer {
         return CRS.findMathTransform(utmCoordinateReferenceSystem(fromUtmZone), wgs84);
     }
 
-
     private CoordinateReferenceSystem utmCoordinateReferenceSystem(String utmZone) throws FactoryException {
         return factory.createCoordinateReferenceSystem("EPSG:326" + utmZone);
     }
-
-    private static GeometryTransformer getInstance() throws FactoryException {
-        if (instance == null) {
-            instance = new GeometryTransformer();
-        }
-        return instance;
-    }
-
 
     /**
      * Lifted from stack overflow.

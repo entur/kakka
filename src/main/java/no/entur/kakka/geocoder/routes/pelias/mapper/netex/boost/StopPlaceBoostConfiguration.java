@@ -41,12 +41,9 @@ import java.util.stream.Collectors;
 public class StopPlaceBoostConfiguration {
 
     private static final String ALL_TYPES = "*";
-
-    private long defaultValue;
-
     private final Map<StopTypeEnumeration, StopTypeBoostConfig> stopTypeScaleFactorMap = new HashMap<>();
-
     private final Map<InterchangeWeightingEnumeration, Double> interchangeScaleFactorMap = new HashMap<>();
+    private long defaultValue;
 
     @Autowired
     public StopPlaceBoostConfiguration(@Value("${pelias.stop.place.boost.config:{\"defaultValue\":1000}}") String boostConfig) {

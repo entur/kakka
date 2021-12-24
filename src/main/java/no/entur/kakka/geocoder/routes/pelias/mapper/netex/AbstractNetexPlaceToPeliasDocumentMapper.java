@@ -132,7 +132,6 @@ public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_V
     }
 
 
-
     protected abstract void populateDocument(PlaceHierarchy<T> placeHierarchy, PeliasDocument document);
 
     protected abstract String getLayer(T place);

@@ -47,11 +47,11 @@ public class PlaceHierarchy<T extends Place_VersionStructure> {
         return children;
     }
 
-    public PlaceHierarchy<T> getParent() {
-        return parent;
-    }
-
     public void setChildren(Collection<PlaceHierarchy<T>> children) {
         this.children = children;
+    }
+
+    public PlaceHierarchy<T> getParent() {
+        return parent;
     }
 }

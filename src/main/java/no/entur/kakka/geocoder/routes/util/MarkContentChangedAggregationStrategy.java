@@ -26,11 +26,11 @@ import org.apache.camel.Exchange;
  */
 public class MarkContentChangedAggregationStrategy implements AggregationStrategy {
 
-	@Override
-	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-		if (newExchange.getIn().getHeader(Constants.CONTENT_CHANGED, false, Boolean.class)) {
-			return newExchange;
-		}
-		return oldExchange;
-	}
+    @Override
+    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+        if (newExchange.getIn().getHeader(Constants.CONTENT_CHANGED, false, Boolean.class)) {
+            return newExchange;
+        }
+        return oldExchange;
+    }
 }

@@ -26,16 +26,16 @@ import java.util.Collection;
 public class ElasticsearchCommandWriterService {
 
 
-	public String write(Collection<ElasticsearchCommand> elasticsearchCommands) {
-		try {
-			StringWriter stringWriter = new StringWriter();
-			ElasticsearchBulkCommandWriter bulkCommandWriter = new ElasticsearchBulkCommandWriter(stringWriter);
-			bulkCommandWriter.write(elasticsearchCommands);
-			return stringWriter.toString();
-		} catch (IOException ioE) {
-			throw new RuntimeException("Failed to write elasticsearch commands: " + ioE.getMessage(), ioE);
-		}
+    public String write(Collection<ElasticsearchCommand> elasticsearchCommands) {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            ElasticsearchBulkCommandWriter bulkCommandWriter = new ElasticsearchBulkCommandWriter(stringWriter);
+            bulkCommandWriter.write(elasticsearchCommands);
+            return stringWriter.toString();
+        } catch (IOException ioE) {
+            throw new RuntimeException("Failed to write elasticsearch commands: " + ioE.getMessage(), ioE);
+        }
 
-	}
+    }
 
 }

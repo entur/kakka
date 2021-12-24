@@ -4,7 +4,6 @@ package no.entur.kakka.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -50,6 +49,15 @@ public class ExportParams implements Serializable {
         this.countyReferences = countyReferences;
         this.countryReferences = countryReferences;
         this.stopPlaceSearch = stopPlaceSearch;
+    }
+
+    public static ExportParams fromString(String exportJob) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(exportJob, ExportParams.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getName() {
@@ -147,15 +155,6 @@ public class ExportParams implements Serializable {
             mapper.writeValue(writer, this);
             return writer.toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static ExportParams fromString(String exportJob) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(exportJob, ExportParams.class);
-        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

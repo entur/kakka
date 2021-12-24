@@ -47,12 +47,12 @@ public class ExtendedKubernetesService {
 
     public void scaleDownDeployment() {
         log.info("Scaling down es-scratch");
-         scaleDeployment(0);
+        scaleDeployment(0);
     }
 
     public int getNoOfAvailableReplicas() {
         var deployment = kubernetesClient.apps().deployments().withName("es-scratch").get();
-        Integer noOfAvailableReplicas= deployment.getStatus().getAvailableReplicas();
+        Integer noOfAvailableReplicas = deployment.getStatus().getAvailableReplicas();
         return noOfAvailableReplicas == null ? 0 : noOfAvailableReplicas;
 
     }
@@ -84,7 +84,7 @@ public class ExtendedKubernetesService {
 
         Job job = new JobBuilder()
                 .withSpec(jobSpec).
-                        withNewMetadata()
+                withNewMetadata()
                 .withName(jobName)
                 .endMetadata()
                 .editOrNewSpec()

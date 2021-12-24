@@ -15,8 +15,8 @@
   ~
   -->
 
-<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                     xmlns:ns3="http://www.siri.org.uk/siri" version="any">
+<PublicationDelivery xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns="http://www.netex.org.uk/netex"
+                     version="any">
     <PublicationTimestamp>2017-01-25T14:07:27.443+01:00</PublicationTimestamp>
     <ParticipantRef>NSR</ParticipantRef>
     <dataObjects>
@@ -168,11 +168,10 @@
                 </GroupOfStopPlaces>
             </groupsOfStopPlaces>
             <stopPlaces>
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:39231" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:39231" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <keyList>
                         <KeyValue>
                             <Key>imported-id</Key>
@@ -226,11 +225,10 @@
                 </StopPlace>
 
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1000" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1000" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                     </ValidBetween>
@@ -263,11 +261,10 @@
                 </StopPlace>
 
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1000a" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1000a" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                     </ValidBetween>
@@ -312,11 +309,10 @@
                 </StopPlace>
 
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1000b" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1000b" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                     </ValidBetween>
@@ -360,11 +356,10 @@
                     </quays>
                 </StopPlace>
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1001" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1001" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                     </ValidBetween>
@@ -409,11 +404,10 @@
                 </StopPlace>
 
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1002" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1002" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                     </ValidBetween>
@@ -437,11 +431,10 @@
                 </StopPlace>
 
 
-                <StopPlace created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00"
-                           modification="new" version="4" id="NSR:StopPlace:1003" xsi:schemaLocation=""
-                           xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2"
-                           xmlns:ns3="http://www.siri.org.uk/siri"
-                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <StopPlace xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           created="2017-01-23T16:59:34.554+01:00" changed="2017-01-23T16:59:34.554+01:00" modification="new" version="4"
+                           id="NSR:StopPlace:1003" xsi:schemaLocation=""
+                           xmlns="http://www.netex.org.uk/netex">
                     <ValidBetween>
                         <FromDate>2017-05-02T13:07:03.764+02:00</FromDate>
                         <ToDate>2017-08-02T20:00:03.764+02:00</ToDate>

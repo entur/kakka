@@ -53,9 +53,9 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 @Component
 public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
+    public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
     private static final String PROVIDER_ID = "ProviderId";
-    public static final String FILE_HANDLE = "FileHandle";
     @Value("${server.port:8080}")
     private String port;
 
@@ -185,7 +185,6 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("bean:customConfigurationService?method=deleteCustomConfiguration(${header.key})");
 
 
-
         rest("/osmpoifilter")
                 .description("OSM POI Filters REST service")
                 .consumes("application/json")
@@ -295,12 +294,12 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
         from("direct:update-configuration")
                 .to("bean:customConfigurationService?method=updateCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(204))
                 .setBody(constant(""));
 
         from("direct:add-configuration")
                 .to("bean:customConfigurationService?method=saveCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(204))
                 .setBody(constant(""));
 
         from("direct:validateProvider")

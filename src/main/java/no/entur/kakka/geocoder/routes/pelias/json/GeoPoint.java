@@ -23,34 +23,34 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("geo_point")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeoPoint {
-	@JsonProperty("lat")
-	private Double lat;
+    @JsonProperty("lat")
+    private Double lat;
 
-	@JsonProperty("lon")
-	private Double lon;
+    @JsonProperty("lon")
+    private Double lon;
 
 
-	public GeoPoint(Double lat, Double lon) {
-		this.lat = lat;
-		this.lon = lon;
-	}
+    public GeoPoint(Double lat, Double lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
 
-	public GeoPoint() {
-	}
+    public GeoPoint() {
+    }
 
-	public Double getLat() {
-		return lat;
-	}
+    public Double getLat() {
+        return lat;
+    }
 
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
 
-	public Double getLon() {
-		return lon;
-	}
+    public Double getLon() {
+        return lon;
+    }
 
-	public void setLon(Double lon) {
-		this.lon = lon;
-	}
+    public void setLon(Double lon) {
+        this.lon = lon;
+    }
 }

@@ -33,7 +33,7 @@ public class OSMPOIFilterServiceTest {
         repository.setFilters(toBeDeleted);
         Assertions.assertEquals(5, service.getFilters().size());
         service.updateFilters(List.of());
-        Assertions.assertEquals( 0, service.getFilters().size());
+        Assertions.assertEquals(0, service.getFilters().size());
     }
 
     @Test

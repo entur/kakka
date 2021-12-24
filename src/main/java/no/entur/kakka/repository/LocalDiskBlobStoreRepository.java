@@ -152,12 +152,12 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override
     public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override

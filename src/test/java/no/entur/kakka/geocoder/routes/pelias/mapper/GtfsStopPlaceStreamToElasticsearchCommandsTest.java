@@ -22,7 +22,7 @@ public class GtfsStopPlaceStreamToElasticsearchCommandsTest {
         GtfsStopPlaceStreamToElasticsearchCommands transformer = new GtfsStopPlaceStreamToElasticsearchCommands(new GtfsStopPlaceToPeliasMapper(POPULARITY));
 
         Collection<ElasticsearchCommand> commands = transformer
-                                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/gtfs/flb.zip"), "target/","flb.zip");
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/gtfs/flb.zip"), "target/", "flb.zip");
 
 
         Assertions.assertEquals(9, commands.size());
@@ -37,7 +37,7 @@ public class GtfsStopPlaceStreamToElasticsearchCommandsTest {
     }
 
     private void assertKnownStopPlace(PeliasDocument known) {
-        Assertions.assertNotNull(known,"Known stop place not found in mapped data");
+        Assertions.assertNotNull(known, "Known stop place not found in mapped data");
         Assertions.assertEquals("NSR:StopPlace:457", known.getSourceId());
         Assertions.assertEquals("Berekvam stasjon", known.getDefaultName());
 

@@ -24,47 +24,47 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddressParts {
 
-	@JsonProperty("street")
-	private String street;
+    @JsonProperty("street")
+    private String street;
 
-	@JsonProperty("number")
-	private String number;
+    @JsonProperty("number")
+    private String number;
 
-	@JsonProperty("zip")
-	private String zip;
+    @JsonProperty("zip")
+    private String zip;
 
-	@JsonProperty("name")
-	private String name;
+    @JsonProperty("name")
+    private String name;
 
-	public String getStreet() {
-		return street;
-	}
+    public String getStreet() {
+        return street;
+    }
 
-	public void setStreet(String street) {
-		this.street = street;
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public String getNumber() {
-		return number;
-	}
+    public String getNumber() {
+        return number;
+    }
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+    public void setNumber(String number) {
+        this.number = number;
+    }
 
-	public String getZip() {
-		return zip;
-	}
+    public String getZip() {
+        return zip;
+    }
 
-	public void setZip(String zip) {
-		this.zip = zip;
-	}
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 }

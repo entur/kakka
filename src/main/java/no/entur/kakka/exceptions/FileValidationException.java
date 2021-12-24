@@ -18,15 +18,17 @@ package no.entur.kakka.exceptions;
 
 public class FileValidationException extends KakkaException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    public FileValidationException(){ super(); }
+    public FileValidationException() {
+        super();
+    }
 
-	public FileValidationException(String message) {
+    public FileValidationException(String message) {
         super(message);
     }
 
-    public FileValidationException(String message, Throwable throwable){
+    public FileValidationException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

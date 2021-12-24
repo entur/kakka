@@ -16,12 +16,11 @@
 
 package no.entur.kakka.geocoder.nabu;
 
-import org.apache.camel.http.common.HttpMethods;
-import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;
 import no.entur.kakka.Utils;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.nabu.rest.AdministrativeZone;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
@@ -29,12 +28,13 @@ import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.sosi.SosiTopographicPlaceAdapterReader;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.services.BlobStoreService;
-import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.http.common.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.commons.io.FileUtils;
+import org.locationtech.jts.geom.CoordinateList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -55,34 +55,23 @@ import java.util.stream.Collectors;
 public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilder {
 
 
+    private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
     @Value("${kartverket.blobstore.subdirectory:kartverket}")
     private String blobStoreSubdirectoryForKartverket;
-
     @Value("${tiamat.countries.geojson.blobstore.subdirectory:geojson/countries}")
     private String blobStoreSubdirectoryCountries;
-
     @Value("${organisations.api.url:http://baba/services/organisations/}")
     private String organisationRegistryUrl;
-
-
     @Value("${tiamat.administrative.units.update.directory:files/orgReg/adminUnits}")
     private String localWorkingDirectory;
-
     @Value("${kartverket.admin.units.archive.filename:county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip}")
     private String adminUnitsArchiveFileName;
-
     @Value("${kartverket.admin.units.filename:Basisdata_0000_Norge_25833_Fylker_SOSI.sos}")
     private String adminUnitsFileName;
-
     @Value("${organisation.registry.admin.zone.code.space.id:rb}")
     private String adminZoneCodeSpaceId;
     @Value("${organisation.registry.admin.zone.code.space.xmlns:RB}")
     private String adminZoneCodeSpaceXmlns;
-
-    private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
-
-
-
     @Autowired
     private BlobStoreService blobStoreService;
 
@@ -142,7 +131,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
 
         from("direct:updateAdministrativeUnitsInOrgReg")
                 .process(e -> e.getIn().setBody(new SosiTopographicPlaceAdapterReader(sosiWrapperFactory, new File(localWorkingDirectory + "/" + adminUnitsFileName)).read().stream().map(tpa -> toAdministrativeZone(tpa, "KVE"))
-                                                        .collect(Collectors.toList())))
+                        .collect(Collectors.toList())))
                 .to("direct:updateAdministrativeZonesInOrgReg")
                 .routeId("organisation-registry-update-admin-units");
 
@@ -158,9 +147,9 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
                 .toD(getOrganisationRegistryUrl() + "administrative_zones")
 
                 .doCatch(HttpOperationFailedException.class).onWhen(exchange -> {
-            HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
-            return (ex.getStatusCode() == HttpStatus.CONFLICT.value());
-        })  // Update if zone already exists
+                    HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
+                    return (ex.getStatusCode() == HttpStatus.CONFLICT.value());
+                })  // Update if zone already exists
                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.PUT))
                 .toD(getOrganisationRegistryUrl() + "administrative_zones/" + adminZoneCodeSpaceXmlns + ":AdministrativeZone:${header.privateCode}")
                 .end()
@@ -191,7 +180,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
 
         Polygon geoJsonPolygon = (Polygon) geoJSONWriter.write(geometry);
         AdministrativeZone administrativeZone = new AdministrativeZone(adminZoneCodeSpaceId, topographicPlaceAdapter.getId(),
-                                                                              topographicPlaceAdapter.getName(), geoJsonPolygon, toType(topographicPlaceAdapter.getType()), source);
+                topographicPlaceAdapter.getName(), geoJsonPolygon, toType(topographicPlaceAdapter.getType()), source);
         return administrativeZone;
     }
 

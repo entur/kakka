@@ -72,8 +72,8 @@ public class TiamatExportTask {
     @Override
     public String toString() {
         return "TiamatExportConfig{" +
-                       "name='" + name + '\'' +
-                       ", queryString='" + queryString + '\'' +
-                       '}';
+                "name='" + name + '\'' +
+                ", queryString='" + queryString + '\'' +
+                '}';
     }
 }

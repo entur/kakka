@@ -16,10 +16,10 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.sosi;
 
-import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketSosiStreamToElasticsearchCommands;
-import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
+import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketSosiStreamToElasticsearchCommands;
+import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.sosi.SosiFileFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

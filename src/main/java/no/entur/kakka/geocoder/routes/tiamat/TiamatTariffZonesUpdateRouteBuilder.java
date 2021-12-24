@@ -21,7 +21,6 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-
 import no.entur.kakka.geocoder.netex.TariffZoneConverter;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
@@ -41,34 +40,25 @@ import java.util.stream.Collectors;
 @Component
 public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
-    public static final Logger logger= LoggerFactory.getLogger(TiamatTariffZonesUpdateRouteBuilder.class);
-
+    public static final Logger logger = LoggerFactory.getLogger(TiamatTariffZonesUpdateRouteBuilder.class);
+    private final BlobStoreService blobStoreService;
+    private final TariffZoneConverter tariffZoneConverter;
     @Value("${tiamat.tariffzones.blobstore.xml.directory:tariffzones/netex}")
     private String blobStoreXmldirectory;
-
     @Value("${tiamat.tariffzones.blobstore.osm.directory:tariffzones/osm}")
     private String blobStoreOsmdirectory;
-
     @Value("${tiamat.url}")
     private String tiamatUrl;
-
     @Value("${tiamat.publication.delivery.path:/services/stop_places/netex}")
     private String tiamatPublicationDeliveryPath;
-
     @Value("${tiamat.tariffzones.update.directory:files/tiamat/tariffZones}")
     private String localWorkingDirectory;
-
-
-    private final BlobStoreService blobStoreService;
-
-    private final TariffZoneConverter tariffZoneConverter;
-
 
 
     @Autowired
     public TiamatTariffZonesUpdateRouteBuilder(BlobStoreService blobStoreService,
                                                TariffZoneConverter tariffZoneConverter
-                                               ) {
+    ) {
         this.blobStoreService = blobStoreService;
         this.tariffZoneConverter = tariffZoneConverter;
     }
@@ -89,16 +79,16 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:fetchTariffZones")
                 .choice()
                 .when(header(Constants.FILE_NAME).endsWith("xml"))
-                .log(LoggingLevel.INFO,"Updating tariff_zone_netex_file: ${header." + Constants.FILE_NAME + "}")
+                .log(LoggingLevel.INFO, "Updating tariff_zone_netex_file: ${header." + Constants.FILE_NAME + "}")
                 .to("direct:updateTariffZonesInTiamat")
                 .log(LoggingLevel.INFO, "Finished updating tariff zones in Tiamat")
                 .when(header(Constants.FILE_NAME).endsWith("osm"))
-                .log(LoggingLevel.INFO,"Converting tariff_zone_osm_file: ${header." + Constants.FILE_NAME + "}")
+                .log(LoggingLevel.INFO, "Converting tariff_zone_osm_file: ${header." + Constants.FILE_NAME + "}")
                 .to("direct:mapTariffZonesToNetex")
                 .to("direct:updateTariffZonesInTiamat")
                 .log(LoggingLevel.INFO, "Finished updating tariff zones in Tiamat")
                 .otherwise()
-                .log(LoggingLevel.INFO,"Invalid Tariff zone file")
+                .log(LoggingLevel.INFO, "Invalid Tariff zone file")
                 .endDoTry()
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
@@ -122,12 +112,12 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
         from("direct:mapTariffZonesToNetex")
                 .log(LoggingLevel.DEBUG, getClass().getName(), "Mapping Tariff zones to Netex ...")
-                .process(e -> tariffZoneConverter.toNetexFile(e,localWorkingDirectory))
+                .process(e -> tariffZoneConverter.toNetexFile(e, localWorkingDirectory))
                 .routeId("tiamat-osm-tariff-zones-to-netex");
 
 
         from("direct:updateTariffZonesInTiamat")
-                .log(LoggingLevel.INFO,"updating tiamat via import endpoint {}",localWorkingDirectory + "/" + header(Constants.FILE_NAME))
+                .log(LoggingLevel.INFO, "updating tiamat via import endpoint {}", localWorkingDirectory + "/" + header(Constants.FILE_NAME))
                 .process(e -> {
                     final String pathname = localWorkingDirectory + "/" + e.getIn().getHeader(Constants.FILE_NAME);
                     logger.info("local file path is: {}", pathname);

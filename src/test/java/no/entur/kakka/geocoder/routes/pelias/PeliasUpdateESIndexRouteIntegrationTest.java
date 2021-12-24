@@ -39,70 +39,62 @@ import java.io.FileInputStream;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-	@Autowired
-	private ModelCamelContext context;
-
-	@Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
-	private String elasticsearchScratchUrl;
-
-	@Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
-	private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-
-	@Value("${kartverket.blobstore.subdirectory:kartverket}")
-	private String blobStoreSubdirectoryForKartverket;
-
-	@EndpointInject(uri = "mock:es-scratch")
-	protected MockEndpoint esScratchMock;
-
-	@EndpointInject(uri = "mock:es-scratch-admin-index")
-	protected MockEndpoint esScratchAdminIndexMock;
-
-
-	@Produce(uri = "direct:insertElasticsearchIndexData")
-	protected ProducerTemplate insertESDataTemplate;
-	@Autowired
-	private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
+    @EndpointInject(uri = "mock:es-scratch")
+    protected MockEndpoint esScratchMock;
+    @EndpointInject(uri = "mock:es-scratch-admin-index")
+    protected MockEndpoint esScratchAdminIndexMock;
+    @Produce(uri = "direct:insertElasticsearchIndexData")
+    protected ProducerTemplate insertESDataTemplate;
+    @Autowired
+    private ModelCamelContext context;
+    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
+    private String elasticsearchScratchUrl;
+    @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
+    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
+    @Value("${kartverket.blobstore.subdirectory:kartverket}")
+    private String blobStoreSubdirectoryForKartverket;
+    @Autowired
+    private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
 
 
-	@Test
-	public void testInsertElasticsearchIndexDataSuccess() throws Exception {
+    @Test
+    public void testInsertElasticsearchIndexDataSuccess() throws Exception {
 
-		// Stub for elastic search scratch instance
+        // Stub for elastic search scratch instance
 
-		AdviceWith.adviceWith(context,"pelias-delete-index-if-exists",
-				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
-
-
-		AdviceWith.adviceWith(context,"pelias-create-index",
-				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
+        AdviceWith.adviceWith(context, "pelias-delete-index-if-exists",
+                a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+                        .skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
 
 
-		AdviceWith.adviceWith(context,"pelias-invoke-bulk-command",
-				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch"));
+        AdviceWith.adviceWith(context, "pelias-create-index",
+                a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+                        .skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
 
 
-
-		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
-				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/addresses/addresses.csv",
-				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv")), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat/tiamat-export-latest.xml",
-				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml")), false);
+        AdviceWith.adviceWith(context, "pelias-invoke-bulk-command",
+                a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
+                        .skipSendToOriginalEndpoint().to("mock:es-scratch"));
 
 
-		esScratchAdminIndexMock.expectedMessageCount(2);
-		esScratchMock.expectedMessageCount(3);
-		context.start();
+        inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
+                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/addresses/addresses.csv",
+                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv")), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat/tiamat-export-latest.xml",
+                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml")), false);
 
-		Exchange e = insertESDataTemplate.request("direct:insertElasticsearchIndexData", ex -> {
-		});
 
-		Assertions.assertEquals(GeoCoderConstants.PELIAS_ES_SCRATCH_STOP, e.getProperty(GeoCoderConstants.GEOCODER_NEXT_TASK));
-		esScratchAdminIndexMock.assertIsSatisfied();
-		esScratchMock.assertIsSatisfied();
+        esScratchAdminIndexMock.expectedMessageCount(2);
+        esScratchMock.expectedMessageCount(3);
+        context.start();
 
-	}
+        Exchange e = insertESDataTemplate.request("direct:insertElasticsearchIndexData", ex -> {
+        });
+
+        Assertions.assertEquals(GeoCoderConstants.PELIAS_ES_SCRATCH_STOP, e.getProperty(GeoCoderConstants.GEOCODER_NEXT_TASK));
+        esScratchAdminIndexMock.assertIsSatisfied();
+        esScratchMock.assertIsSatisfied();
+
+    }
 }

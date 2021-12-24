@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 public class FileNameAndDigestTest {
 
 
-	@Test
-	public void testStringEncoding() {
-		FileNameAndDigest org = new FileNameAndDigest("fileName", "digest");
+    @Test
+    public void testStringEncoding() {
+        FileNameAndDigest org = new FileNameAndDigest("fileName", "digest");
 
-		FileNameAndDigest converted = FileNameAndDigest.fromString(org.toString());
+        FileNameAndDigest converted = FileNameAndDigest.fromString(org.toString());
 
-		Assertions.assertEquals(org, converted);
-		Assertions.assertEquals(org.getFileName(), converted.getFileName());
-		Assertions.assertEquals(org.getDigest(), converted.getDigest());
-	}
+        Assertions.assertEquals(org, converted);
+        Assertions.assertEquals(org.getFileName(), converted.getFileName());
+        Assertions.assertEquals(org.getDigest(), converted.getDigest());
+    }
 }

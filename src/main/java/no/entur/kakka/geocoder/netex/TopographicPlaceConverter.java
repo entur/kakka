@@ -69,15 +69,15 @@ public class TopographicPlaceConverter {
     private PublicationDeliveryStructure createPublicationDeliveryStructure(TopographicPlaceReader input, String siteFrameId) {
         VersionFrameDefaultsStructure frameDefaultsStructure = new VersionFrameDefaultsStructure().withDefaultLocale(new LocaleStructure().withTimeZone(defaultTimeZone));
         SiteFrame siteFrame = new SiteFrame()
-                                      .withCreated(LocalDateTime.now()).withId(siteFrameId)
-                                      .withModification(ModificationEnumeration.NEW).withVersion("any").withFrameDefaults(frameDefaultsStructure);
+                .withCreated(LocalDateTime.now()).withId(siteFrameId)
+                .withModification(ModificationEnumeration.NEW).withVersion("any").withFrameDefaults(frameDefaultsStructure);
 
         return new PublicationDeliveryStructure()
-                       .withParticipantRef(input.getParticipantRef())
-                       .withPublicationTimestamp(LocalDateTime.now())
-                       .withDescription(input.getDescription())
-                       .withDataObjects(new PublicationDeliveryStructure.DataObjects()
-                                                .withCompositeFrameOrCommonFrame(new ObjectFactory().createSiteFrame(siteFrame)));
+                .withParticipantRef(input.getParticipantRef())
+                .withPublicationTimestamp(LocalDateTime.now())
+                .withDescription(input.getDescription())
+                .withDataObjects(new PublicationDeliveryStructure.DataObjects()
+                        .withCompositeFrameOrCommonFrame(new ObjectFactory().createSiteFrame(siteFrame)));
     }
 
 

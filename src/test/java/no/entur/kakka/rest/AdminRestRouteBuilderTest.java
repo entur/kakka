@@ -17,6 +17,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Disabled
 public class AdminRestRouteBuilderTest extends KakkaRouteBuilderIntegrationTestBase {
 
+    @Produce("http:localhost:28081/services/osmpoifilter")
+    protected ProducerTemplate getTemplate;
+
+    @Test
+    public void testGetPoiFilters() throws Exception {
+        context.start();
+        getTemplate.sendBody(null);
+    }
+
     @TestConfiguration
     @EnableWebSecurity
     static class AdminRestRouteBuilderTestContextConfiguration extends WebSecurityConfigurerAdapter {
@@ -30,14 +39,5 @@ public class AdminRestRouteBuilderTest extends KakkaRouteBuilderIntegrationTestB
                     );
 
         }
-    }
-
-    @Produce("http:localhost:28081/services/osmpoifilter")
-    protected ProducerTemplate getTemplate;
-
-    @Test
-    public void testGetPoiFilters() throws Exception {
-        context.start();
-        getTemplate.sendBody(null);
     }
 }

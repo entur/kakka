@@ -31,26 +31,26 @@ import java.util.Arrays;
 public class StopPlaceBoostConfigurationTest {
 
     StopPlaceBoostConfiguration boostConfiguration = new StopPlaceBoostConfiguration("{\"defaultValue\": 1000," +
-                                                                                             "  \"stopTypeFactors\": {" +
-                                                                                             "    \"metroStation\": {" +
-                                                                                             "      \"*\": 2" +
-                                                                                             "    }," +
-                                                                                             "    \"busStation\": {" +
-                                                                                             "      \"localBus\": 2" +
-                                                                                             "    }," +
-                                                                                             "    \"railStation\": {" +
-                                                                                             "      \"*\": 2," +
-                                                                                             "      \"highSpeedRail\": 6" +
-                                                                                             "    }," +
-                                                                                             "    \"airport\": {" +
-                                                                                             "      \"*\": 2" +
-                                                                                             "    }" +
-                                                                                             "  }," +
-                                                                                             "  \"interchangeFactors\": {" +
-                                                                                             "    \"recommendedInterchange\": 3," +
-                                                                                             "    \"preferredInterchange\": 10" +
-                                                                                             "  }" +
-                                                                                             "}");
+            "  \"stopTypeFactors\": {" +
+            "    \"metroStation\": {" +
+            "      \"*\": 2" +
+            "    }," +
+            "    \"busStation\": {" +
+            "      \"localBus\": 2" +
+            "    }," +
+            "    \"railStation\": {" +
+            "      \"*\": 2," +
+            "      \"highSpeedRail\": 6" +
+            "    }," +
+            "    \"airport\": {" +
+            "      \"*\": 2" +
+            "    }" +
+            "  }," +
+            "  \"interchangeFactors\": {" +
+            "    \"recommendedInterchange\": 3," +
+            "    \"preferredInterchange\": 10" +
+            "  }" +
+            "}");
 
     @Test
     public void emptyConfigShouldYieldPopularity0ForAllStops() {

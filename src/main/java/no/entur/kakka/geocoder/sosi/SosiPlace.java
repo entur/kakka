@@ -16,13 +16,13 @@
 
 package no.entur.kakka.geocoder.sosi;
 
+import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
+import no.vegvesen.nvdb.sosi.document.SosiElement;
+import no.vegvesen.nvdb.sosi.document.SosiNumber;
 import no.vegvesen.nvdb.sosi.document.SosiValue;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
-import no.vegvesen.nvdb.sosi.document.SosiElement;
-import no.vegvesen.nvdb.sosi.document.SosiNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SosiPlace extends SosiElementWrapper {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public static final String OBJECT_TYPE = "Sted";
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public SosiPlace(SosiElement sosiElement, SosiCoordinates coordinates) {
         super(sosiElement, coordinates);

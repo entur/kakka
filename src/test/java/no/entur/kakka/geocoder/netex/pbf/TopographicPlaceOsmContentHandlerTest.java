@@ -30,60 +30,60 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class TopographicPlaceOsmContentHandlerTest {
 
-	@Test
-	public void testMissingNameDoesNotMatches() {
-		Assertions.assertFalse(handler().matchesFilter(node("amenity=test", "leisure=test", "key=start", "other=other")));
-	}
+    @Test
+    public void testMissingNameDoesNotMatches() {
+        Assertions.assertFalse(handler().matchesFilter(node("amenity=test", "leisure=test", "key=start", "other=other")));
+    }
 
-	@Test
-	public void testNameOnlyDoesNotMatches() {
-		Assertions.assertFalse(handler().matchesFilter(node("name=1", "other2=other", "other1=other")));
-	}
+    @Test
+    public void testNameOnlyDoesNotMatches() {
+        Assertions.assertFalse(handler().matchesFilter(node("name=1", "other2=other", "other1=other")));
+    }
 
-	@Test
-	public void testFullTagFilterMatches() {
-		Assertions.assertTrue(handler().matchesFilter(node("name=1", "amenity=test", "other=other")));
-	}
+    @Test
+    public void testFullTagFilterMatches() {
+        Assertions.assertTrue(handler().matchesFilter(node("name=1", "amenity=test", "other=other")));
+    }
 
-	@Test
-	public void testOnlyKeyFilterMatches() {
-		Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=start")));
-	}
+    @Test
+    public void testOnlyKeyFilterMatches() {
+        Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=start")));
+    }
 
-	@Test
-	public void testStartFilterMatches() {
-		Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=startOTHER", "other=other")));
-	}
+    @Test
+    public void testStartFilterMatches() {
+        Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=startOTHER", "other=other")));
+    }
 
-	private TopographicPlaceOsmContentHandler handler() {
+    private TopographicPlaceOsmContentHandler handler() {
 
-		OSMPOIFilter filterKey = createFilter("leisure", null);
-		OSMPOIFilter filterFull = createFilter("amenity", "test");
-		OSMPOIFilter filterStartsWith = createFilter("key", "start");
+        OSMPOIFilter filterKey = createFilter("leisure", null);
+        OSMPOIFilter filterFull = createFilter("amenity", "test");
+        OSMPOIFilter filterStartsWith = createFilter("key", "start");
 
-		return handler(filterKey, filterFull, filterStartsWith);
-	}
+        return handler(filterKey, filterFull, filterStartsWith);
+    }
 
-	private TopographicPlaceOsmContentHandler handler(OSMPOIFilter... filter) {
+    private TopographicPlaceOsmContentHandler handler(OSMPOIFilter... filter) {
 
-		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+        BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 
-		TopographicPlaceOsmContentHandler handler = new TopographicPlaceOsmContentHandler(queue, Arrays.asList(filter), "OSM", IanaCountryTldEnumeration.NO);
-		return handler;
-	}
+        TopographicPlaceOsmContentHandler handler = new TopographicPlaceOsmContentHandler(queue, Arrays.asList(filter), "OSM", IanaCountryTldEnumeration.NO);
+        return handler;
+    }
 
 
-	private OSMNode node(String... tags) {
-		OSMNode node = new OSMNode();
+    private OSMNode node(String... tags) {
+        OSMNode node = new OSMNode();
 
-		if (tags != null) {
-			Arrays.stream(tags).forEach(t -> node.addTag(
-					t.split("=")[0], t.split("=")[1]));
-		}
-		return node;
-	}
+        if (tags != null) {
+            Arrays.stream(tags).forEach(t -> node.addTag(
+                    t.split("=")[0], t.split("=")[1]));
+        }
+        return node;
+    }
 
-	private OSMPOIFilter createFilter(String key, String value) {
-		return OSMPOIFilter.fromKeyAndValue(key, value);
-	}
+    private OSMPOIFilter createFilter(String key, String value) {
+        return OSMPOIFilter.fromKeyAndValue(key, value);
+    }
 }

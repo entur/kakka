@@ -25,9 +25,9 @@ import java.util.concurrent.BlockingQueue;
 
 public interface TopographicPlaceReader {
 
-	String getParticipantRef();
+    String getParticipantRef();
 
-	MultilingualString getDescription();
+    MultilingualString getDescription();
 
-	void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException, InterruptedException;
+    void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException, InterruptedException;
 }

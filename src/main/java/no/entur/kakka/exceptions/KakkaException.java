@@ -22,18 +22,20 @@ package no.entur.kakka.exceptions;
 public class KakkaException extends RuntimeException {
 // TODO split
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-    public KakkaException(){ super(); }
+    public KakkaException() {
+        super();
+    }
 
-	public KakkaException(String message) {
-        super( message );
+    public KakkaException(String message) {
+        super(message);
     }
 
     public KakkaException(String message, Throwable throwable) {
-        super( message, throwable );
+        super(message, throwable);
     }
 
 }

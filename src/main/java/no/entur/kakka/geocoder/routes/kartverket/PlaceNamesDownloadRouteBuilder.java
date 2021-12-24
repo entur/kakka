@@ -19,28 +19,24 @@ package no.entur.kakka.geocoder.routes.kartverket;
 import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PlaceNamesDownloadRouteBuilder extends BaseRouteBuilder {
+    private static final String FORMAT_SOSI = "SOSI";
     /**
      * One time per 24H on MON-FRI
      */
     @Value("${kartverket.place.names.download.cron.schedule:0+0+23+?+*+MON-FRI}")
     private String cronSchedule;
-
     @Value("${kartverket.blobstore.subdirectory:kartverket}")
     private String blobStoreSubdirectoryForKartverket;
-
-
     @Value("${kartverket.place.names.dataSetId:30caed2f-454e-44be-b5cc-26bb5c0110ca}")
     private String placeNamesDataSetId;
-
-    private static final String FORMAT_SOSI = "SOSI";
 
     @Override
     public void configure() throws Exception {

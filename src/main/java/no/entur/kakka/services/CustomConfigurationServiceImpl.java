@@ -20,7 +20,7 @@ public class CustomConfigurationServiceImpl implements CustomConfigurationServic
     public List<CustomConfiguration> findAllCustomConfigurations() {
 
         final Iterable<CustomConfiguration> all = customConfigurationRepository.findAll();
-        List<CustomConfiguration> customConfigurations= new ArrayList<>();
+        List<CustomConfiguration> customConfigurations = new ArrayList<>();
         for (CustomConfiguration customConfiguration : all) {
 
             customConfigurations.add(customConfiguration);

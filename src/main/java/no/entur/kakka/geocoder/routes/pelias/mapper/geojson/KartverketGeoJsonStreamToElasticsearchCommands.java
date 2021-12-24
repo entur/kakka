@@ -48,8 +48,8 @@ public class KartverketGeoJsonStreamToElasticsearchCommands {
 
     public Collection<ElasticsearchCommand> transform(InputStream placeNamesStream) {
         return new FeatureJSONCollection(placeNamesStream)
-                       .mapToList(f -> createMapper(f).toPeliasDocument()).stream()
-                       .filter(peliasDocument -> peliasDocument != null).map(pd -> ElasticsearchCommand.peliasIndexCommand(pd)).collect(Collectors.toList());
+                .mapToList(f -> createMapper(f).toPeliasDocument()).stream()
+                .filter(peliasDocument -> peliasDocument != null).map(pd -> ElasticsearchCommand.peliasIndexCommand(pd)).collect(Collectors.toList());
     }
 
     TopographicPlaceAdapterToPeliasDocument createMapper(SimpleFeature feature) {

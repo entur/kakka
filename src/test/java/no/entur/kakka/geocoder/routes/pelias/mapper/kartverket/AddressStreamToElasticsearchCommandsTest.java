@@ -17,16 +17,16 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
+import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
+import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
+import no.entur.kakka.geocoder.routes.pelias.json.Parent;
+import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
+import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
-import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
-import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
-import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
-import no.entur.kakka.geocoder.routes.pelias.json.Parent;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ public class AddressStreamToElasticsearchCommandsTest {
         AddressStreamToElasticSearchCommands transformer = new AddressStreamToElasticSearchCommands(new AddressToPeliasMapper(ADDRESS_POPULARITY), new AddressToStreetMapper(ADDRESS_STREET_POPULARITY));
 
         Collection<ElasticsearchCommand> commands = transformer
-                                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv"));
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv"));
 
 
         Assertions.assertEquals(28, commands.size());
@@ -52,7 +52,7 @@ public class AddressStreamToElasticsearchCommandsTest {
         commands.forEach(c -> assertCommand(c));
 
         List<PeliasDocument> documents = commands.stream().map(c -> (PeliasDocument) c.getSource()).collect(Collectors.toList());
-        Assertions.assertEquals( 8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).collect(Collectors.toList()).size(),"Should be 8 streets");
+        Assertions.assertEquals(8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).collect(Collectors.toList()).size(), "Should be 8 streets");
 
         PeliasDocument knownDocument = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().endsWith("416246828")).collect(Collectors.toList()).get(0);
         assertKnownAddress(knownDocument);

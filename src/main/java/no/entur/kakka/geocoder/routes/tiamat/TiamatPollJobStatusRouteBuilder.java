@@ -17,9 +17,9 @@
 package no.entur.kakka.geocoder.routes.tiamat;
 
 import no.entur.kakka.Constants;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import no.entur.kakka.geocoder.routes.tiamat.xml.JobStatus;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -35,7 +35,7 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_POLL;
 @Component
 public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
 
-    public static final Logger logger= LoggerFactory.getLogger(TiamatPollJobStatusRouteBuilder.class);
+    public static final Logger logger = LoggerFactory.getLogger(TiamatPollJobStatusRouteBuilder.class);
 
     @Value("${tiamat-exporter.url}")
     private String tiamatUrl;
@@ -65,8 +65,8 @@ public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
                     return (
                             ex.getStatusCode() == 404);
                 })
-                    .log(LoggingLevel.WARN, correlation() + "got 404 from Tiamat. Something is wrong... giving up")
-                    .setHeader("current_status", constant(JobStatus.FAILED.toString()))
+                .log(LoggingLevel.WARN, correlation() + "got 404 from Tiamat. Something is wrong... giving up")
+                .setHeader("current_status", constant(JobStatus.FAILED.toString()))
                 .end()
                 .choice()
                 .when(simple("${header.current_status} != '" + JobStatus.PROCESSING + "'"))

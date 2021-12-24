@@ -72,32 +72,12 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
 
         List<Message> messages = (List<Message>) exchange.getIn().getBody(List.class);
         List<BasicAcknowledgeablePubsubMessage> ackList = messages.stream()
-                .map(m->m.getHeader(EnturGooglePubSubConstants.ACK_ID, BasicAcknowledgeablePubsubMessage.class))
+                .map(m -> m.getHeader(EnturGooglePubSubConstants.ACK_ID, BasicAcknowledgeablePubsubMessage.class))
                 .collect(Collectors.toList());
 
         exchange.adapt(ExtendedExchange.class).addOnCompletion(new AckSynchronization(ackList));
 
     }
-
-    private static class AckSynchronization implements Synchronization {
-
-        private final List<BasicAcknowledgeablePubsubMessage> ackList;
-
-        public AckSynchronization(List<BasicAcknowledgeablePubsubMessage> ackList) {
-            this.ackList = ackList;
-        }
-
-        @Override
-        public void onComplete(Exchange exchange) {
-            ackList.forEach(BasicAcknowledgeablePubsubMessage::ack);
-        }
-
-        @Override
-        public void onFailure(Exchange exchange) {
-            ackList.forEach(BasicAcknowledgeablePubsubMessage::nack);
-        }
-    }
-
 
     /**
      * Create a new singleton route definition from URI. Only one such route should be active throughout the cluster at any time.
@@ -105,7 +85,6 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
     protected RouteDefinition singletonFrom(String uri) {
         return this.from(uri).group(SINGLETON_ROUTE_DEFINITION_GROUP_NAME);
     }
-
 
     /**
      * Singleton route is only active if it is started and this node is the cluster leader for the route
@@ -126,6 +105,25 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
             return ((MasterConsumer) consumer).isMaster();
         }
         return false;
+    }
+
+    private static class AckSynchronization implements Synchronization {
+
+        private final List<BasicAcknowledgeablePubsubMessage> ackList;
+
+        public AckSynchronization(List<BasicAcknowledgeablePubsubMessage> ackList) {
+            this.ackList = ackList;
+        }
+
+        @Override
+        public void onComplete(Exchange exchange) {
+            ackList.forEach(BasicAcknowledgeablePubsubMessage::ack);
+        }
+
+        @Override
+        public void onFailure(Exchange exchange) {
+            ackList.forEach(BasicAcknowledgeablePubsubMessage::nack);
+        }
     }
 
 

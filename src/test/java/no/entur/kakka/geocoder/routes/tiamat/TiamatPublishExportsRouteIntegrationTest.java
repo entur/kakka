@@ -41,33 +41,25 @@ import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class,
         properties = {
-        "tiamat.export.retry.delay=1"
+                "tiamat.export.retry.delay=1"
         })
 @Disabled
 public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @Value("${tiamat.export.max.retries:480}")
-    private int maxRetries;
-
-    @Autowired
-    private ModelCamelContext context;
-
     @EndpointInject("mock:updateStatus")
     protected MockEndpoint statusQueueMock;
-
-
     @EndpointInject("mock:tiamatExport")
     protected MockEndpoint tiamatStartExportMock;
-
     @EndpointInject("mock:tiamatPollJobStatus")
     protected MockEndpoint tiamatPollMock;
-
-    @EndpointInject( "mock:TiamatExportQueue")
+    @EndpointInject("mock:TiamatExportQueue")
     protected MockEndpoint rescheduleMock;
-
-
     @Produce("entur-google-pubsub:TiamatExportQueue")
     protected ProducerTemplate input;
+    @Value("${tiamat.export.max.retries:480}")
+    private int maxRetries;
+    @Autowired
+    private ModelCamelContext context;
 
     @BeforeEach
     public void setUp() {
@@ -77,21 +69,21 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
         tiamatPollMock.reset();
         try {
 
-            AdviceWith.adviceWith(context,"tiamat-publish-export-poll-status",
+            AdviceWith.adviceWith(context, "tiamat-publish-export-poll-status",
                     a -> a.weaveByToUri("direct:tiamatPollJobStatus").replace().to("mock:tiamatPollJobStatus"));
 
-            AdviceWith.adviceWith(context,"tiamat-publish-export-start-new",
+            AdviceWith.adviceWith(context, "tiamat-publish-export-start-new",
                     a -> a.weaveByToUri("direct:tiamatExport").replace().to("mock:tiamatExport"));
 
-            AdviceWith.adviceWith(context,"tiamat-publish-export",
+            AdviceWith.adviceWith(context, "tiamat-publish-export",
                     a -> a.weaveByToUri("entur-google-pubsub:TiamatExportQueue").replace().to("mock:tiamatExportQueue"));
 
 
-            AdviceWith.adviceWith(context,"tiamat-publish-export-start-new",
+            AdviceWith.adviceWith(context, "tiamat-publish-export-start-new",
                     a -> a.weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus"));
 
 
-            AdviceWith.adviceWith(context,"tiamat-publish-export-poll-status",
+            AdviceWith.adviceWith(context, "tiamat-publish-export-poll-status",
                     a -> a.weaveByToUri("direct:updateStatus").replace().to("mock:updateStatus"));
 
         } catch (Exception e) {

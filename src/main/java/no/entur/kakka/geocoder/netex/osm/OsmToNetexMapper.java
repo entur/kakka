@@ -19,7 +19,6 @@ import net.opengis.gml._3.AbstractRingPropertyType;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LinearRingType;
 import net.opengis.gml._3.PolygonType;
-
 import org.openstreetmap.osm.Node;
 import org.openstreetmap.osm.Tag;
 import org.openstreetmap.osm.Way;
@@ -37,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -129,22 +127,22 @@ public class OsmToNetexMapper<T extends Zone_VersionStructure> {
             } else if (tag.getK().startsWith(ZONE_TYPE)) {
                 String keyName = tag.getK();
                 String value = tag.getV();
-                tagValueNotNull(ZONE_TYPE,value);
+                tagValueNotNull(ZONE_TYPE, value);
 
                 KeyValueStructure keyValueStructure = new KeyValueStructure().withKey(keyName).withValue(value);
                 KeyListStructure keyListStructure = new KeyListStructure().withKeyValue(keyValueStructure);
                 zone.setKeyList(keyListStructure);
             } else if (tag.getK().equals(VALID_FROM)) {
                 var validFrom = tag.getV();
-                tagValueNotNull(VALID_FROM,validFrom);
+                tagValueNotNull(VALID_FROM, validFrom);
 
-                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 try {
-                    var  instant = sdf.parse(validFrom).toInstant();
+                    var instant = sdf.parse(validFrom).toInstant();
                     final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
                     zone.withValidBetween(new ValidBetween().withFromDate(localDateTime));
                 } catch (ParseException e) {
-                    logger.info("Unable to parse and set valid from date: {}",e.getMessage());
+                    logger.info("Unable to parse and set valid from date: {}", e.getMessage());
                 }
 
             }

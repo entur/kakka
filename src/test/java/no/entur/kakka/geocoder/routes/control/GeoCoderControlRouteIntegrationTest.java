@@ -19,8 +19,8 @@ package no.entur.kakka.geocoder.routes.control;
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.GeoCoderConstants;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -37,119 +37,115 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-	@Autowired
-	private ModelCamelContext context;
+    @EndpointInject("mock:destination")
+    protected MockEndpoint destination;
+    @Produce("entur-google-pubsub:GeoCoderQueue")
+    protected ProducerTemplate geoCoderQueueTemplate;
+    @EndpointInject("mock:statusQueue")
+    protected MockEndpoint statusQueueMock;
+    @Autowired
+    private ModelCamelContext context;
+    @Value("${geocoder.max.retries:3000}")
+    private int maxRetries;
 
-	@EndpointInject("mock:destination")
-	protected MockEndpoint destination;
+    @BeforeEach
+    public void before() {
+        destination.reset();
+        statusQueueMock.reset();
+    }
 
-	@Produce("entur-google-pubsub:GeoCoderQueue")
-	protected ProducerTemplate geoCoderQueueTemplate;
+    @Test
+    public void testMessagesAreMergedAndTaskedOrderAccordingToPhase() throws Exception {
+        destination.expectedMessageCount(4);
 
-	@EndpointInject("mock:statusQueue")
-	protected MockEndpoint statusQueueMock;
+        GeoCoderTask task1 = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
+        GeoCoderTask task2 = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
+        GeoCoderTask task3 = task(GeoCoderTask.Phase.TIAMAT_EXPORT);
+        GeoCoderTask task4 = task(GeoCoderTask.Phase.PELIAS_UPDATE);
 
-	@Value("${geocoder.max.retries:3000}")
-	private int maxRetries;
+        destination.expectedBodiesReceived(task1, task2, task3, task4);
+        context.start();
 
-	@BeforeEach
-	public void before() {
-		destination.reset();
-		statusQueueMock.reset();
-	}
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task3).toString());
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task2, task4).toString());
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task1).toString());
 
-	@Test
-	public void testMessagesAreMergedAndTaskedOrderAccordingToPhase() throws Exception {
-		destination.expectedMessageCount(4);
+        destination.assertIsSatisfied();
+    }
 
-		GeoCoderTask task1 = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
-		GeoCoderTask task2 = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
-		GeoCoderTask task3 = task(GeoCoderTask.Phase.TIAMAT_EXPORT);
-		GeoCoderTask task4 = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+    @Test
+    public void testOngoingTasksAreAllowedToComplete() throws Exception {
+        GeoCoderTask ongoingInit = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+        ongoingInit.setSubStep(1);
+        GeoCoderTask ongoingFinalStep = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+        ongoingFinalStep.setSubStep(2);
+        GeoCoderTask earlierPhase = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
 
-		destination.expectedBodiesReceived(task1, task2, task3, task4);
-		context.start();
+        // First task is rescheduled for step 2
+        destination.whenExchangeReceived(1, e -> e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, ongoingFinalStep));
+        destination.expectedBodiesReceived(ongoingInit, ongoingFinalStep, earlierPhase);
 
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task3).toString());
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task2, task4).toString());
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task1).toString());
+        context.start();
 
-		destination.assertIsSatisfied();
-	}
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(ongoingInit, earlierPhase).toString());
 
-	@Test
-	public void testOngoingTasksAreAllowedToComplete() throws Exception {
-		GeoCoderTask ongoingInit = task(GeoCoderTask.Phase.PELIAS_UPDATE);
-		ongoingInit.setSubStep(1);
-		GeoCoderTask ongoingFinalStep = task(GeoCoderTask.Phase.PELIAS_UPDATE);
-		ongoingFinalStep.setSubStep(2);
-		GeoCoderTask earlierPhase = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
+        destination.assertIsSatisfied();
+    }
 
-		// First task is rescheduled for step 2
-		destination.whenExchangeReceived(1, e -> e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, ongoingFinalStep));
-		destination.expectedBodiesReceived(ongoingInit, ongoingFinalStep, earlierPhase);
+    @Test
+    public void testTaskIsDehydratedAndRehydratedWithHeaders() throws Exception {
 
-		context.start();
+        String headerValue = "fileNametest";
+        GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
+        GeoCoderTask taskNextIteration = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
 
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(ongoingInit, earlierPhase).toString());
+        destination.whenExchangeReceived(1, e -> {
+            Assertions.assertEquals(task, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
+            e.getIn().setHeader(Constants.FILE_NAME, headerValue);
+            e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, taskNextIteration);
+        });
 
-		destination.assertIsSatisfied();
-	}
+        destination.whenExchangeReceived(2, e -> {
+            Assertions.assertEquals(taskNextIteration, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
+            Assertions.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME, String.class));
+        });
 
-	@Test
-	public void testTaskIsDehydratedAndRehydratedWithHeaders() throws Exception {
+        destination.expectedBodiesReceived(task, taskNextIteration);
 
-		String headerValue = "fileNametest";
-		GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
-		GeoCoderTask taskNextIteration = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
+        context.start();
 
-		destination.whenExchangeReceived(1, e -> {
-			Assertions.assertEquals(task, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
-			e.getIn().setHeader(Constants.FILE_NAME, headerValue);
-			e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, taskNextIteration);
-		});
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
 
-		destination.whenExchangeReceived(2, e -> {
-			Assertions.assertEquals(taskNextIteration, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
-			Assertions.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME, String.class));
-		});
+        destination.assertIsSatisfied();
+    }
 
-		destination.expectedBodiesReceived(task, taskNextIteration);
+    @Test
+    public void testTimeout() throws Exception {
 
-		context.start();
+        AdviceWith.adviceWith(context, "geocoder-reschedule-task",
+                a -> a.interceptSendToEndpoint("direct:updateStatus")
+                        .skipSendToOriginalEndpoint().to("mock:statusQueue"));
 
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
+        statusQueueMock
+                .whenExchangeReceived(1, e -> Assertions.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));
+        statusQueueMock.expectedMessageCount(1);
+        destination.whenExchangeReceived(1, e ->
+                e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, true)
+        );
 
-		destination.assertIsSatisfied();
-	}
+        context.start();
+        GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
+        task.getHeaders().put(Constants.LOOP_COUNTER, maxRetries);
+        task.getHeaders().put(Constants.SYSTEM_STATUS, JobEvent.builder().startGeocoder(GeoCoderTaskType.ADDRESS_DOWNLOAD).build().toString());
 
-	@Test
-	public void testTimeout() throws Exception {
+        geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
 
-		AdviceWith.adviceWith(context,"geocoder-reschedule-task",
-				a -> a.interceptSendToEndpoint("direct:updateStatus")
-						.skipSendToOriginalEndpoint().to("mock:statusQueue"));
+        destination.assertIsSatisfied();
+        statusQueueMock.assertIsSatisfied();
+    }
 
-		statusQueueMock
-				.whenExchangeReceived(1, e -> Assertions.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));
-		statusQueueMock.expectedMessageCount(1);
-		destination.whenExchangeReceived(1, e ->
-			e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, true)
-		);
-
-		context.start();
-		GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
-		task.getHeaders().put(Constants.LOOP_COUNTER, maxRetries);
-		task.getHeaders().put(Constants.SYSTEM_STATUS, JobEvent.builder().startGeocoder(GeoCoderTaskType.ADDRESS_DOWNLOAD).build().toString());
-
-		geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
-
-		destination.assertIsSatisfied();
-		statusQueueMock.assertIsSatisfied();
-	}
-
-	private GeoCoderTask task(GeoCoderTask.Phase phase) {
-		return new GeoCoderTask(phase, "mock:destination");
-	}
+    private GeoCoderTask task(GeoCoderTask.Phase phase) {
+        return new GeoCoderTask(phase, "mock:destination");
+    }
 
 }

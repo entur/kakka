@@ -43,88 +43,87 @@ import java.util.stream.Collectors;
 public class PeliasIndexValidPlaceNameFilter {
 
 
-	private AdminUnitRepository adminUnitRepository;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private AdminUnitRepository adminUnitRepository;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * Remove place name which withen 1KM distance to group of stopplaces
+     * <p>
+     * Certain commands will be acceptable for insert into Elasticsearch, but will cause Pelias API to fail upon subsequent queries.
+     */
+    public List<ElasticsearchCommand> removeInvalidCommands(@Body Collection<ElasticsearchCommand> commands,
+                                                            @ExchangeProperty(value = GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO) AdminUnitRepository adminUnitRepository) {
 
-	/**
-	 * Remove place name which withen 1KM distance to group of stopplaces
-	 * <p>
-	 * Certain commands will be acceptable for insert into Elasticsearch, but will cause Pelias API to fail upon subsequent queries.
-	 */
-	public List<ElasticsearchCommand> removeInvalidCommands(@Body Collection<ElasticsearchCommand> commands,
-															@ExchangeProperty(value = GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO) AdminUnitRepository adminUnitRepository) {
+        this.adminUnitRepository = adminUnitRepository;
 
-		this.adminUnitRepository=adminUnitRepository;
+        return commands.stream().filter(c -> isValid(c)).collect(Collectors.toList());
+    }
 
-		return commands.stream().filter(c -> isValid(c)).collect(Collectors.toList());
-	}
+    boolean isValid(ElasticsearchCommand command) {
+        if (command == null || command.getIndex() == null) {
+            logger.warn("Removing invalid command");
+            return false;
+        }
+        if (command.getIndex().getIndex() == null || command.getIndex().getType() == null) {
+            logger.warn("Removing invalid command with missing index name or type:" + command);
+            return false;
+        }
 
-	boolean isValid(ElasticsearchCommand command) {
-		if (command == null || command.getIndex() == null) {
-			logger.warn("Removing invalid command");
-			return false;
-		}
-		if (command.getIndex().getIndex() == null || command.getIndex().getType() == null) {
-			logger.warn("Removing invalid command with missing index name or type:" + command);
-			return false;
-		}
+        if (!(command.getSource() instanceof PeliasDocument)) {
+            logger.warn("Removing invalid command with missing pelias document:" + command);
+            return false;
+        }
 
-		if (!(command.getSource() instanceof PeliasDocument)) {
-			logger.warn("Removing invalid command with missing pelias document:" + command);
-			return false;
-		}
+        PeliasDocument doc = (PeliasDocument) command.getSource();
 
-		PeliasDocument doc = (PeliasDocument) command.getSource();
+        if (doc.getLayer() == null || doc.getSource() == null || doc.getSourceId() == null) {
+            logger.warn("Removing invalid command where pelias document is missing mandatory fields:" + command);
+            return false;
+        }
 
-		if (doc.getLayer() == null || doc.getSource() == null || doc.getSourceId() == null) {
-			logger.warn("Removing invalid command where pelias document is missing mandatory fields:" + command);
-			return false;
-		}
+        if (doc.getCenterPoint() == null) {
+            logger.debug("Removing invalid command where geometry is missing:" + command);
+            return false;
+        }
 
-		if (doc.getCenterPoint() == null) {
-			logger.debug("Removing invalid command where geometry is missing:" + command);
-			return false;
-		}
-
-		if ((adminUnitRepository.getGroupOfStopPlaces(doc.getDefaultName())) != null) {
-			logger.debug("Removing placename which same as groupofstopplace name");
-			final SimplePoint_VersionStructure gospCentroid = adminUnitRepository.getGroupOfStopPlaces(doc.getDefaultName()).getCentroid();
-			final GeoPoint placeNameCenterPoint = doc.getCenterPoint();
-			if (gospCentroid != null) {
-				Point placeNamePoint = new GeometryFactory().createPoint(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()));
-				Point gospPoint = new GeometryFactory().createPoint(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()));
-
-
-				final GeodeticCalculator gc = new GeodeticCalculator();
-
-				final DirectPosition placeDirectPosition = JTS.toDirectPosition(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()), gc.getCoordinateReferenceSystem());
-				final DirectPosition gospDirectPosition = JTS.toDirectPosition(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()), gc.getCoordinateReferenceSystem());
-
-				try {
-					gc.setStartingPosition(placeDirectPosition);
-					gc.setDestinationPosition(gospDirectPosition);
-				} catch (TransformException e) {
-					e.printStackTrace();
-				}
+        if ((adminUnitRepository.getGroupOfStopPlaces(doc.getDefaultName())) != null) {
+            logger.debug("Removing placename which same as groupofstopplace name");
+            final SimplePoint_VersionStructure gospCentroid = adminUnitRepository.getGroupOfStopPlaces(doc.getDefaultName()).getCentroid();
+            final GeoPoint placeNameCenterPoint = doc.getCenterPoint();
+            if (gospCentroid != null) {
+                Point placeNamePoint = new GeometryFactory().createPoint(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()));
+                Point gospPoint = new GeometryFactory().createPoint(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()));
 
 
-				final double orthodromicDistance = gc.getOrthodromicDistance();
+                final GeodeticCalculator gc = new GeodeticCalculator();
 
-				int totalDistanceMeters = (int) orthodromicDistance;
+                final DirectPosition placeDirectPosition = JTS.toDirectPosition(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()), gc.getCoordinateReferenceSystem());
+                final DirectPosition gospDirectPosition = JTS.toDirectPosition(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()), gc.getCoordinateReferenceSystem());
+
+                try {
+                    gc.setStartingPosition(placeDirectPosition);
+                    gc.setDestinationPosition(gospDirectPosition);
+                } catch (TransformException e) {
+                    e.printStackTrace();
+                }
 
 
-				logger.debug(String.format("placename cordinates: %s", placeNamePoint));
-				logger.debug(String.format("gosp cordinates: %s", gospPoint));
-				logger.debug(String.format("Distance between placename and gosp %s is %s", doc.getDefaultName(), totalDistanceMeters));
+                final double orthodromicDistance = gc.getOrthodromicDistance();
 
-				return totalDistanceMeters >= 1000;
+                int totalDistanceMeters = (int) orthodromicDistance;
 
-			}
 
-		}
+                logger.debug(String.format("placename cordinates: %s", placeNamePoint));
+                logger.debug(String.format("gosp cordinates: %s", gospPoint));
+                logger.debug(String.format("Distance between placename and gosp %s is %s", doc.getDefaultName(), totalDistanceMeters));
 
-		return true;
-	}
+                return totalDistanceMeters >= 1000;
+
+            }
+
+        }
+
+        return true;
+    }
 
 }

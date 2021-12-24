@@ -24,33 +24,33 @@ import org.junit.jupiter.api.Test;
 public class KartverketAddressTest {
 
 
-	@Test
-	public void testFormatFylkesNo() {
-		Assertions.assertEquals("02", address("0203", null).getFylkesNo());
-		Assertions.assertEquals("02", address("203", null).getFylkesNo());
-		Assertions.assertNull(address(null, null).getFylkesNo());
-	}
+    @Test
+    public void testFormatFylkesNo() {
+        Assertions.assertEquals("02", address("0203", null).getFylkesNo());
+        Assertions.assertEquals("02", address("203", null).getFylkesNo());
+        Assertions.assertNull(address(null, null).getFylkesNo());
+    }
 
-	@Test
-	public void testFormatFullKommuneNo() {
-		Assertions.assertEquals("0203", address("0203", null).getFullKommuneNo());
-		Assertions.assertEquals("0203", address("203", null).getFullKommuneNo());
-		Assertions.assertNull(address(null, null).getFullKommuneNo());
-	}
+    @Test
+    public void testFormatFullKommuneNo() {
+        Assertions.assertEquals("0203", address("0203", null).getFullKommuneNo());
+        Assertions.assertEquals("0203", address("203", null).getFullKommuneNo());
+        Assertions.assertNull(address(null, null).getFullKommuneNo());
+    }
 
-	@Test
-	public void testFormatFullGrunnkretsNo() {
-		Assertions.assertEquals("02030560", address("0203", "0560").getFullGrunnkretsNo());
-		Assertions.assertEquals("02030560", address("203", "560").getFullGrunnkretsNo());
-		Assertions.assertNull(address(null, null).getFullGrunnkretsNo());
-		Assertions.assertNull(address("0203", null).getFullGrunnkretsNo());
-		Assertions.assertNull(address(null, "531").getFullGrunnkretsNo());
-	}
+    @Test
+    public void testFormatFullGrunnkretsNo() {
+        Assertions.assertEquals("02030560", address("0203", "0560").getFullGrunnkretsNo());
+        Assertions.assertEquals("02030560", address("203", "560").getFullGrunnkretsNo());
+        Assertions.assertNull(address(null, null).getFullGrunnkretsNo());
+        Assertions.assertNull(address("0203", null).getFullGrunnkretsNo());
+        Assertions.assertNull(address(null, "531").getFullGrunnkretsNo());
+    }
 
-	private KartverketAddress address(String kommunenr, String grunnkretsnr) {
-		KartverketAddress address = new KartverketAddress();
-		address.setGrunnkretsnr(grunnkretsnr);
-		address.setKommunenr(kommunenr);
-		return address;
-	}
+    private KartverketAddress address(String kommunenr, String grunnkretsnr) {
+        KartverketAddress address = new KartverketAddress();
+        address.setGrunnkretsnr(grunnkretsnr);
+        address.setKommunenr(kommunenr);
+        return address;
+    }
 }

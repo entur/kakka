@@ -32,7 +32,7 @@ public class UtilsTest {
 
     @Test
     public void testGetJobIdWithNull() {
-        assertThrows( IllegalArgumentException.class, () -> Utils.getLastPathElementOfUrl(null));
+        assertThrows(IllegalArgumentException.class, () -> Utils.getLastPathElementOfUrl(null));
     }
 
     @Test

@@ -106,12 +106,12 @@ public class AdminUnitRepositoryBuilder {
             this.idCache = idCache;
             this.localities = localities;
             this.countries = countries;
-            this.groupOfStopPlaces=groupOfStopPlaces;
+            this.groupOfStopPlaces = groupOfStopPlaces;
 
         }
 
         @Override
-        public GroupOfStopPlaces getGroupOfStopPlaces(String name){
+        public GroupOfStopPlaces getGroupOfStopPlaces(String name) {
             return groupOfStopPlaces.stream().filter(gosp -> gosp.getName().getValue().equals(name)).findFirst().orElse(null);
         }
 
@@ -123,7 +123,7 @@ public class AdminUnitRepositoryBuilder {
         @Override
         public TopographicPlaceAdapter getLocality(String id) {
             for (TopographicPlaceAdapter topographicPlace : localities) {
-                var topographicPlaceId=topographicPlace.getId();
+                var topographicPlaceId = topographicPlace.getId();
                 if (topographicPlaceId != null && topographicPlaceId.equals(id)) {
                     return topographicPlace;
                 }
@@ -147,9 +147,9 @@ public class AdminUnitRepositoryBuilder {
             }
 
             for (TopographicPlaceAdapter topographicPlace : topographicPlaces) {
-                var polygon=topographicPlace.getDefaultGeometry();
+                var polygon = topographicPlace.getDefaultGeometry();
                 if (polygon != null && polygon.covers(point)) {
-                        return topographicPlace;
+                    return topographicPlace;
                 }
             }
             return null;
@@ -188,13 +188,13 @@ public class AdminUnitRepositoryBuilder {
                 }
             }
             FileUtils.listFiles(
-                    new File(localWorkingDirectory), new String[]{"xml"}, true)
+                            new File(localWorkingDirectory), new String[]{"xml"}, true)
                     .forEach(f -> {
 
                         List<GroupOfStopPlaces> gosp = new ArrayList<>();
 
                         List<TopographicPlace> tp = new ArrayList<>();
-                        fromDeliveryPublicationStructure(tp,gosp,f);
+                        fromDeliveryPublicationStructure(tp, gosp, f);
 
                         if (!gosp.isEmpty()) {
                             gosp.forEach(this::addGroupOfStopPlaces);
@@ -286,7 +286,7 @@ public class AdminUnitRepositoryBuilder {
         }
 
         private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {
-            var id= topographicPlace.getId();
+            var id = topographicPlace.getId();
             var isoCode = topographicPlace.getIsoCode();
             final String parentId;
             if (topographicPlace.getParentTopographicPlaceRef() != null) {

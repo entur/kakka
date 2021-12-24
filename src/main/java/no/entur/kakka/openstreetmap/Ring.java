@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class Ring {
 
-    public static final Logger logger= LoggerFactory.getLogger(Ring.class);
+    public static final Logger logger = LoggerFactory.getLogger(Ring.class);
 
     private final List<Long> nodesIds;
     private final Map<Long, OSMNode> nodes;

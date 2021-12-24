@@ -26,7 +26,7 @@ public class OsmSchemaValidator {
         String resourceName = "xsd/OSMSchema.xsd";
         logger.info("Loading resource: {}", resourceName);
         URL resource = getClass().getClassLoader().getResource(resourceName);
-        if(resource == null) {
+        if (resource == null) {
             throw new IOException("Cannot load resource " + resourceName);
         }
         return factory.newSchema(resource);

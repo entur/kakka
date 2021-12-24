@@ -44,10 +44,10 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
                 new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
-                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true);
+                        POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true);
 
         Collection<ElasticsearchCommand> commands = mapper
-                                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
         Assertions.assertEquals(16, commands.size());
         commands.forEach(c -> assertCommand(c));
@@ -97,7 +97,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
     }
 
     private void assertNotMapped(Collection<ElasticsearchCommand> commands, String sourceId) {
-        Assertions.assertTrue(commands.stream().map(c -> (PeliasDocument) c.getSource()).noneMatch(d -> d.getSourceId().equals(sourceId)),"Id should not have been matched");
+        Assertions.assertTrue(commands.stream().map(c -> (PeliasDocument) c.getSource()).noneMatch(d -> d.getSourceId().equals(sourceId)), "Id should not have been matched");
     }
 
     private void assertKnownMultimodalStopPlaceParent(PeliasDocument known) throws Exception {
@@ -107,7 +107,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(known.getCategory().size(), 2);
         Assertions.assertTrue(known.getCategory().containsAll(Arrays.asList("airport", "onstreetBus")));
         Assertions.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport", "onstreetbus")));
-        Assertions.assertEquals(5000, known.getPopularity().longValue(),"Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)");
+        Assertions.assertEquals(5000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)");
     }
 
     private void assertKnownMultimodalStopPlaceChild(PeliasDocument known) throws Exception {
@@ -118,7 +118,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(known.getCategory().size(), 1);
         Assertions.assertTrue(known.getCategory().containsAll(Arrays.asList("airport")));
         Assertions.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport")));
-        Assertions.assertEquals(3000, known.getPopularity().longValue(),"Expected popularity to be default (1000) boosted by stop type boosts (airport=3)");
+        Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type boosts (airport=3)");
     }
 
     private void assertKnownStopPlace(PeliasDocument known, String defaultName) throws Exception {
@@ -134,7 +134,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
         Assertions.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
         Assertions.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
-        Assertions.assertEquals(3000, known.getPopularity().longValue(),"Expected popularity to be default (1000) boosted by stop type (airport)");
+        Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type (airport)");
         Assertions.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
     }
 

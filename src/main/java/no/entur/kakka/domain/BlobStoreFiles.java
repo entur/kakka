@@ -43,33 +43,56 @@ public class BlobStoreFiles {
     }
 
     public static class File {
-        public enum Format {NETEX, GTFS, GRAPH, UNKOWN}
+        @JsonProperty(required = true)
+        private String name;
+        @JsonProperty(required = false)
+        private Date created;
+        @JsonProperty(required = false)
+        private Date updated;
+        @JsonProperty(required = false)
+        private Long fileSize;
+        @JsonProperty(required = false)
+        private String referential;
+        @JsonProperty(required = false)
+        private Long providerId;
+        @JsonProperty(required = false)
+        private Format format;
+        @JsonProperty(required = false)
+        private String url;
+
+        public File() {
+        }
+
+        public File(String name, Date created, Date updated, Long fileSize) {
+            super();
+            this.name = name;
+            this.created = created;
+            this.updated = updated;
+            this.fileSize = fileSize;
+        }
 
         public String getName() {
             return name;
-        }
-
-        public File() {
         }
 
         public void setName(String name) {
             this.name = name;
         }
 
-        public void setUpdated(Date updated) {
-            this.updated = updated;
-        }
-
-        public void setFileSize(Long fileSize) {
-            this.fileSize = fileSize;
-        }
-
         public Date getUpdated() {
             return updated;
         }
 
+        public void setUpdated(Date updated) {
+            this.updated = updated;
+        }
+
         public Long getFileSize() {
             return fileSize;
+        }
+
+        public void setFileSize(Long fileSize) {
+            this.fileSize = fileSize;
         }
 
         public Date getCreated() {
@@ -112,38 +135,6 @@ public class BlobStoreFiles {
             this.providerId = providerId;
         }
 
-        public File(String name, Date created, Date updated, Long fileSize) {
-            super();
-            this.name = name;
-            this.created = created;
-            this.updated = updated;
-            this.fileSize = fileSize;
-        }
-
-        @JsonProperty(required = true)
-        private String name;
-
-        @JsonProperty(required = false)
-        private Date created;
-
-        @JsonProperty(required = false)
-        private Date updated;
-
-        @JsonProperty(required = false)
-        private Long fileSize;
-
-        @JsonProperty(required = false)
-        private String referential;
-
-        @JsonProperty(required = false)
-        private Long providerId;
-
-        @JsonProperty(required = false)
-        private Format format;
-
-        @JsonProperty(required = false)
-        private String url;
-
         @JsonIgnore
         public String getFileNameOnly() {
             if (name == null || name.endsWith("/")) {
@@ -157,6 +148,8 @@ public class BlobStoreFiles {
         public String toString() {
             return "File [name=" + name + ", created=" + created + ", updated=" + updated + ", fileSize=" + fileSize + "]";
         }
+
+        public enum Format {NETEX, GTFS, GRAPH, UNKOWN}
 
     }
 }

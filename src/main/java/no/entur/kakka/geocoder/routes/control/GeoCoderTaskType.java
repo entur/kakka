@@ -19,22 +19,22 @@ package no.entur.kakka.geocoder.routes.control;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 
 public enum GeoCoderTaskType {
-	ADDRESS_DOWNLOAD(GeoCoderConstants.KARTVERKET_ADDRESS_DOWNLOAD),
-	ADMINISTRATIVE_UNITS_DOWNLOAD(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD),
-	PLACE_NAMES_DOWNLOAD(GeoCoderConstants.KARTVERKET_PLACE_NAMES_DOWNLOAD),
-	TIAMAT_POI_UPDATE(GeoCoderConstants.TIAMAT_PLACES_OF_INTEREST_UPDATE_START),
-	TIAMAT_ADMINISTRATIVE_UNITS_UPDATE(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START),
-	TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE(GeoCoderConstants.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START),
-	TIAMAT_EXPORT(GeoCoderConstants.TIAMAT_EXPORT_START),
-	PELIAS_UPDATE(GeoCoderConstants.PELIAS_UPDATE_START);
+    ADDRESS_DOWNLOAD(GeoCoderConstants.KARTVERKET_ADDRESS_DOWNLOAD),
+    ADMINISTRATIVE_UNITS_DOWNLOAD(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD),
+    PLACE_NAMES_DOWNLOAD(GeoCoderConstants.KARTVERKET_PLACE_NAMES_DOWNLOAD),
+    TIAMAT_POI_UPDATE(GeoCoderConstants.TIAMAT_PLACES_OF_INTEREST_UPDATE_START),
+    TIAMAT_ADMINISTRATIVE_UNITS_UPDATE(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START),
+    TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE(GeoCoderConstants.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START),
+    TIAMAT_EXPORT(GeoCoderConstants.TIAMAT_EXPORT_START),
+    PELIAS_UPDATE(GeoCoderConstants.PELIAS_UPDATE_START);
 
-	GeoCoderTaskType(GeoCoderTask geoCoderTask) {
-		this.geoCoderTask = geoCoderTask;
-	}
+    private final GeoCoderTask geoCoderTask;
 
-	private final GeoCoderTask geoCoderTask;
+    GeoCoderTaskType(GeoCoderTask geoCoderTask) {
+        this.geoCoderTask = geoCoderTask;
+    }
 
-	public GeoCoderTask getGeoCoderTask() {
-		return geoCoderTask;
-	}
+    public GeoCoderTask getGeoCoderTask() {
+        return geoCoderTask;
+    }
 }

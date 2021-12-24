@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class PbfToElasticsearchCommands {
 
-    public static final Logger logger= LoggerFactory.getLogger(PbfToElasticsearchCommands.class);
+    public static final Logger logger = LoggerFactory.getLogger(PbfToElasticsearchCommands.class);
 
     private final OSMPOIFilterService osmpoiFilterService;
 
@@ -49,7 +49,7 @@ public class PbfToElasticsearchCommands {
         this.poiBoost = poiBoost;
         if (poiFilter != null) {
             this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
-            logger.info("pelias poiFilter is set to: {}", poiFilter );
+            logger.info("pelias poiFilter is set to: {}", poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();
             logger.info("No pelias poiFilter found");
@@ -67,12 +67,13 @@ public class PbfToElasticsearchCommands {
     }
 
     private File getFile(InputStream poiStream) throws IOException {
-        File tmpPoiFile =File.createTempFile("tmp","poi");
+        File tmpPoiFile = File.createTempFile("tmp", "poi");
         tmpPoiFile.deleteOnExit();
         var out = new FileOutputStream(tmpPoiFile);
-        IOUtils.copy(poiStream,out);
+        IOUtils.copy(poiStream, out);
         return tmpPoiFile;
     }
+
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
             logger.info("Total number of topographical places from osm: {}", places.size());

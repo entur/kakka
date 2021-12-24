@@ -38,7 +38,7 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
  * This is expected to be https://download.geofabrik.de/europe/norway-latest.osm.pbf
  *
  * <p>
- *     The MD5 sum is found by adding <code>.md5</code> to the URL
+ * The MD5 sum is found by adding <code>.md5</code> to the URL
  * </p>
  * <p>
  *     <ul>
@@ -54,7 +54,9 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
 
     private static final String FINISHED = "FINISHED";
 
-    /** One time per 24H on MON-FRI */
+    /**
+     * One time per 24H on MON-FRI
+     */
     @Value("${fetch.osm.cron.schedule:0+*+*/23+?+*+MON-FRI}")
     private String cronSchedule;
 

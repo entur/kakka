@@ -31,7 +31,6 @@ import org.rutebanken.netex.model.TariffZone;
 import org.rutebanken.netex.model.TariffZonesInFrame_RelStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -43,7 +42,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +50,6 @@ import java.util.stream.Collectors;
 public class TariffZoneConverter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
 
 
     private final NetexHelper netexHelper;
@@ -65,7 +62,7 @@ public class TariffZoneConverter {
 
     public void toNetexFile(Exchange e, String localWorkingDir) throws JAXBException, IOException, SAXException, ParserConfigurationException, ClassNotFoundException {
 
-        String fileName = e.getIn().getHeader(Constants.FILE_NAME,String.class);
+        String fileName = e.getIn().getHeader(Constants.FILE_NAME, String.class);
 
         logger.info("Converting to tariff zone: {}", fileName);
 
@@ -78,7 +75,7 @@ public class TariffZoneConverter {
         final String netexFileName = FilenameUtils.getBaseName(file.getName()) + ".xml";
         var netexOutputFile = localWorkingDir + "/" + netexFileName;
 
-        var inputStream= new FileInputStream(file);
+        var inputStream = new FileInputStream(file);
         var inputStreamReader = new InputStreamReader(inputStream);
         var inputSource = new InputSource(inputStreamReader);
 
@@ -99,9 +96,9 @@ public class TariffZoneConverter {
 
         logger.debug("Converted osm to netex file {}", netexOutputFile);
 
-        var providerId = e.getIn().getHeader("providerId",String.class);
+        var providerId = e.getIn().getHeader("providerId", String.class);
 
-        e.getIn().setHeader(Constants.FILE_NAME,netexFileName);
+        e.getIn().setHeader(Constants.FILE_NAME, netexFileName);
         e.getIn().setHeader(Constants.FILE_HANDLE, "tariffzones/netex/" + providerId + "/" + netexFileName);
         e.getIn().setBody(new File(netexOutputFile));
     }
@@ -111,10 +108,10 @@ public class TariffZoneConverter {
         var mapOfNodes = osm.getNode().stream().collect(Collectors.toMap(Node::getId, node -> node));
         logger.info("Mapped {} nodes from osm file", mapOfNodes.size());
 
-            OsmToNetexMapper<TariffZone> osmToNetexMapper = new OsmToNetexMapper<>(netexHelper);
-            List<TariffZone> tariffZones = osmToNetexMapper.mapWaysToZoneList(osm.getWay(), mapOfNodes, TariffZone.class);
-            siteFrame.withTariffZones(
-                    new TariffZonesInFrame_RelStructure()
-                            .withTariffZone(tariffZones));
+        OsmToNetexMapper<TariffZone> osmToNetexMapper = new OsmToNetexMapper<>(netexHelper);
+        List<TariffZone> tariffZones = osmToNetexMapper.mapWaysToZoneList(osm.getWay(), mapOfNodes, TariffZone.class);
+        siteFrame.withTariffZones(
+                new TariffZonesInFrame_RelStructure()
+                        .withTariffZone(tariffZones));
     }
 }

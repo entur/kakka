@@ -17,9 +17,12 @@
 package no.entur.kakka.geocoder.netex;
 
 
+import net.opengis.gml._3.AbstractRingPropertyType;
+import net.opengis.gml._3.DirectPositionListType;
+import net.opengis.gml._3.LinearRingType;
+import net.opengis.gml._3.PolygonType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
-import net.opengis.gml._3.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -45,7 +48,7 @@ public class NetexGeoUtil {
         linearRing.withPosList(positionList);
 
         return new PolygonType().withSrsDimension(BigInteger.valueOf(2)).withSrsName(SRS_NAME_WGS84)
-                       .withExterior(new AbstractRingPropertyType().withAbstractRing(
-                               new net.opengis.gml._3.ObjectFactory().createLinearRing(linearRing)));
+                .withExterior(new AbstractRingPropertyType().withAbstractRing(
+                        new net.opengis.gml._3.ObjectFactory().createLinearRing(linearRing)));
     }
 }

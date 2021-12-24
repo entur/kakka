@@ -17,11 +17,11 @@
 package no.entur.kakka.geocoder.netex;
 
 
+import net.opengis.gml._3.PolygonType;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import net.opengis.gml._3.PolygonType;
 import org.rutebanken.netex.model.CountryRef;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.ModificationEnumeration;
@@ -62,16 +62,16 @@ public class TopographicPlaceMapper {
             return null;
         }
         return new TopographicPlace()
-                       .withVersion("any").withModification(ModificationEnumeration.NEW)
-                       .withName(multilingualString(feature.getName()))
-                       .withAlternativeDescriptors(getAlternativeDescriptors())
-                       .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(feature.getName())))
-                       .withTopographicPlaceType(getType())
-                       .withPolygon(getPolygon())
-                       .withIsoCode(feature.getIsoCode())
-                       .withCountryRef(new CountryRef().withRef(mapCountryRef(feature.getCountryRef())))
-                       .withId(prefix(feature.getId()))
-                       .withParentTopographicPlaceRef(toParentRef(feature.getParentId()));
+                .withVersion("any").withModification(ModificationEnumeration.NEW)
+                .withName(multilingualString(feature.getName()))
+                .withAlternativeDescriptors(getAlternativeDescriptors())
+                .withDescriptor(new TopographicPlaceDescriptor_VersionedChildStructure().withName(multilingualString(feature.getName())))
+                .withTopographicPlaceType(getType())
+                .withPolygon(getPolygon())
+                .withIsoCode(feature.getIsoCode())
+                .withCountryRef(new CountryRef().withRef(mapCountryRef(feature.getCountryRef())))
+                .withId(prefix(feature.getId()))
+                .withParentTopographicPlaceRef(toParentRef(feature.getParentId()));
     }
 
 
@@ -96,7 +96,7 @@ public class TopographicPlaceMapper {
             return null;
         }
         return new TopographicPlaceRefStructure()
-                       .withRef(prefix(feature.getParentId()));
+                .withRef(prefix(feature.getParentId()));
     }
 
     protected TopographicPlaceTypeEnumeration getType() {

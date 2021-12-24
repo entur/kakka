@@ -26,7 +26,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,64 +37,64 @@ import java.util.Map;
  */
 public class FeatureJSONFilter {
 
-	private final String sourceFilePath;
+    private final String sourceFilePath;
 
-	private final String correlationProperty;
+    private final String correlationProperty;
 
-	private final String targetFilePath;
-	private final String comparatorProperty;
-
-
-	private final Map<Object, SimpleFeature> map = new HashMap<>();
-
-	public FeatureJSONFilter(String sourceFilePath, String targetFilePath, String correlationProperty, String comparatorProperty) {
-		this.sourceFilePath = sourceFilePath;
-		this.targetFilePath = targetFilePath;
-		this.correlationProperty = correlationProperty;
-		this.comparatorProperty = comparatorProperty;
-	}
+    private final String targetFilePath;
+    private final String comparatorProperty;
 
 
-	public void filter() {
-		try {
+    private final Map<Object, SimpleFeature> map = new HashMap<>();
 
-			FeatureJSON fJson = new FeatureJSON();
-			FeatureIterator<SimpleFeature> itr = fJson.streamFeatureCollection(FileUtils.openInputStream(new File(sourceFilePath)));
-			while (itr.hasNext()) {
-				SimpleFeature simpleFeature = itr.next();
-				Object id = getProperty(simpleFeature, correlationProperty);
-				SimpleFeature existing = map.get(id);
-
-				if (existing == null || shouldNewReplaceExisting(simpleFeature, existing)) {
-					map.put(id, simpleFeature);
-				}
-			}
-			itr.close();
-
-			DefaultFeatureCollection filteredCollection = new DefaultFeatureCollection();
-			filteredCollection.addAll(map.values());
-
-			fJson.writeFeatureCollection(filteredCollection, new FileOutputStream(targetFilePath));
-
-		} catch (IOException ioE) {
-			throw new RuntimeException("Filtering failed for featureJSON file: " + sourceFilePath, ioE);
-		}
-	}
+    public FeatureJSONFilter(String sourceFilePath, String targetFilePath, String correlationProperty, String comparatorProperty) {
+        this.sourceFilePath = sourceFilePath;
+        this.targetFilePath = targetFilePath;
+        this.correlationProperty = correlationProperty;
+        this.comparatorProperty = comparatorProperty;
+    }
 
 
-	protected boolean shouldNewReplaceExisting(SimpleFeature newF, SimpleFeature existingF) {
-		Comparable existingCmpVal = getProperty(existingF, comparatorProperty);
-		Comparable newCmpVal = getProperty(newF, comparatorProperty);
+    public void filter() {
+        try {
 
-		return ObjectUtils.compare(newCmpVal, existingCmpVal) > 0;
-	}
+            FeatureJSON fJson = new FeatureJSON();
+            FeatureIterator<SimpleFeature> itr = fJson.streamFeatureCollection(FileUtils.openInputStream(new File(sourceFilePath)));
+            while (itr.hasNext()) {
+                SimpleFeature simpleFeature = itr.next();
+                Object id = getProperty(simpleFeature, correlationProperty);
+                SimpleFeature existing = map.get(id);
+
+                if (existing == null || shouldNewReplaceExisting(simpleFeature, existing)) {
+                    map.put(id, simpleFeature);
+                }
+            }
+            itr.close();
+
+            DefaultFeatureCollection filteredCollection = new DefaultFeatureCollection();
+            filteredCollection.addAll(map.values());
+
+            fJson.writeFeatureCollection(filteredCollection, new FileOutputStream(targetFilePath));
+
+        } catch (IOException ioE) {
+            throw new RuntimeException("Filtering failed for featureJSON file: " + sourceFilePath, ioE);
+        }
+    }
 
 
-	protected <T> T getProperty(Feature feature, String propertyName) {
-		Property property = feature.getProperty(propertyName);
-		if (property == null) {
-			return null;
-		}
-		return (T) property.getValue();
-	}
+    protected boolean shouldNewReplaceExisting(SimpleFeature newF, SimpleFeature existingF) {
+        Comparable existingCmpVal = getProperty(existingF, comparatorProperty);
+        Comparable newCmpVal = getProperty(newF, comparatorProperty);
+
+        return ObjectUtils.compare(newCmpVal, existingCmpVal) > 0;
+    }
+
+
+    protected <T> T getProperty(Feature feature, String propertyName) {
+        Property property = feature.getProperty(propertyName);
+        if (property == null) {
+            return null;
+        }
+        return (T) property.getValue();
+    }
 }

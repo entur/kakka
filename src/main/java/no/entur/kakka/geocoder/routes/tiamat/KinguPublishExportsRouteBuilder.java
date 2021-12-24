@@ -11,26 +11,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
-    @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
-    private String cronSchedule;
-
-    @Value("${tiamat.publish.export.cron.schedule.mid.day:0+0+12+*+*+?}")
-    private String cronScheduleMidDay;
-
-    @Value("${kingu.outgoing.camel.route.topic.netex.export}")
-    private String outGoingNetexExport;
-
-    @Value("${tiamat.publish.export.source.blobstore.subdirectory:export}")
-    private String blobStoreSourceSubdirectoryForTiamatExport;
-
-    @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
-    private String blobStoreSubdirectoryForTiamatExport;
-
-    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
-    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-
     @Autowired
     TaskGenerator taskGenerator;
+    @Value("${tiamat.publish.export.cron.schedule:0+0+23+*+*+?}")
+    private String cronSchedule;
+    @Value("${tiamat.publish.export.cron.schedule.mid.day:0+0+12+*+*+?}")
+    private String cronScheduleMidDay;
+    @Value("${kingu.outgoing.camel.route.topic.netex.export}")
+    private String outGoingNetexExport;
+    @Value("${tiamat.publish.export.source.blobstore.subdirectory:export}")
+    private String blobStoreSourceSubdirectoryForTiamatExport;
+    @Value("${tiamat.publish.export.blobstore.subdirectory:tiamat}")
+    private String blobStoreSubdirectoryForTiamatExport;
+    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
+    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
 
     @Override
     public void configure() throws Exception {
@@ -57,11 +51,11 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .routeId("kingu-publish-export-start-full");
 
         from(outGoingNetexExport)
-                .log(LoggingLevel.INFO,"Incoming message from kingu export")
+                .log(LoggingLevel.INFO, "Incoming message from kingu export")
                 //.filter(e -> e.getIn().getHeader(Constants.EXPORT_JOB_NAME) == null)
                 .log(LoggingLevel.INFO, "Done processing Tiamat exports: ${body}")
-                .log(LoggingLevel.INFO,"Export location is $simple{in.header.exportLocation}")
-                .setHeader(Constants.FILE_HANDLE,simple(blobStoreSourceSubdirectoryForTiamatExport +"/${in.header.exportLocation}"))
+                .log(LoggingLevel.INFO, "Export location is $simple{in.header.exportLocation}")
+                .setHeader(Constants.FILE_HANDLE, simple(blobStoreSourceSubdirectoryForTiamatExport + "/${in.header.exportLocation}"))
                 .choice()
                 .when(header(Constants.EXPORT_JOB_NAME).isEqualTo("tiamat_export_geocoder"))
                 .setHeader(Constants.TARGET_FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat_export_geocoder_latest.zip"))

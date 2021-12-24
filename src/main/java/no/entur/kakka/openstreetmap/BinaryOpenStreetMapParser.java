@@ -28,15 +28,15 @@ import java.util.Map;
 
 /**
  * Parser for the OpenStreetMap PBF Format.
- *
+ * <p>
  * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
  */
 public class BinaryOpenStreetMapParser extends BinaryParser {
     private final OpenStreetMapContentHandler handler;
+    private final Map<String, String> stringTable = new HashMap<>();
     private boolean parseWays = true;
     private boolean parseRelations = true;
     private boolean parseNodes = true;
-    private final Map<String, String> stringTable = new HashMap<>();
 
     public BinaryOpenStreetMapParser(OpenStreetMapContentHandler handler) {
         this.handler = handler;
@@ -162,7 +162,7 @@ public class BinaryOpenStreetMapParser extends BinaryParser {
 
     @Override
     protected void parseRelations(List<Osmformat.Relation> relations) {
-        if(!parseRelations) {
+        if (!parseRelations) {
             return;
         }
 

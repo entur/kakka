@@ -23,21 +23,21 @@ import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 public class LocalityToPeliasDocument extends TopographicPlaceAdapterToPeliasDocument {
 
 
-	public LocalityToPeliasDocument(TopographicPlaceAdapter feature) {
-		super(feature);
-	}
+    public LocalityToPeliasDocument(TopographicPlaceAdapter feature) {
+        super(feature);
+    }
 
-	@Override
-	protected String getLayer() {
-		return "locality";
-	}
+    @Override
+    protected String getLayer() {
+        return "locality";
+    }
 
 
-	@Override
-	protected Parent getParent() {
-		return Parent.builder()
-				       .withCountryId("NOR")
-				       .withCountyId(feature.getParentId())
-				       .build();
-	}
+    @Override
+    protected Parent getParent() {
+        return Parent.builder()
+                .withCountryId("NOR")
+                .withCountyId(feature.getParentId())
+                .build();
+    }
 }

@@ -31,31 +31,31 @@ import java.util.List;
 public class ElasticsearchBulkCommandWriterTest {
 
 
-	@Test
-	public void testWriteBulkCommandWithPeliasDocuments() throws Exception {
-		List<ElasticsearchCommand> commands = new ArrayList<>();
-		for (int i = 0; i < 2; i++) {
-			commands.add(ElasticsearchCommand.peliasIndexCommand(doc("møre" + i)));
+    @Test
+    public void testWriteBulkCommandWithPeliasDocuments() throws Exception {
+        List<ElasticsearchCommand> commands = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            commands.add(ElasticsearchCommand.peliasIndexCommand(doc("møre" + i)));
 
-		}
+        }
 
-		StringWriter writer = new StringWriter();
-		new ElasticsearchBulkCommandWriter(writer).write(commands);
-		String asString = writer.toString();
+        StringWriter writer = new StringWriter();
+        new ElasticsearchBulkCommandWriter(writer).write(commands);
+        String asString = writer.toString();
 
-		Assertions.assertEquals(commands.size() * 2, StringUtils.countMatches(asString, "\n"));
-		Assertions.assertTrue(asString.contains("\"name\":{\"default\":\"møre0\""));
-	}
+        Assertions.assertEquals(commands.size() * 2, StringUtils.countMatches(asString, "\n"));
+        Assertions.assertTrue(asString.contains("\"name\":{\"default\":\"møre0\""));
+    }
 
 
-	private PeliasDocument doc(String name) {
-		PeliasDocument peliasDocument = new PeliasDocument("layer","sourceId");
-		peliasDocument.setDefaultNameAndPhrase(name);
-		peliasDocument.setCenterPoint(new GeoPoint(51.7651177, -0.2336668));
+    private PeliasDocument doc(String name) {
+        PeliasDocument peliasDocument = new PeliasDocument("layer", "sourceId");
+        peliasDocument.setDefaultNameAndPhrase(name);
+        peliasDocument.setCenterPoint(new GeoPoint(51.7651177, -0.2336668));
 
-		peliasDocument.setParent(Parent.builder().withBorough("bor").withCountryId("NOR").build());
+        peliasDocument.setParent(Parent.builder().withBorough("bor").withCountryId("NOR").build());
 
-		return peliasDocument;
-	}
+        return peliasDocument;
+    }
 
 }

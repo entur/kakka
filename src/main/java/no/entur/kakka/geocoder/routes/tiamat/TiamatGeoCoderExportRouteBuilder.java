@@ -19,8 +19,8 @@ package no.entur.kakka.geocoder.routes.tiamat;
 import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,19 +31,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
 
+    public static String TIAMAT_EXPORT_LATEST_FILE_NAME = "tiamat_export_geocoder_latest.zip";
     @Value("${tiamat.geocoder.export.cron.schedule:0+0+23+?+*+MON-FRI}")
     private String cronSchedule;
-
     @Value("${tiamat.geocoder.export.cron.schedule.mid.day:0+0+14+?+*+MON-FRI}")
     private String cronScheduleMidDay;
-
     @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-
     @Value("${tiamat.geocoder.export.query:topographicPlaceExportMode=ALL&versionValidity=CURRENT_FUTURE}")
     private String tiamatExportQuery;
-
-    public static String TIAMAT_EXPORT_LATEST_FILE_NAME = "tiamat_export_geocoder_latest.zip";
 
     @Override
     public void configure() throws Exception {
@@ -64,7 +60,6 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
                 .setBody(constant(GeoCoderConstants.PELIAS_UPDATE_START))
                 .inOnly("direct:geoCoderStart")
                 .routeId("tiamat-geocoder-export-mid-day-quartz");
-
 
 
         from(GeoCoderConstants.TIAMAT_EXPORT_START.getEndpoint())

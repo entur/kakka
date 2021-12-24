@@ -34,65 +34,63 @@ import java.io.InputStream;
 @Service
 public class BlobStoreService {
 
-	public static final Logger logger= LoggerFactory.getLogger(BlobStoreService.class);
+    public static final Logger logger = LoggerFactory.getLogger(BlobStoreService.class);
 
-	@Autowired
+    @Autowired
     BlobStoreRepository repository;
 
-	@Autowired
-	Storage storage;
+    @Autowired
+    Storage storage;
 
-	@Autowired
-	Storage targetStorage;
+    @Autowired
+    Storage targetStorage;
 
-	@Value("${blobstore.gcs.container.name}")
-	String containerName;
+    @Value("${blobstore.gcs.container.name}")
+    String containerName;
+    @Value("${blobstore.gcs.target-container.name}")
+    String targetContainerName;
+    @Value("${blobstore.gcs.source.container.name}")
+    private String sourceContainerName;
 
-	@Value("${blobstore.gcs.source.container.name}")
-	private String sourceContainerName;
+    @PostConstruct
+    public void init() {
+        repository.setStorage(storage);
+        repository.setTargetStorage(targetStorage);
+        repository.setContainerName(containerName);
+        repository.setKinguContainerName(sourceContainerName);
+        repository.setTargetContainerName(targetContainerName);
+    }
 
-	@Value("${blobstore.gcs.target-container.name}")
-	String targetContainerName;
+    public BlobStoreFiles listBlobsInFolder(@Header(value = Exchange.FILE_PARENT) String folder, Exchange exchange) {
+        return repository.listBlobs(folder + "/");
+    }
 
-	@PostConstruct
-	public void init() {
-		repository.setStorage(storage);
-		repository.setTargetStorage(targetStorage);
-		repository.setContainerName(containerName);
-		repository.setKinguContainerName(sourceContainerName);
-		repository.setTargetContainerName(targetContainerName);
-	}
+    public InputStream getBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
+        return repository.getBlob(name);
+    }
 
-	public BlobStoreFiles listBlobsInFolder(@Header(value = Exchange.FILE_PARENT) String folder, Exchange exchange) {
-		return repository.listBlobs(folder + "/");
-	}
+    public void uploadBlob(@Header(value = Constants.FILE_HANDLE) String name,
+                           @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream, Exchange exchange) {
+        repository.uploadBlob(name, inputStream, makePublic);
+    }
 
-	public InputStream getBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
-		return repository.getBlob(name);
-	}
+    public boolean deleteBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
+        return repository.delete(name);
+    }
 
-	public void uploadBlob(@Header(value = Constants.FILE_HANDLE) String name,
-			                      @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream, Exchange exchange) {
-		repository.uploadBlob(name, inputStream, makePublic);
-	}
+    public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
 
-	public boolean deleteBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
-		return repository.delete(name);
-	}
+        repository.copyBlob(sourceName, targetName, makePublic);
+    }
 
-	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+    public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+        logger.info("Copying kingu file to marduk bucket");
+        repository.copyKinguBlob(sourceName, targetName, makePublic);
+    }
 
-		repository.copyBlob(sourceName, targetName, makePublic);
-	}
-
-	public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
-		logger.info("Copying kingu file to marduk bucket");
-		repository.copyKinguBlob(sourceName, targetName, makePublic);
-	}
-
-	public void copyGeoCoderBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
-		logger.info("Copying geocoder netex file to kakka bucket");
-		repository.copyGeoCoderBlob(sourceName, targetName, makePublic);
-	}
+    public void copyGeoCoderBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
+        logger.info("Copying geocoder netex file to kakka bucket");
+        repository.copyGeoCoderBlob(sourceName, targetName, makePublic);
+    }
 
 }

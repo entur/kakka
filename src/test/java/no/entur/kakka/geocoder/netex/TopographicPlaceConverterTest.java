@@ -18,20 +18,20 @@ package no.entur.kakka.geocoder.netex;
 
 
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.netex.geojson.GeoJsonCollectionTopographicPlaceReader;
-import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
-import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
 import no.entur.kakka.geocoder.featurejson.FeatureJSONFilter;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
+import no.entur.kakka.geocoder.netex.geojson.GeoJsonCollectionTopographicPlaceReader;
+import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
+import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
-import org.springframework.util.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
+import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -56,8 +56,8 @@ public class TopographicPlaceConverterTest {
 
         String targetPath = "target/adm-units-from-geojson.xml";
         converter.toNetexFile(new GeoJsonCollectionTopographicPlaceReader
-                                      (new GeojsonFeatureWrapperFactory(null), new File(filteredFilePath)
-                                      ), targetPath);
+                (new GeojsonFeatureWrapperFactory(null), new File(filteredFilePath)
+                ), targetPath);
         validateNetexFile(targetPath);
     }
 
@@ -66,7 +66,7 @@ public class TopographicPlaceConverterTest {
     public void testConvertPlaceOfInterestFromOsmPbf() throws Exception {
         List<OSMPOIFilter> filters = Arrays.asList(createFilter("leisure", "common"), createFilter("naptan:indicator", ""));
         TopographicPlaceReader reader = new PbfTopographicPlaceReader(filters, IanaCountryTldEnumeration.NO,
-                                                                             new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
+                new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
         String targetPath = "target/poi.xml";
         converter.toNetexFile(reader,
                 targetPath);
@@ -88,7 +88,7 @@ public class TopographicPlaceConverterTest {
     @Test
     public void testConvertNeighbouringCountriesFromGeoJson() throws Exception {
         TopographicPlaceReader reader = new GeoJsonSingleTopographicPlaceReader(new GeojsonFeatureWrapperFactory(null),
-                                                                                       new File("src/test/resources/no/entur/kakka/geocoder/geojson/finland.geojson"));
+                new File("src/test/resources/no/entur/kakka/geocoder/geojson/finland.geojson"));
         String targetPath = "target/neighbouring-countries_from_geosjon.xml";
         converter.toNetexFile(reader,
                 targetPath);
@@ -118,9 +118,9 @@ public class TopographicPlaceConverterTest {
         PublicationDeliveryStructure publicationDeliveryStructure = jaxbElement.getValue();
 
         boolean containsTopographicPlaces = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().stream().map(frame -> frame.getValue())
-                                                    .filter(frame -> frame instanceof Site_VersionFrameStructure).anyMatch(frame -> ((Site_VersionFrameStructure) frame).getTopographicPlaces() != null && !CollectionUtils.isEmpty(((Site_VersionFrameStructure) frame).getTopographicPlaces().getTopographicPlace()));
+                .filter(frame -> frame instanceof Site_VersionFrameStructure).anyMatch(frame -> ((Site_VersionFrameStructure) frame).getTopographicPlaces() != null && !CollectionUtils.isEmpty(((Site_VersionFrameStructure) frame).getTopographicPlaces().getTopographicPlace()));
 
-        Assertions.assertTrue(containsTopographicPlaces,"Expected publication delivery to contain site frame with topograhpic places");
+        Assertions.assertTrue(containsTopographicPlaces, "Expected publication delivery to contain site frame with topograhpic places");
         return publicationDeliveryStructure;
     }
 

@@ -15,18 +15,19 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 package no.entur.kakka.openstreetmap.model;
+
 /**
  * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
  */
 public class OSMNodeRef {
 
-  private long ref;
+    private long ref;
 
-  public long getRef() {
-    return ref;
-  }
+    public long getRef() {
+        return ref;
+    }
 
-  public void setRef(long ref) {
-    this.ref = ref;
-  }
+    public void setRef(long ref) {
+        this.ref = ref;
+    }
 }

@@ -16,9 +16,9 @@
 
 package no.entur.kakka.geocoder.netex.geojson;
 
-import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
+import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceMapper;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import org.apache.commons.io.FileUtils;
@@ -39,12 +39,9 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GeoJsonSingleTopographicPlaceReader implements TopographicPlaceReader {
 
-    private final File[] files;
-
     private static final String LANGUAGE = "en";
-
     private static final String PARTICIPANT_REF = "WOF";
-
+    private final File[] files;
     private final GeojsonFeatureWrapperFactory wrapperFactory;
 
     public GeoJsonSingleTopographicPlaceReader(GeojsonFeatureWrapperFactory wrapperFactory, File... files) {

@@ -71,8 +71,8 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
     }
 
     @Override
-    public void setKinguContainerName(String kinguContainerName){
-        this.kinguContainerName =kinguContainerName;
+    public void setKinguContainerName(String kinguContainerName) {
+        this.kinguContainerName = kinguContainerName;
     }
 
     @Override
@@ -136,12 +136,12 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(kinguContainerName,sourceObjectName,targetContainerName,targetObjectName,makePublic);
+        copyBlob(kinguContainerName, sourceObjectName, targetContainerName, targetObjectName, makePublic);
     }
 
     @Override
     public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(kinguContainerName,sourceObjectName,containerName,targetObjectName,makePublic);
+        copyBlob(kinguContainerName, sourceObjectName, containerName, targetObjectName, makePublic);
     }
 
     public void copyBlob(String sourceContainerName, String sourceObjectName, String targetContainerName, String targetObjectName, boolean makePublic) {

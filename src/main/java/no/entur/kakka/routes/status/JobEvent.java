@@ -31,29 +31,35 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobEvent {
 
-    public enum JobDomain {GEOCODER, TIAMAT}
-
-    public enum State {PENDING, STARTED, TIMEOUT, FAILED, OK, DUPLICATE, CANCELLED}
-
     public String name;
-
     public String correlationId;
-
     public Long providerId;
-
     public JobDomain domain;
-
     public Long externalId;
-
     public String action;
-
     public State state;
-
     public Instant eventTime;
-
     public String referential;
 
     private JobEvent() {
+    }
+
+    public static JobEvent fromString(String string) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            return mapper.readValue(string, JobEvent.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder systemJobBuilder(Exchange exchange) {
+        return new ExchangeStatusBuilder(exchange).initSystemJob();
     }
 
     public String toString() {
@@ -69,25 +75,9 @@ public class JobEvent {
     }
 
 
-    public static JobEvent fromString(String string) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            return mapper.readValue(string, JobEvent.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public enum JobDomain {GEOCODER, TIAMAT}
 
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder systemJobBuilder(Exchange exchange) {
-        return new ExchangeStatusBuilder(exchange).initSystemJob();
-    }
-
+    public enum State {PENDING, STARTED, TIMEOUT, FAILED, OK, DUPLICATE, CANCELLED}
 
     public static class Builder {
 

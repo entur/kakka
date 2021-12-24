@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.geojson.Polygon;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,14 +156,13 @@ public class PeliasDocument {
         descriptionMap.put(language, description);
     }
 
-    public void setDescriptionMap(Map<String, String> descriptionMap) {
-        this.descriptionMap = descriptionMap;
-    }
-
     public Map<String, String> getDescriptionMap() {
         return descriptionMap;
     }
 
+    public void setDescriptionMap(Map<String, String> descriptionMap) {
+        this.descriptionMap = descriptionMap;
+    }
 
     public void addAlias(String language, String alias) {
         if (aliasMap == null) {
@@ -173,12 +171,12 @@ public class PeliasDocument {
         aliasMap.put(language, alias);
     }
 
-    public void setAliasMap(Map<String, String> aliasMap) {
-        this.aliasMap = aliasMap;
-    }
-
     public Map<String, String> getAliasMap() {
         return aliasMap;
+    }
+
+    public void setAliasMap(Map<String, String> aliasMap) {
+        this.aliasMap = aliasMap;
     }
 
     @JsonIgnore
@@ -280,7 +278,9 @@ public class PeliasDocument {
         }
     }
 
-    public List<String> getCategoryFilter() { return categoryFilter; }
+    public List<String> getCategoryFilter() {
+        return categoryFilter;
+    }
 
     public List<String> getTariffZones() {
         return tariffZones;

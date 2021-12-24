@@ -17,7 +17,6 @@ package no.entur.kakka.config;
 
 import com.google.common.base.MoreObjects;
 
-
 import java.time.Instant;
 import java.util.List;
 
@@ -76,7 +75,8 @@ public class StopPlaceSearch {
 
     private Instant pointInTime;
 
-    public StopPlaceSearch() {}
+    public StopPlaceSearch() {
+    }
 
     private StopPlaceSearch(String query,
                             List<StopTypeEnumeration> stopTypeEnumerations,
@@ -111,6 +111,10 @@ public class StopPlaceSearch {
         this.submode = submode;
         this.page = page;
         this.size = size;
+    }
+
+    public static Builder newStopPlaceSearchBuilder() {
+        return new Builder();
     }
 
     public String getQuery() {
@@ -165,7 +169,6 @@ public class StopPlaceSearch {
         return withTags;
     }
 
-
     public Instant getPointInTime() {
         return pointInTime;
     }
@@ -201,10 +204,6 @@ public class StopPlaceSearch {
                 .add("page", page)
                 .add("size", size)
                 .toString();
-    }
-
-    public static Builder newStopPlaceSearchBuilder() {
-        return new Builder();
     }
 
     public static class Builder {

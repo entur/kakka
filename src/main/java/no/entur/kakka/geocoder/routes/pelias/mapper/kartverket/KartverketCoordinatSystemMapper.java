@@ -53,31 +53,31 @@ import java.util.Map;
 public class KartverketCoordinatSystemMapper {
 
 
-	private static final Map<String, String> COORDSYS_MAPPING;
+    private static final Map<String, String> COORDSYS_MAPPING;
 
-	static {
-		COORDSYS_MAPPING = new HashMap<>();
-		COORDSYS_MAPPING.put("21", "31");
-		COORDSYS_MAPPING.put("22", "32");
-		COORDSYS_MAPPING.put("23", "33");
-		COORDSYS_MAPPING.put("24", "34");
-		COORDSYS_MAPPING.put("25", "35");
-		COORDSYS_MAPPING.put("26", "36");
+    static {
+        COORDSYS_MAPPING = new HashMap<>();
+        COORDSYS_MAPPING.put("21", "31");
+        COORDSYS_MAPPING.put("22", "32");
+        COORDSYS_MAPPING.put("23", "33");
+        COORDSYS_MAPPING.put("24", "34");
+        COORDSYS_MAPPING.put("25", "35");
+        COORDSYS_MAPPING.put("26", "36");
 
-		// EPSG to utm maping since new dataset form kartverket uses epsg kodes
-		// https://register.geonorge.no/epsg-koder?register=SOSI+kodelister&text=
+        // EPSG to utm maping since new dataset form kartverket uses epsg kodes
+        // https://register.geonorge.no/epsg-koder?register=SOSI+kodelister&text=
 
-		COORDSYS_MAPPING.put("25831", "31");
-		COORDSYS_MAPPING.put("25832", "32");
-		COORDSYS_MAPPING.put("25833", "33");
-		COORDSYS_MAPPING.put("25834", "34");
-		COORDSYS_MAPPING.put("25835", "35");
-		COORDSYS_MAPPING.put("25836", "36");
+        COORDSYS_MAPPING.put("25831", "31");
+        COORDSYS_MAPPING.put("25832", "32");
+        COORDSYS_MAPPING.put("25833", "33");
+        COORDSYS_MAPPING.put("25834", "34");
+        COORDSYS_MAPPING.put("25835", "35");
+        COORDSYS_MAPPING.put("25836", "36");
 
-	}
+    }
 
-	public static String toUTMZone(String kartverketCoordinateSystemCode) {
-		return COORDSYS_MAPPING.get(kartverketCoordinateSystemCode);
-	}
+    public static String toUTMZone(String kartverketCoordinateSystemCode) {
+        return COORDSYS_MAPPING.get(kartverketCoordinateSystemCode);
+    }
 
 }

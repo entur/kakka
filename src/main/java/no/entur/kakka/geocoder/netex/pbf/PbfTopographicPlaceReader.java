@@ -36,57 +36,52 @@ import java.util.concurrent.BlockingQueue;
  */
 public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 
-	private final File[] files;
+    private static final String LANGUAGE = "en";
+    private static final String PARTICIPANT_REF = "OSM";
+    private final File[] files;
+    private final List<OSMPOIFilter> osmpoiFilters;
+    private final IanaCountryTldEnumeration countryRef;
 
-	private final List<OSMPOIFilter> osmpoiFilters;
+    public PbfTopographicPlaceReader(List<OSMPOIFilter> osmpoiFilters, IanaCountryTldEnumeration countryRef, File... files) {
+        this.files = files;
+        this.osmpoiFilters = osmpoiFilters;
+        this.countryRef = countryRef;
+    }
 
-	private final IanaCountryTldEnumeration countryRef;
+    @Override
+    public String getParticipantRef() {
+        return PARTICIPANT_REF;
+    }
 
-	private static final String LANGUAGE = "en";
+    @Override
+    public MultilingualString getDescription() {
+        return new MultilingualString().withLang(LANGUAGE).withValue("Kartverket administrative units");
+    }
 
-	private static final String PARTICIPANT_REF = "OSM";
-
-	public PbfTopographicPlaceReader(List<OSMPOIFilter> osmpoiFilters, IanaCountryTldEnumeration countryRef, File... files) {
-		this.files = files;
-		this.osmpoiFilters = osmpoiFilters;
-		this.countryRef = countryRef;
-	}
-
-	@Override
-	public String getParticipantRef() {
-		return PARTICIPANT_REF;
-	}
-
-	@Override
-	public MultilingualString getDescription() {
-		return new MultilingualString().withLang(LANGUAGE).withValue("Kartverket administrative units");
-	}
-
-	@Override
-	public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException {
-		for (File file : files) {
-			OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, osmpoiFilters, PARTICIPANT_REF, countryRef);
-			BinaryOpenStreetMapParser parser = new BinaryOpenStreetMapParser(contentHandler);
+    @Override
+    public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException {
+        for (File file : files) {
+            OpenStreetMapContentHandler contentHandler = new TopographicPlaceOsmContentHandler(queue, osmpoiFilters, PARTICIPANT_REF, countryRef);
+            BinaryOpenStreetMapParser parser = new BinaryOpenStreetMapParser(contentHandler);
 
 
-			//Parse relations to collect ways first
-			parser.setParseWays(false);
-			parser.setParseNodes(false);
+            //Parse relations to collect ways first
+            parser.setParseWays(false);
+            parser.setParseNodes(false);
 
-			new BlockInputStream(new FileInputStream(file), parser).process();
-			parser.setParseRelations(false);
+            new BlockInputStream(new FileInputStream(file), parser).process();
+            parser.setParseRelations(false);
 
 
+            // Parse ways to collect nodes first
+            parser.setParseWays(true);
+            new BlockInputStream(new FileInputStream(file), parser).process();
+            contentHandler.doneSecondPhaseWays();
 
-			// Parse ways to collect nodes first
-			parser.setParseWays(true);
-			new BlockInputStream(new FileInputStream(file), parser).process();
-			contentHandler.doneSecondPhaseWays();
-
-			// Parse nodes and ways
-			parser.setParseNodes(true);
-			new BlockInputStream(new FileInputStream(file), parser).process();
-			contentHandler.doneThirdPhaseNodes();
-		}
-	}
+            // Parse nodes and ways
+            parser.setParseNodes(true);
+            new BlockInputStream(new FileInputStream(file), parser).process();
+            contentHandler.doneThirdPhaseNodes();
+        }
+    }
 }

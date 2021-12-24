@@ -13,6 +13,14 @@ import java.io.IOException;
 import java.util.List;
 
 public class YamlPropertySourceFactory implements PropertySourceFactory {
+    private static String getNameForResource(Resource resource) {
+        String name = resource.getDescription();
+        if (!StringUtils.hasText(name)) {
+            name = resource.getClass().getSimpleName() + "@" + System.identityHashCode(resource);
+        }
+        return name;
+    }
+
     @Override
     public PropertySource<?> createPropertySource(String name, EncodedResource resource) throws IOException {
         List<PropertySource<?>> propertySource = null;
@@ -30,7 +38,7 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
         if (propertySource == null) {
             String path = ((ClassPathResource) resource.getResource()).getPath();
             if (!path.startsWith("/")) {
-                path = "/"+path;
+                path = "/" + path;
             }
             propertySource = new YamlPropertySourceLoader().load(null, new FileSystemResource(path));
         }
@@ -39,12 +47,5 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
             return propertySource.get(0);
         }
         return null;
-    }
-    private static String getNameForResource(Resource resource) {
-        String name = resource.getDescription();
-        if (!StringUtils.hasText(name)) {
-            name = resource.getClass().getSimpleName() + "@" + System.identityHashCode(resource);
-        }
-        return name;
     }
 }

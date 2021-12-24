@@ -33,49 +33,48 @@ import java.util.List;
 public class KartverketAddressReader {
 
 
-	public Collection<KartverketAddress> read(InputStream inputStream) {
-		BeanReader in = getBeanReader(inputStream);
+    public Collection<KartverketAddress> read(InputStream inputStream) {
+        BeanReader in = getBeanReader(inputStream);
 
-		List<KartverketAddress> addresses = asList(in);
+        List<KartverketAddress> addresses = asList(in);
 
-		in.close();
-		return addresses;
-	}
+        in.close();
+        return addresses;
+    }
 
-	private BeanReader getBeanReader(InputStream inputStream) {
-		StreamFactory factory = StreamFactory.newInstance();
+    private BeanReader getBeanReader(InputStream inputStream) {
+        StreamFactory factory = StreamFactory.newInstance();
 
-		String streamName = "address";
-		StreamBuilder builder = new StreamBuilder(streamName);
-		builder.format("delimited");
-		builder.parser(new DelimitedParserBuilder(';'));
-		builder.readOnly();
+        String streamName = "address";
+        StreamBuilder builder = new StreamBuilder(streamName);
+        builder.format("delimited");
+        builder.parser(new DelimitedParserBuilder(';'));
+        builder.readOnly();
 
-		builder.addRecord(KartverketHeader.class);
-		builder.addRecord(KartverketAddress.class);
-		factory.define(builder);
+        builder.addRecord(KartverketHeader.class);
+        builder.addRecord(KartverketAddress.class);
+        factory.define(builder);
 
-		BufferedReader buffReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        BufferedReader buffReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-		return factory.createReader(streamName, buffReader);
-	}
+        return factory.createReader(streamName, buffReader);
+    }
 
-	private List<KartverketAddress> asList(BeanReader in) {
-		List<KartverketAddress> addresses = new ArrayList<>();
-		Object record;
-		while ((record = in.read()) != null) {
-			if (in.getLineNumber() == 1) {
-				if (record instanceof KartverketAddress) {
-					KartverketAddress address = (KartverketAddress) record;
-					addresses.add(address);
-				}
-			}
-			else  {
-				KartverketAddress address = (KartverketAddress) record;
-				addresses.add(address);
-			}
+    private List<KartverketAddress> asList(BeanReader in) {
+        List<KartverketAddress> addresses = new ArrayList<>();
+        Object record;
+        while ((record = in.read()) != null) {
+            if (in.getLineNumber() == 1) {
+                if (record instanceof KartverketAddress) {
+                    KartverketAddress address = (KartverketAddress) record;
+                    addresses.add(address);
+                }
+            } else {
+                KartverketAddress address = (KartverketAddress) record;
+                addresses.add(address);
+            }
 
-		}
-		return addresses;
-	}
+        }
+        return addresses;
+    }
 }

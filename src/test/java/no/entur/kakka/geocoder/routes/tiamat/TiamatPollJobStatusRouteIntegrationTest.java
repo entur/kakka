@@ -20,10 +20,10 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import no.entur.kakka.geocoder.routes.tiamat.xml.JobStatus;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
@@ -43,27 +43,19 @@ import static org.apache.camel.builder.Builder.constant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @Autowired
-    private ModelCamelContext context;
-
-    @Value("${tiamat-exporter.url}")
-    private String tiamatUrl;
-
+    private static final String JOB_URL = "/job/1234";
     @EndpointInject(uri = "mock:tiamat")
     protected MockEndpoint tiamatMock;
-
-
     @EndpointInject(uri = "mock:complete")
     protected MockEndpoint completeEndpointMock;
-
     @EndpointInject(uri = "mock:statusQueue")
     protected MockEndpoint statusQueueMock;
-
-
     @Produce(uri = "direct:checkTiamatJobStatus")
     protected ProducerTemplate checkTiamatJobStatusTemplate;
-
-    private static final String JOB_URL = "/job/1234";
+    @Autowired
+    private ModelCamelContext context;
+    @Value("${tiamat-exporter.url}")
+    private String tiamatUrl;
 
     @BeforeEach
     public void setUp() {
@@ -71,11 +63,11 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         statusQueueMock.reset();
         tiamatMock.reset();
         try {
-            AdviceWith.adviceWith(context,"tiamat-get-job-status",
+            AdviceWith.adviceWith(context, "tiamat-get-job-status",
                     a -> a.interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
                             .skipSendToOriginalEndpoint().to("mock:tiamat"));
 
-            AdviceWith.adviceWith(context,"tiamat-process-job-status-done",
+            AdviceWith.adviceWith(context, "tiamat-process-job-status-done",
                     a -> a.interceptSendToEndpoint("direct:updateStatus")
                             .skipSendToOriginalEndpoint().to("mock:statusQueue"));
 

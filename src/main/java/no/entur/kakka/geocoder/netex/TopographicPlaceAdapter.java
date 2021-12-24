@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface TopographicPlaceAdapter {
-    enum Type {COUNTRY, COUNTY, LOCALITY, BOROUGH, PLACE}
-
     String getId();
 
     String getIsoCode();
@@ -39,7 +37,7 @@ public interface TopographicPlaceAdapter {
     /**
      * Returns map of languages as keys and corresponding name as value.
      */
-    Map<String,String> getAlternativeNames();
+    Map<String, String> getAlternativeNames();
 
     /**
      * Returns two letter country code.
@@ -49,4 +47,6 @@ public interface TopographicPlaceAdapter {
     List<String> getCategories();
 
     boolean isValid();
+
+    enum Type {COUNTRY, COUNTY, LOCALITY, BOROUGH, PLACE}
 }

@@ -117,7 +117,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
             nodesById.put(osmNode.getId(), osmNode);
         }
 
-      if (nodesById.size() % 100000 == 0) {
+        if (nodesById.size() % 100000 == 0) {
             logger.debug(String.format("nodes=%d", nodesById.size()));
         }
     }

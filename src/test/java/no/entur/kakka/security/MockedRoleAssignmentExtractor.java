@@ -56,5 +56,4 @@ public class MockedRoleAssignmentExtractor implements RoleAssignmentExtractor {
     }
 
 
-
 }

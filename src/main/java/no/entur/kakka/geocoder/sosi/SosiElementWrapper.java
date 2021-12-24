@@ -17,15 +17,15 @@
 package no.entur.kakka.geocoder.sosi;
 
 import com.google.common.collect.Lists;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.vegvesen.nvdb.sosi.document.SosiElement;
 import no.vegvesen.nvdb.sosi.document.SosiRefIsland;
 import no.vegvesen.nvdb.sosi.document.SosiRefNumber;
 import no.vegvesen.nvdb.sosi.document.SosiValue;
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

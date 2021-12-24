@@ -90,7 +90,7 @@ public class ZipFileUtils {
 
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer,0,len);
+                        fileOutputStream.write(buffer, 0, len);
                     }
                     fileOutputStream.close();
                 }

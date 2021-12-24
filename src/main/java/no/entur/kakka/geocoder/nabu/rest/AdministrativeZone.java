@@ -22,18 +22,11 @@ import org.wololo.geojson.Polygon;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AdministrativeZone {
 
-    public enum AdministrativeZoneType {COUNTRY, COUNTY, LOCALITY, CUSTOM}
-
     public String codeSpace;
-
     public String privateCode;
-
     public String name;
-
     public String source;
-
     public Polygon polygon;
-
     public AdministrativeZoneType type;
 
     public AdministrativeZone(String codeSpace, String privateCode, String name, Polygon polygon, AdministrativeZoneType type, String source) {
@@ -68,4 +61,6 @@ public class AdministrativeZone {
     public String getSource() {
         return source;
     }
+
+    public enum AdministrativeZoneType {COUNTRY, COUNTY, LOCALITY, CUSTOM}
 }

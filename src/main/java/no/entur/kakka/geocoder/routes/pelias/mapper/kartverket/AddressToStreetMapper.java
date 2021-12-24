@@ -52,8 +52,8 @@ public class AddressToStreetMapper {
     public List<PeliasDocument> createStreetPeliasDocumentsFromAddresses(Collection<PeliasDocument> addresses) {
         Collection<List<PeliasDocument>> addressesPerStreet =
                 addresses.stream().filter(a -> a.getAddressParts() != null && !ObjectUtils.isEmpty(a.getAddressParts().getStreet()))
-                        .collect(Collectors.groupingBy(a -> fromAddress(a), Collectors.mapping(Function.identity(), Collectors.toList()))).values();
-        return addressesPerStreet.stream().map(addressesOnStreet -> createPeliasStreetDocFromAddresses(addressesOnStreet)).collect(Collectors.toList());
+                        .collect(Collectors.groupingBy(this::fromAddress, Collectors.mapping(Function.identity(), Collectors.toList()))).values();
+        return addressesPerStreet.stream().map(this::createPeliasStreetDocFromAddresses).collect(Collectors.toList());
     }
 
 

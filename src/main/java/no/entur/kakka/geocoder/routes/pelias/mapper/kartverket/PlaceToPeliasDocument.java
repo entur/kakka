@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PlaceToPeliasDocument extends TopographicPlaceAdapterToPeliasDocument {
 
-    private long popularity;
+    private final long popularity;
 
     public PlaceToPeliasDocument(TopographicPlaceAdapter simpleFeature, long popularity) {
         super(simpleFeature);

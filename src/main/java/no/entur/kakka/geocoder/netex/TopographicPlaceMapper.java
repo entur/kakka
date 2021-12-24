@@ -44,9 +44,9 @@ import java.util.Map;
 public class TopographicPlaceMapper {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private String participantRef;
+    private final String participantRef;
 
-    private TopographicPlaceAdapter feature;
+    private final TopographicPlaceAdapter feature;
 
     private Map<String, Locale> localeMap;
 

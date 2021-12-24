@@ -97,9 +97,9 @@ public class AddressToStreetMapper {
 
     private class UniqueStreetKey {
 
-        private String streetName;
+        private final String streetName;
 
-        private String localityId;
+        private final String localityId;
 
         public UniqueStreetKey(String streetName, String localityId) {
             this.streetName = streetName;

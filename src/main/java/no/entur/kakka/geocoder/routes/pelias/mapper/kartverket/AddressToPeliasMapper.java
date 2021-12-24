@@ -49,7 +49,7 @@ public class AddressToPeliasMapper {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private GeometryFactory factory = new GeometryFactory();
+	private final GeometryFactory factory = new GeometryFactory();
 
 	public PeliasDocument toPeliasDocument(KartverketAddress address) {
 		PeliasDocument document = new PeliasDocument("address", SOURCE, address.getAddresseId());

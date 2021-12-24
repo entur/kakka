@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class KartverketSosiStreamToElasticsearchCommands {
 
 
-    private SosiElementWrapperFactory sosiElementWrapperFactory;
+    private final SosiElementWrapperFactory sosiElementWrapperFactory;
 
     private final long placeBoost;
 

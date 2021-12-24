@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class SosiTopographicPlaceAdapterReader {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String AREA_TYPE = "FLATE";
 
@@ -50,9 +50,9 @@ public class SosiTopographicPlaceAdapterReader {
     private SosiCoordinates coordinates;
 
 
-    private Map<String, TopographicPlaceAdapter> adapterMap = new HashMap<>();
+    private final Map<String, TopographicPlaceAdapter> adapterMap = new HashMap<>();
 
-    private SosiElementWrapperFactory wrapperFactory;
+    private final SosiElementWrapperFactory wrapperFactory;
 
     public SosiTopographicPlaceAdapterReader(SosiElementWrapperFactory wrapperFactory, InputStream sosiInputStream) {
         this.sosiInputStream = sosiInputStream;

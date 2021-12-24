@@ -31,7 +31,7 @@ import java.util.function.Function;
 
 public class FeatureJSONCollection {
 
-	private InputStream inputStream;
+	private final InputStream inputStream;
 
 	public FeatureJSONCollection(InputStream inputStream) {
 		this.inputStream = inputStream;

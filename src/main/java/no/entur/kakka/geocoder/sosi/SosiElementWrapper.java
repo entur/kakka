@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected SosiElement sosiElement;
     protected Geometry geometry;
     protected Map<String, String> names;

@@ -33,14 +33,14 @@ import java.util.Map;
 
 public class SosiCoordinates {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private double unit = 0.01;
 
     private String utmZone = "33";
 
 
-    private Map<Long, List<Coordinate>> coordinatesMap = new HashMap<>();
+    private final Map<Long, List<Coordinate>> coordinatesMap = new HashMap<>();
 
     public SosiCoordinates(SosiElement head) {
         SosiElement transpar = head.findSubElement(se -> "TRANSPAR".equals(se.getName())).get();

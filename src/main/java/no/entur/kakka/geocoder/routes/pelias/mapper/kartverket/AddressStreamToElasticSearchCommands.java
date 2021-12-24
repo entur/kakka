@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class AddressStreamToElasticSearchCommands {
 
-    private AddressToPeliasMapper addressMapper;
+    private final AddressToPeliasMapper addressMapper;
 
-    private AddressToStreetMapper addressToStreetMapper;
+    private final AddressToStreetMapper addressToStreetMapper;
 
     @Autowired
     public AddressStreamToElasticSearchCommands(AddressToPeliasMapper addressMapper, AddressToStreetMapper addressToStreetMapper) {

@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +56,7 @@ public class KartverketAddressReader {
 		builder.addRecord(KartverketAddress.class);
 		factory.define(builder);
 
-		BufferedReader buffReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+		BufferedReader buffReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
 		return factory.createReader(streamName, buffReader);
 	}

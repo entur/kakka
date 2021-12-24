@@ -38,12 +38,12 @@ import java.util.Map;
  */
 public class FeatureJSONFilter {
 
-	private String sourceFilePath;
+	private final String sourceFilePath;
 
-	private String correlationProperty;
+	private final String correlationProperty;
 
-	private String targetFilePath;
-	private String comparatorProperty;
+	private final String targetFilePath;
+	private final String comparatorProperty;
 
 
 	private final Map<Object, SimpleFeature> map = new HashMap<>();

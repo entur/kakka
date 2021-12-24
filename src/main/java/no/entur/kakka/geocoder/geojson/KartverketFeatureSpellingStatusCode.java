@@ -43,7 +43,7 @@ public class KartverketFeatureSpellingStatusCode {
     //  P (privat): the spelling has been decided by a private entity and not by the authorities
     public static final String PRIVATE = "P";
 
-    private static Set<String> ACTIVE_CODES = Sets.newHashSet(ACCEPTED, BATCH_ACCEPTED, APPROVED, PRIVATE);
+    private static final Set<String> ACTIVE_CODES = Sets.newHashSet(ACCEPTED, BATCH_ACCEPTED, APPROVED, PRIVATE);
 
     public static boolean isActive(String code) {
         return ACTIVE_CODES.contains(code);

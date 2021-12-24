@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SosiPlace extends SosiElementWrapper {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public static final String OBJECT_TYPE = "Sted";
 
     public SosiPlace(SosiElement sosiElement, SosiCoordinates coordinates) {

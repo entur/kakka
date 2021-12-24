@@ -463,7 +463,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
     private PolygonType toPolygon(List<Coordinate> coordinates, String id) {
         Polygon polygon = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()]));
         if (!polygon.isValid()) {
-            logger.info("Invalid polygon: " + polygon.toString());
+            logger.info("Invalid polygon: " + polygon);
             return null;
         }
         return NetexGeoUtil.toNetexPolygon(polygon).withId(id);

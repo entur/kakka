@@ -38,7 +38,7 @@ public class PeliasIndexParentInfoEnricherTest {
     @Mock
     private KartverketLocality locality;
 
-    private PeliasIndexParentInfoEnricher parentInfoEnricher = new PeliasIndexParentInfoEnricher();
+    private final PeliasIndexParentInfoEnricher parentInfoEnricher = new PeliasIndexParentInfoEnricher();
 
 
     @BeforeEach

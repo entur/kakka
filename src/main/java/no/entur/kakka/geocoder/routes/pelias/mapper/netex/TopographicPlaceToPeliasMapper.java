@@ -33,11 +33,11 @@ import static org.rutebanken.netex.model.TopographicPlaceTypeEnumeration.PLACE_O
 
 public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentMapper<TopographicPlace> {
 
-    private long popularity;
+    private final long popularity;
 
-    private List<String> typeFilter;
+    private final List<String> typeFilter;
 
-    private List<OSMPOIFilter> osmpoiFilters;
+    private final List<OSMPOIFilter> osmpoiFilters;
 
     public TopographicPlaceToPeliasMapper(long popularity, List<String> typeFilter, List<OSMPOIFilter> osmpoiFilters) {
         super();

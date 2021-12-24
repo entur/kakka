@@ -47,7 +47,7 @@ import static javax.xml.bind.JAXBContext.newInstance;
 
 public class TopographicPlaceConverterTest {
 
-    private TopographicPlaceConverter converter = new TopographicPlaceConverter("CET");
+    private final TopographicPlaceConverter converter = new TopographicPlaceConverter("CET");
 
     @Test
     public void testFilterConvertAdminUnitsFromGeoJson() throws Exception {

@@ -87,7 +87,7 @@ public class SosiFileFilter {
         if (split >= 0) {
 
             String key = field.substring(0, split);
-            String value = field.substring(split + 1, field.length());
+            String value = field.substring(split + 1);
             return Pair.of(key, value);
         }
         return Pair.of(field, null);

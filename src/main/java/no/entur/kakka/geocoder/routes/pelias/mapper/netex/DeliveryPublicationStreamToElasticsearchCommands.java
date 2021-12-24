@@ -57,17 +57,17 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-    private OSMPOIFilterService osmpoiFilterService;
+    private final OSMPOIFilterService osmpoiFilterService;
 
     public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
 
-    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
+    private final StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
 
     private final long poiBoost;
 
     private final double gosBoostFactor;
 
-    private boolean gosInclude;
+    private final boolean gosInclude;
 
     private final List<String> poiFilter;
 

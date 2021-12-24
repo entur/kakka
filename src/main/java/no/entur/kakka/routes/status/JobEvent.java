@@ -167,7 +167,7 @@ public class JobEvent {
 
     public static class ExchangeStatusBuilder extends Builder {
 
-        private Exchange exchange;
+        private final Exchange exchange;
 
         private ExchangeStatusBuilder(Exchange exchange) {
             super();

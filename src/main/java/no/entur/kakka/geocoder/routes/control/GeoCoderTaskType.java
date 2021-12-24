@@ -32,7 +32,7 @@ public enum GeoCoderTaskType {
 		this.geoCoderTask = geoCoderTask;
 	}
 
-	private GeoCoderTask geoCoderTask;
+	private final GeoCoderTask geoCoderTask;
 
 	public GeoCoderTask getGeoCoderTask() {
 		return geoCoderTask;

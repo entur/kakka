@@ -52,7 +52,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
     @Autowired
     private ExtendedKubernetesService extendedKubernetesService;
 
-    private static String NO_OF_REPLICAS = "RutebankenESNoOfReplicas";
+    private static final String NO_OF_REPLICAS = "RutebankenESNoOfReplicas";
 
     @Override
     public void configure() throws Exception {

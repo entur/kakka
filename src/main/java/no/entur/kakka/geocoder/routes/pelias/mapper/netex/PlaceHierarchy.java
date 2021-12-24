@@ -22,9 +22,9 @@ import java.util.Collection;
 
 public class PlaceHierarchy<T extends Place_VersionStructure> {
 
-    private PlaceHierarchy<T> parent;
+    private final PlaceHierarchy<T> parent;
 
-    private T place;
+    private final T place;
 
     private Collection<PlaceHierarchy<T>> children;
 

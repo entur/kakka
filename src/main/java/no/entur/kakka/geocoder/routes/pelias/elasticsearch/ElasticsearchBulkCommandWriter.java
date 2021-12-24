@@ -27,8 +27,8 @@ import java.util.Collection;
 
 public class ElasticsearchBulkCommandWriter {
 
-	private Writer writer;
-	private ObjectMapper mapper;
+	private final Writer writer;
+	private final ObjectMapper mapper;
 
 	public ElasticsearchBulkCommandWriter(Writer writer) {
 		this.writer = writer;

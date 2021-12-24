@@ -36,11 +36,11 @@ import java.util.concurrent.BlockingQueue;
  */
 public class PbfTopographicPlaceReader implements TopographicPlaceReader {
 
-	private File[] files;
+	private final File[] files;
 
-	private List<OSMPOIFilter> osmpoiFilters;
+	private final List<OSMPOIFilter> osmpoiFilters;
 
-	private IanaCountryTldEnumeration countryRef;
+	private final IanaCountryTldEnumeration countryRef;
 
 	private static final String LANGUAGE = "en";
 

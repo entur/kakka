@@ -63,7 +63,7 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
     @Produce(uri = "direct:checkTiamatJobStatus")
     protected ProducerTemplate checkTiamatJobStatusTemplate;
 
-    private static String JOB_URL = "/job/1234";
+    private static final String JOB_URL = "/job/1234";
 
     @BeforeEach
     public void setUp() {

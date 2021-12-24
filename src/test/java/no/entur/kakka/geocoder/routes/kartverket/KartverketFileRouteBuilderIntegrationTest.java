@@ -61,7 +61,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 	@Produce(uri = "direct:uploadUpdatedFiles")
 	protected ProducerTemplate uploadUpdatedFilesTemplate;
 
-	private String blobFolder = "blobTest";
+	private final String blobFolder = "blobTest";
 
 	@Test
 	public void testNewFilesAreUploadedToBlobStore() throws Exception {

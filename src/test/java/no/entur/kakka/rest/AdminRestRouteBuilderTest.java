@@ -2,7 +2,6 @@ package no.entur.kakka.rest;
 
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
-import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.junit.jupiter.api.Disabled;

@@ -33,9 +33,9 @@ public class GeometryTransformer {
 
     private static GeometryTransformer instance;
 
-    private CRSAuthorityFactory factory;
+    private final CRSAuthorityFactory factory;
 
-    private CoordinateReferenceSystem wgs84;
+    private final CoordinateReferenceSystem wgs84;
 
 
     private GeometryTransformer() throws FactoryException {

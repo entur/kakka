@@ -33,7 +33,7 @@ public class PlaceNamesStreamToElasticsearchCommandTest {
 
     private static final Long placePopularity = 3l;
 
-    private SosiElementWrapperFactory sosiElementWrapperFactory = new SosiElementWrapperFactory();
+    private final SosiElementWrapperFactory sosiElementWrapperFactory = new SosiElementWrapperFactory();
 
 
     @Test

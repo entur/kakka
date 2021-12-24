@@ -29,7 +29,7 @@ import java.util.List;
 
 public class PeliasIndexValidCommandFilterTest {
 
-	private PeliasIndexValidCommandFilter filter = new PeliasIndexValidCommandFilter();
+	private final PeliasIndexValidCommandFilter filter = new PeliasIndexValidCommandFilter();
 
 	@Test
 	public void testInvalidCommandsAreRemoved() {

@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 @Profile("in-memory-blobstore")
 public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, byte[]> blobs = new HashMap<>();
+    private final Map<String, byte[]> blobs = new HashMap<>();
 
     @Override
     public BlobStoreFiles listBlobs(String prefix) {

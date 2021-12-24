@@ -42,7 +42,7 @@ import java.util.List;
 @Scope("prototype")
 public class GcsBlobStoreRepository implements BlobStoreRepository {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Storage storage;
 

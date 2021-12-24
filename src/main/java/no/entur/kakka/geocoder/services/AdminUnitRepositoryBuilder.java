@@ -96,13 +96,13 @@ public class AdminUnitRepositoryBuilder {
 
     private class CacheAdminUnitRepository implements AdminUnitRepository {
 
-        private Cache<String, String> idCache;
+        private final Cache<String, String> idCache;
 
-        private List<TopographicPlaceAdapter> localities;
+        private final List<TopographicPlaceAdapter> localities;
 
-        private List<TopographicPlaceAdapter> countries;
+        private final List<TopographicPlaceAdapter> countries;
 
-        private List<GroupOfStopPlaces> groupOfStopPlaces;
+        private final List<GroupOfStopPlaces> groupOfStopPlaces;
 
         public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries, List<GroupOfStopPlaces> groupOfStopPlaces) {
             this.idCache = idCache;
@@ -284,11 +284,7 @@ public class AdminUnitRepositoryBuilder {
             if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
                 //Invalid Validity toDate < fromDate
                 return false;
-            } else if (fromDate != null && toDate == null) {
-                return true;
-            } else {
-                return false;
-            }
+            } else return fromDate != null && toDate == null;
         }
 
         private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {

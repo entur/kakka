@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @Service("osmpoifilterService")
 @Transactional
 public class OSMPOIFilterServiceImpl implements OSMPOIFilterService {
-    private OSMPOIFilterRepository repository;
-    private Integer defaultPriority;
+    private final OSMPOIFilterRepository repository;
+    private final Integer defaultPriority;
 
     @Autowired
     public OSMPOIFilterServiceImpl(OSMPOIFilterRepository repository, @Value("${osmpoifilter.priority.default:1}") Integer defaultPriority) {

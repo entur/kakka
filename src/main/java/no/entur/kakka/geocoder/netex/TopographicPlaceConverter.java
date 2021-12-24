@@ -40,7 +40,7 @@ public class TopographicPlaceConverter {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
-    private String defaultTimeZone;
+    private final String defaultTimeZone;
 
     public TopographicPlaceConverter(@Value("${tiamat.netex.import.time.zone:CET}") String defaultTimeZone) {
         this.defaultTimeZone = defaultTimeZone;
@@ -83,9 +83,9 @@ public class TopographicPlaceConverter {
 
     private class ReaderTask implements Runnable {
 
-        private BlockingQueue<TopographicPlace> queue;
+        private final BlockingQueue<TopographicPlace> queue;
 
-        private TopographicPlaceReader input;
+        private final TopographicPlaceReader input;
 
         private Exception exception;
 

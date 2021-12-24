@@ -45,7 +45,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
     public static final String SOURCE_PARENT_STOP_PLACE = "openstreetmap";
     public static final String SOURCE_CHILD_STOP_PLACE = "geonames";
 
-    private StopPlaceBoostConfiguration boostConfiguration;
+    private final StopPlaceBoostConfiguration boostConfiguration;
 
     public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration) {
         super();

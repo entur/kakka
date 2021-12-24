@@ -26,7 +26,7 @@ import java.util.Objects;
 
 public class KartverketPlace extends AbstractKartverketGeojsonAdapter {
 
-    private List<String> placeTypeWhiteList;
+    private final List<String> placeTypeWhiteList;
 
     public KartverketPlace(SimpleFeature feature, List<String> placeTypeWhiteList) {
         super(feature);

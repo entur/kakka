@@ -80,7 +80,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
     @Value("${organisation.registry.admin.zone.code.space.xmlns:RB}")
     private String adminZoneCodeSpaceXmlns;
 
-    private GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
+    private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
 
 
 

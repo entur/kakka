@@ -44,13 +44,13 @@ import static org.apache.camel.builder.Builder.constant;
 public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
     private static final String JOB_URL = "/job/1234";
-    @EndpointInject(uri = "mock:tiamat")
+    @EndpointInject("mock:tiamat")
     protected MockEndpoint tiamatMock;
-    @EndpointInject(uri = "mock:complete")
+    @EndpointInject("mock:complete")
     protected MockEndpoint completeEndpointMock;
-    @EndpointInject(uri = "mock:statusQueue")
+    @EndpointInject("mock:statusQueue")
     protected MockEndpoint statusQueueMock;
-    @Produce(uri = "direct:checkTiamatJobStatus")
+    @Produce("direct:checkTiamatJobStatus")
     protected ProducerTemplate checkTiamatJobStatusTemplate;
     @Autowired
     private ModelCamelContext context;

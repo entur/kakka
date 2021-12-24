@@ -57,7 +57,7 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .otherwise()
                 .log(LoggingLevel.INFO, "Invalid file upload")
                 .end()
-                .process(e -> e.getIn().setHeader(FILE_CONTENT_HEADER, new CloseShieldInputStream(e.getIn().getBody(FileItem.class).getInputStream())))
+                .process(e -> e.getIn().setHeader(FILE_CONTENT_HEADER, CloseShieldInputStream.wrap(e.getIn().getBody(FileItem.class).getInputStream())))
                 .to("direct:uploadFileAndStartImport")
                 .routeId("files-upload");
 

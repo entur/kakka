@@ -119,11 +119,6 @@ public class OSMPOIFilterRepositoryStub implements OSMPOIFilterRepository {
     }
 
     @Override
-    public void deleteInBatch(Iterable<OSMPOIFilter> entities) {
-
-    }
-
-    @Override
     public void deleteAllInBatch() {
 
     }

@@ -22,6 +22,7 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
 import no.entur.kakka.routes.status.JobEvent;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +59,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")
                 .setBody(constant(PELIAS_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly, "direct:geoCoderStart")
                 .routeId("pelias-update-quartz");
 
         from(PELIAS_UPDATE_START.getEndpoint())

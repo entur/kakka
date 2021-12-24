@@ -31,7 +31,7 @@ import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.http.common.HttpMethods;
-import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.commons.io.FileUtils;
 import org.locationtech.jts.geom.CoordinateList;

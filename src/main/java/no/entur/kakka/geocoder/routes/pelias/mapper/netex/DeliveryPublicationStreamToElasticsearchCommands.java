@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -81,7 +81,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         this.osmpoiFilterService = osmpoiFilterService;
         this.mapPOIFromNetex = mapPOIFromNetex;
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).collect(Collectors.toList());
             logger.info("pelias poiFilter is set to: " + poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();

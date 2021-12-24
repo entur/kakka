@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,7 +48,7 @@ public class PbfToElasticsearchCommands {
         this.osmpoiFilterService = osmpoiFilterService;
         this.poiBoost = poiBoost;
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
+            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).collect(Collectors.toList());
             logger.info("pelias poiFilter is set to: {}", poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();

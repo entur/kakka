@@ -39,11 +39,11 @@ import java.io.FileInputStream;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
-    @EndpointInject(uri = "mock:es-scratch")
+    @EndpointInject("mock:es-scratch")
     protected MockEndpoint esScratchMock;
-    @EndpointInject(uri = "mock:es-scratch-admin-index")
+    @EndpointInject("mock:es-scratch-admin-index")
     protected MockEndpoint esScratchAdminIndexMock;
-    @Produce(uri = "direct:insertElasticsearchIndexData")
+    @Produce("direct:insertElasticsearchIndexData")
     protected ProducerTemplate insertESDataTemplate;
     @Autowired
     private ModelCamelContext context;

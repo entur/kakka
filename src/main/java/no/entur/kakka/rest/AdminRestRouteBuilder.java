@@ -26,6 +26,7 @@ import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
@@ -133,7 +134,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .validate(header("task").isNotNull())
                 .removeHeaders("CamelHttp*")
                 .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .inOnly("direct:geoCoderStartBatch")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStartBatch")
                 .setBody(constant(null))
                 .endRest()
 

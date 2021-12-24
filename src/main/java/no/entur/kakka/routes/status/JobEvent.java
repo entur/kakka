@@ -188,8 +188,8 @@ public class JobEvent {
             JobEvent jobEvent = super.build();
 
             exchange.getIn().setHeader(Constants.SYSTEM_STATUS, jobEvent.toString());
-            exchange.getOut().setBody(jobEvent.toString());
-            exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+            exchange.getMessage().setBody(jobEvent.toString());
+            exchange.getMessage().setHeaders(exchange.getIn().getHeaders());
             return jobEvent;
         }
     }

@@ -35,6 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
     private final String blobFolder = "blobTest";
     @MockBean
     public KartverketService kartverketService;
-    @Produce(uri = "direct:uploadUpdatedFiles")
+    @Produce("direct:uploadUpdatedFiles")
     protected ProducerTemplate uploadUpdatedFilesTemplate;
     @Autowired
     private ModelCamelContext context;
@@ -111,7 +112,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
     private List<File> files(String... names) throws Exception {
         List<File> files = Arrays.stream(names).map(n -> new File("target/files/" + n)).collect(Collectors.toList());
         for (File file : files) {
-            FileUtils.writeStringToFile(file, file.getName());
+            FileUtils.writeStringToFile(file, file.getName(), Charset.defaultCharset());
         }
         return files;
     }

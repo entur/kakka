@@ -3,6 +3,7 @@ package no.entur.kakka.geocoder.routes.tiamat;
 import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.services.TaskGenerator;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,14 +35,14 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .autoStartup("{{kingu.export.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Kingu exports for publish ")
-                .inOnly("direct:startFullKinguPublishExport")
+                .to(ExchangePattern.InOnly,"direct:startFullKinguPublishExport")
                 .routeId("kingu-publish-export-quartz");
 
         singletonFrom("quartz://kakka/kinguPublishExportMidday?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{kingu.export.mid.day.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers mid day Kingu exports for publish ")
-                .inOnly("direct:startFullKinguPublishExport")
+                .to(ExchangePattern.InOnly,"direct:startFullKinguPublishExport")
                 .routeId("kingu-publish-export-mid-day-quartz");
 
 

@@ -16,16 +16,15 @@
 
 package no.entur.kakka.geocoder.routes.pelias.mapper.geojson;
 
+import no.entur.kakka.geocoder.featurejson.FeatureJSONCollection;
+import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
+import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.BoroughToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.CountyToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.LocalityToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.PlaceToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.TopographicPlaceAdapterToPeliasDocument;
-import no.entur.kakka.geocoder.featurejson.FeatureJSONCollection;
-import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
-import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
-import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.*;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

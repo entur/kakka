@@ -25,7 +25,6 @@ import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

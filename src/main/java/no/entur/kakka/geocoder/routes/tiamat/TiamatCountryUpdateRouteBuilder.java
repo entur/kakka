@@ -23,7 +23,6 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

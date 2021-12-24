@@ -118,16 +118,6 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
 
         rest("/geocoder_admin")
-                .post("/idempotentfilter/clean")
-                .description("Clean Idempotent repo for downloads")
-                .responseMessage().code(200).endResponseMessage()
-                .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-application-clean-idempotent-download-repos")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("direct:cleanIdempotentDownloadRepo")
-                .setBody(constant(null))
-                .endRest()
-
                 .post("/build_pipeline")
                 .param().name("task")
                 .type(RestParamType.query)

@@ -16,7 +16,6 @@
 
 package no.entur.kakka.geocoder.nabu;
 
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import org.apache.camel.http.common.HttpMethods;
 import org.locationtech.jts.geom.CoordinateList;
 import no.entur.kakka.Constants;

@@ -20,7 +20,6 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
-import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.routes.file.FileUtils;
 import no.entur.kakka.routes.file.ZipFileUtils;

@@ -23,7 +23,6 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 
 import no.entur.kakka.geocoder.netex.TariffZoneConverter;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

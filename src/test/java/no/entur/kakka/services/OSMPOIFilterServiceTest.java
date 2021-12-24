@@ -1,18 +1,13 @@
 package no.entur.kakka.services;
 
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.repository.OSMPOIFilterRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.*;
 
 public class OSMPOIFilterServiceTest {
 

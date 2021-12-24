@@ -24,7 +24,6 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.OSMPOIFilterService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

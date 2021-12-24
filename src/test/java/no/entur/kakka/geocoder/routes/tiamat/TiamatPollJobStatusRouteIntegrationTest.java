@@ -28,12 +28,12 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -65,26 +65,19 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
 
     private static String JOB_URL = "/job/1234";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         completeEndpointMock.reset();
         statusQueueMock.reset();
         tiamatMock.reset();
         try {
-            context.getRouteDefinition("tiamat-get-job-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
-                            .skipSendToOriginalEndpoint().to("mock:tiamat");
-                }
-            });
-            context.getRouteDefinition("tiamat-process-job-status-done").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint("direct:updateStatus")
-                            .skipSendToOriginalEndpoint().to("mock:statusQueue");
-                }
-            });
+            AdviceWith.adviceWith(context,"tiamat-get-job-status",
+                    a -> a.interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
+                            .skipSendToOriginalEndpoint().to("mock:tiamat"));
+
+            AdviceWith.adviceWith(context,"tiamat-process-job-status-done",
+                    a -> a.interceptSendToEndpoint("direct:updateStatus")
+                            .skipSendToOriginalEndpoint().to("mock:statusQueue"));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -102,7 +95,7 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         tiamatMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
-        Assert.assertTrue(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, Boolean.class));
+        Assertions.assertTrue(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, Boolean.class));
     }
 
     @Test
@@ -118,15 +111,15 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
 
         tiamatMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
-        Assert.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
-        Assert.assertNull(e.getException());
+        Assertions.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
+        Assertions.assertNull(e.getException());
     }
 
     @Test
     public void testFailed() throws Exception {
         tiamatMock.expectedMessageCount(1);
         statusQueueMock
-                .whenExchangeReceived(1, e -> Assert.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.FAILED.toString())));
+                .whenExchangeReceived(1, e -> Assertions.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.FAILED.toString())));
         tiamatMock.returnReplyBody(constant(new ExportJob(JobStatus.FAILED)));
 
         context.start();
@@ -136,8 +129,8 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         tiamatMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
-        Assert.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
-        Assert.assertNull(e.getException());
+        Assertions.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
+        Assertions.assertNull(e.getException());
     }
 
 

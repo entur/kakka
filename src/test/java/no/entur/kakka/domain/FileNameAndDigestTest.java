@@ -17,8 +17,8 @@
 package no.entur.kakka.domain;
 
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FileNameAndDigestTest {
 
@@ -29,8 +29,8 @@ public class FileNameAndDigestTest {
 
 		FileNameAndDigest converted = FileNameAndDigest.fromString(org.toString());
 
-		Assert.assertEquals(org, converted);
-		Assert.assertEquals(org.getFileName(), converted.getFileName());
-		Assert.assertEquals(org.getDigest(), converted.getDigest());
+		Assertions.assertEquals(org, converted);
+		Assertions.assertEquals(org.getFileName(), converted.getFileName());
+		Assertions.assertEquals(org.getDigest(), converted.getDigest());
 	}
 }

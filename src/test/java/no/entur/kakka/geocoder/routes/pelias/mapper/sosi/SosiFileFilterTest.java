@@ -21,8 +21,8 @@ import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.sosi.SosiFileFilter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Collection;
@@ -36,9 +36,9 @@ public class SosiFileFilterTest {
 
         Collection<ElasticsearchCommand> commands = new KartverketSosiStreamToElasticsearchCommands(new SosiElementWrapperFactory(), 1).transform(new FileInputStream(targetFile));
 
-        Assert.assertEquals(1, commands.size());
+        Assertions.assertEquals(1, commands.size());
 
-        Assert.assertEquals(((PeliasDocument) commands.iterator().next().getSource()).getDefaultName(), "Stornesodden");
+        Assertions.assertEquals(((PeliasDocument) commands.iterator().next().getSource()).getDefaultName(), "Stornesodden");
     }
 
 }

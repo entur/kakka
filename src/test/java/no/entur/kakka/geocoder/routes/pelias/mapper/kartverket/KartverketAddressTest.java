@@ -18,33 +18,33 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
 import no.entur.kakka.geocoder.routes.pelias.kartverket.KartverketAddress;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class KartverketAddressTest {
 
 
 	@Test
 	public void testFormatFylkesNo() {
-		Assert.assertEquals("02", address("0203", null).getFylkesNo());
-		Assert.assertEquals("02", address("203", null).getFylkesNo());
-		Assert.assertNull(address(null, null).getFylkesNo());
+		Assertions.assertEquals("02", address("0203", null).getFylkesNo());
+		Assertions.assertEquals("02", address("203", null).getFylkesNo());
+		Assertions.assertNull(address(null, null).getFylkesNo());
 	}
 
 	@Test
 	public void testFormatFullKommuneNo() {
-		Assert.assertEquals("0203", address("0203", null).getFullKommuneNo());
-		Assert.assertEquals("0203", address("203", null).getFullKommuneNo());
-		Assert.assertNull(address(null, null).getFullKommuneNo());
+		Assertions.assertEquals("0203", address("0203", null).getFullKommuneNo());
+		Assertions.assertEquals("0203", address("203", null).getFullKommuneNo());
+		Assertions.assertNull(address(null, null).getFullKommuneNo());
 	}
 
 	@Test
 	public void testFormatFullGrunnkretsNo() {
-		Assert.assertEquals("02030560", address("0203", "0560").getFullGrunnkretsNo());
-		Assert.assertEquals("02030560", address("203", "560").getFullGrunnkretsNo());
-		Assert.assertNull(address(null, null).getFullGrunnkretsNo());
-		Assert.assertNull(address("0203", null).getFullGrunnkretsNo());
-		Assert.assertNull(address(null, "531").getFullGrunnkretsNo());
+		Assertions.assertEquals("02030560", address("0203", "0560").getFullGrunnkretsNo());
+		Assertions.assertEquals("02030560", address("203", "560").getFullGrunnkretsNo());
+		Assertions.assertNull(address(null, null).getFullGrunnkretsNo());
+		Assertions.assertNull(address("0203", null).getFullGrunnkretsNo());
+		Assertions.assertNull(address(null, "531").getFullGrunnkretsNo());
 	}
 
 	private KartverketAddress address(String kommunenr, String grunnkretsnr) {

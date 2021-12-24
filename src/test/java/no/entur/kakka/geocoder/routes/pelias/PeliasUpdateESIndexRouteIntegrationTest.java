@@ -24,11 +24,11 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,28 +68,22 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 	public void testInsertElasticsearchIndexDataSuccess() throws Exception {
 
 		// Stub for elastic search scratch instance
-		context.getRouteDefinition("pelias-delete-index-if-exists").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
-			}
-		});
-		context.getRouteDefinition("pelias-create-index").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index");
-			}
-		});
 
-		context.getRouteDefinition("pelias-invoke-bulk-command").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
-						.skipSendToOriginalEndpoint().to("mock:es-scratch");
-			}
-		});
+		AdviceWith.adviceWith(context,"pelias-delete-index-if-exists",
+				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
+
+
+		AdviceWith.adviceWith(context,"pelias-create-index",
+				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/pelias")
+						.skipSendToOriginalEndpoint().to("mock:es-scratch-admin-index"));
+
+
+		AdviceWith.adviceWith(context,"pelias-invoke-bulk-command",
+				a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
+						.skipSendToOriginalEndpoint().to("mock:es-scratch"));
+
+
 
 		inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
 				new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
@@ -106,7 +100,7 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 		Exchange e = insertESDataTemplate.request("direct:insertElasticsearchIndexData", ex -> {
 		});
 
-		Assert.assertEquals(GeoCoderConstants.PELIAS_ES_SCRATCH_STOP, e.getProperty(GeoCoderConstants.GEOCODER_NEXT_TASK));
+		Assertions.assertEquals(GeoCoderConstants.PELIAS_ES_SCRATCH_STOP, e.getProperty(GeoCoderConstants.GEOCODER_NEXT_TASK));
 		esScratchAdminIndexMock.assertIsSatisfied();
 		esScratchMock.assertIsSatisfied();
 

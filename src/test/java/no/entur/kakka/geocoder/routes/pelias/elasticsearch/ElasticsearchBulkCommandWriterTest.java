@@ -21,8 +21,8 @@ import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public class ElasticsearchBulkCommandWriterTest {
 		new ElasticsearchBulkCommandWriter(writer).write(commands);
 		String asString = writer.toString();
 
-		Assert.assertEquals(commands.size() * 2, StringUtils.countMatches(asString, "\n"));
-		Assert.assertTrue(asString.contains("\"name\":{\"default\":\"møre0\""));
+		Assertions.assertEquals(commands.size() * 2, StringUtils.countMatches(asString, "\n"));
+		Assertions.assertTrue(asString.contains("\"name\":{\"default\":\"møre0\""));
 	}
 
 

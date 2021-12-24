@@ -102,7 +102,7 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-map-neighbouring-countries-to-netex");
 
         from("direct:updateNeighbouringCountriesInTiamat")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)

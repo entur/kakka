@@ -21,8 +21,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class GeometryTransformationTest {
 
@@ -44,7 +44,7 @@ public class GeometryTransformationTest {
 
 	private void assertCoordinates(Geometry geometry, double expectedX, double expectedY) {
 		Coordinate coordinate = geometry.getCoordinate();
-		Assert.assertEquals(expectedX, coordinate.x, 0.1);
-		Assert.assertEquals(expectedY, coordinate.y, 0.1);
+		Assertions.assertEquals(expectedX, coordinate.x, 0.1);
+		Assertions.assertEquals(expectedY, coordinate.y, 0.1);
 	}
 }

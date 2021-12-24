@@ -2,16 +2,20 @@ package no.entur.kakka.rest;
 
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
+import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = TestApp.class)
+@Disabled
 public class AdminRestRouteBuilderTest extends KakkaRouteBuilderIntegrationTestBase {
 
     @TestConfiguration
@@ -27,11 +31,9 @@ public class AdminRestRouteBuilderTest extends KakkaRouteBuilderIntegrationTestB
                     );
 
         }
-
     }
 
-
-    @Produce(uri = "http4:localhost:28081/services/osmpoifilter")
+    @Produce("http:localhost:28081/services/osmpoifilter")
     protected ProducerTemplate getTemplate;
 
     @Test

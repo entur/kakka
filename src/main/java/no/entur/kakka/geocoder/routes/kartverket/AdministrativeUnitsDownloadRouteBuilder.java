@@ -51,7 +51,7 @@ public class AdministrativeUnitsDownloadRouteBuilder extends BaseRouteBuilder {
 	public void configure() throws Exception {
 		super.configure();
 
-		singletonFrom("quartz2://kakka/administrativeUnitsDownload?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+		singletonFrom("quartz://kakka/administrativeUnitsDownload?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
 				.autoStartup("{{kartverket.administrative.units.download.autoStartup:false}}")
 				.filter(e -> isSingletonRouteActive(e.getFromRouteId()))
 				.log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")

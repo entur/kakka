@@ -17,15 +17,15 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper;
 
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
+import org.junit.jupiter.api.BeforeEach;
 import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.geojson.KartverketLocality;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.services.AdminUnitRepository;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -41,7 +41,7 @@ public class PeliasIndexParentInfoEnricherTest {
     private PeliasIndexParentInfoEnricher parentInfoEnricher = new PeliasIndexParentInfoEnricher();
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
     }
@@ -61,8 +61,8 @@ public class PeliasIndexParentInfoEnricherTest {
 
         parentInfoEnricher.addMissingParentInfo(command, adminUnitRepository);
 
-        Assert.assertEquals("GokkCounty", doc.getParent().getCounty());
-        Assert.assertEquals("GokkLocality", doc.getParent().getLocality());
+        Assertions.assertEquals("GokkCounty", doc.getParent().getCounty());
+        Assertions.assertEquals("GokkLocality", doc.getParent().getLocality());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class PeliasIndexParentInfoEnricherTest {
 
         parentInfoEnricher.addMissingParentInfo(command, adminUnitRepository);
 
-        Assert.assertEquals("GokkLocality", doc.getParent().getLocality());
+        Assertions.assertEquals("GokkLocality", doc.getParent().getLocality());
     }
 
 
@@ -100,8 +100,8 @@ public class PeliasIndexParentInfoEnricherTest {
 
         parentInfoEnricher.addMissingParentInfo(command, adminUnitRepository);
 
-        Assert.assertEquals("GokkCounty", doc.getParent().getCounty());
-        Assert.assertEquals("GokkLocality", doc.getParent().getLocality());
+        Assertions.assertEquals("GokkCounty", doc.getParent().getCounty());
+        Assertions.assertEquals("GokkLocality", doc.getParent().getLocality());
     }
 
 }

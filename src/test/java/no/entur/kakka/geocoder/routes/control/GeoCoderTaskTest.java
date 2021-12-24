@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.routes.control;
 
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -38,8 +38,8 @@ public class GeoCoderTaskTest {
 
 		SortedSet<GeoCoderTask> sorted = new TreeSet<>(expectedOrder);
 
-		sorted.forEach(s -> Assert.assertEquals(itrExpected.next(), s));
+		sorted.forEach(s -> Assertions.assertEquals(itrExpected.next(), s));
 
-		Assert.assertFalse("Duplicates should not be allowed", sorted.add(new GeoCoderTask(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1")));
+		Assertions.assertFalse(sorted.add(new GeoCoderTask(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1")),"Duplicates should not be allowed");
 	}
 }

@@ -24,9 +24,9 @@ public class Utils {
         }
 
         if (url.contains("https")) {
-            return url.replaceFirst("https", "https4");
+            return url.replaceFirst("https", "https");
         }
-        return url.replaceFirst("http", "http4");
+        return url.replaceFirst("http", "http");
     }
 
     public static Long getLastPathElementOfUrl(String url) {

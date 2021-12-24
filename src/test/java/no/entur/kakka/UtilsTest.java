@@ -16,9 +16,11 @@
 
 package no.entur.kakka;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UtilsTest {
 
@@ -28,20 +30,20 @@ public class UtilsTest {
         assertEquals(Long.valueOf(2321), Utils.getLastPathElementOfUrl(locationUrl));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetJobIdWithNull() {
-        Utils.getLastPathElementOfUrl(null);
+        assertThrows( IllegalArgumentException.class, () -> Utils.getLastPathElementOfUrl(null));
     }
 
     @Test
     public void testGetHttp4() {
         String url = "http://localhost:8180/chouette_iev/referentials/avinor";
-        assertEquals("http4://localhost:8180/chouette_iev/referentials/avinor", Utils.getHttp4(url));
+        assertEquals("http://localhost:8180/chouette_iev/referentials/avinor", Utils.getHttp4(url));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetHttp4WithNull() {
-        Utils.getHttp4(null);
+        assertThrows(IllegalArgumentException.class, () -> Utils.getHttp4(null));
     }
 }
 

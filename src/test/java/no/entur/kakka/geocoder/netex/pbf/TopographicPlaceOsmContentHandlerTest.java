@@ -19,8 +19,8 @@ package no.entur.kakka.geocoder.netex.pbf;
 
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.openstreetmap.model.OSMNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.TopographicPlace;
 
@@ -32,27 +32,27 @@ public class TopographicPlaceOsmContentHandlerTest {
 
 	@Test
 	public void testMissingNameDoesNotMatches() {
-		Assert.assertFalse(handler().matchesFilter(node("amenity=test", "leisure=test", "key=start", "other=other")));
+		Assertions.assertFalse(handler().matchesFilter(node("amenity=test", "leisure=test", "key=start", "other=other")));
 	}
 
 	@Test
 	public void testNameOnlyDoesNotMatches() {
-		Assert.assertFalse(handler().matchesFilter(node("name=1", "other2=other", "other1=other")));
+		Assertions.assertFalse(handler().matchesFilter(node("name=1", "other2=other", "other1=other")));
 	}
 
 	@Test
 	public void testFullTagFilterMatches() {
-		Assert.assertTrue(handler().matchesFilter(node("name=1", "amenity=test", "other=other")));
+		Assertions.assertTrue(handler().matchesFilter(node("name=1", "amenity=test", "other=other")));
 	}
 
 	@Test
 	public void testOnlyKeyFilterMatches() {
-		Assert.assertTrue(handler().matchesFilter(node("name=1", "key=start")));
+		Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=start")));
 	}
 
 	@Test
 	public void testStartFilterMatches() {
-		Assert.assertTrue(handler().matchesFilter(node("name=1", "key=startOTHER", "other=other")));
+		Assertions.assertTrue(handler().matchesFilter(node("name=1", "key=startOTHER", "other=other")));
 	}
 
 	private TopographicPlaceOsmContentHandler handler() {

@@ -54,7 +54,7 @@ public class TiamatPollJobStatusRouteBuilder extends BaseRouteBuilder {
         from("direct:checkTiamatJobStatus")
                 .removeHeaders("CamelHttp*")
                 .setBody(constant(""))
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .doTry()
                 .toD(tiamatUrl + "${header." + Constants.JOB_URL + "}/status")
                 .convertBodyTo(ExportJob.class)

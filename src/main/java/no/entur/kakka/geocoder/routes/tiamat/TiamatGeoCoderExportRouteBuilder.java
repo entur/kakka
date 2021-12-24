@@ -49,7 +49,7 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom("quartz2://kakka/tiamatGeoCoderExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/tiamatGeoCoderExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.geocoder.export.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers pelias update.")
@@ -57,7 +57,7 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
                 .inOnly("direct:geoCoderStart")
                 .routeId("tiamat-geocoder-export-quartz");
 
-        singletonFrom("quartz2://kakka/tiamatGeoCoderExportMidDay?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/tiamatGeoCoderExportMidDay?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.geocoder.export.mid.day.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers mid day pelias update.")

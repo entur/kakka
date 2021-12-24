@@ -20,8 +20,8 @@ import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketSosiStreamToElasticsearchCommands;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class PlaceNamesStreamToElasticsearchCommandTest {
     public void testTransform() throws Exception {
         Collection<ElasticsearchCommand> commands = new KartverketSosiStreamToElasticsearchCommands(sosiElementWrapperFactory, placePopularity).transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos"));
 
-        Assert.assertEquals(2, commands.size());
+        Assertions.assertEquals(2, commands.size());
 
         commands.forEach(c -> assertCommand(c));
 
@@ -49,18 +49,18 @@ public class PlaceNamesStreamToElasticsearchCommandTest {
     }
 
     private void assertKalland(PeliasDocument kalland) {
-        Assert.assertEquals(58.71085, kalland.getCenterPoint().getLat().doubleValue(), 0.0001);
-        Assert.assertEquals(7.397255, kalland.getCenterPoint().getLon().doubleValue(), 0.0001);
+        Assertions.assertEquals(58.71085, kalland.getCenterPoint().getLat().doubleValue(), 0.0001);
+        Assertions.assertEquals(7.397255, kalland.getCenterPoint().getLon().doubleValue(), 0.0001);
 
-        Assert.assertEquals("NOR", kalland.getParent().getCountryId());
-        Assert.assertEquals(Arrays.asList("industriområde"), kalland.getCategory());
-        Assert.assertEquals(placePopularity, kalland.getPopularity());
+        Assertions.assertEquals("NOR", kalland.getParent().getCountryId());
+        Assertions.assertEquals(Arrays.asList("industriområde"), kalland.getCategory());
+        Assertions.assertEquals(placePopularity, kalland.getPopularity());
     }
 
     private void assertCommand(ElasticsearchCommand command) {
-        Assert.assertNotNull(command.getIndex());
-        Assert.assertEquals("pelias", command.getIndex().getIndex());
-        Assert.assertEquals("address", command.getIndex().getType());
+        Assertions.assertNotNull(command.getIndex());
+        Assertions.assertEquals("pelias", command.getIndex().getIndex());
+        Assertions.assertEquals("address", command.getIndex().getType());
     }
 
 }

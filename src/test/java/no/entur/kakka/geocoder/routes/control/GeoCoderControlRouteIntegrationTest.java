@@ -24,12 +24,12 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,19 +40,19 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Autowired
 	private ModelCamelContext context;
 
-	@EndpointInject(uri = "mock:destination")
+	@EndpointInject("mock:destination")
 	protected MockEndpoint destination;
 
-	@Produce(uri = "entur-google-pubsub:GeoCoderQueue")
+	@Produce("entur-google-pubsub:GeoCoderQueue")
 	protected ProducerTemplate geoCoderQueueTemplate;
 
-	@EndpointInject(uri = "mock:statusQueue")
+	@EndpointInject("mock:statusQueue")
 	protected MockEndpoint statusQueueMock;
 
 	@Value("${geocoder.max.retries:3000}")
 	private int maxRetries;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		destination.reset();
 		statusQueueMock.reset();
@@ -104,14 +104,14 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 		GeoCoderTask taskNextIteration = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
 
 		destination.whenExchangeReceived(1, e -> {
-			Assert.assertEquals(task, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
+			Assertions.assertEquals(task, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
 			e.getIn().setHeader(Constants.FILE_NAME, headerValue);
 			e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, taskNextIteration);
 		});
 
 		destination.whenExchangeReceived(2, e -> {
-			Assert.assertEquals(taskNextIteration, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
-			Assert.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME, String.class));
+			Assertions.assertEquals(taskNextIteration, e.getProperty(GeoCoderConstants.GEOCODER_CURRENT_TASK, GeoCoderTask.class));
+			Assertions.assertEquals(headerValue, e.getIn().getHeader(Constants.FILE_NAME, String.class));
 		});
 
 		destination.expectedBodiesReceived(task, taskNextIteration);
@@ -126,15 +126,12 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 	@Test
 	public void testTimeout() throws Exception {
 
-		context.getRouteDefinition("geocoder-reschedule-task").adviceWith(context, new AdviceWithRouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				interceptSendToEndpoint("direct:updateStatus")
-						.skipSendToOriginalEndpoint().to("mock:statusQueue");
-			}
-		});
+		AdviceWith.adviceWith(context,"geocoder-reschedule-task",
+				a -> a.interceptSendToEndpoint("direct:updateStatus")
+						.skipSendToOriginalEndpoint().to("mock:statusQueue"));
+
 		statusQueueMock
-				.whenExchangeReceived(1, e -> Assert.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));
+				.whenExchangeReceived(1, e -> Assertions.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.TIMEOUT.toString())));
 		statusQueueMock.expectedMessageCount(1);
 		destination.whenExchangeReceived(1, e ->
 			e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, true)

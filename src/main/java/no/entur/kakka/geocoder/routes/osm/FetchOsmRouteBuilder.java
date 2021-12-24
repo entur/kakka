@@ -58,7 +58,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
     @Value("${fetch.osm.cron.schedule:0+*+*/23+?+*+MON-FRI}")
     private String cronSchedule;
 
-    @Value("${fetch.osm.map.url:https4://download.geofabrik.de/europe/norway-latest.osm.pbf}")
+    @Value("${fetch.osm.map.url:https://download.geofabrik.de/europe/norway-latest.osm.pbf}")
     private String osmMapUrl;
 
     /**
@@ -75,7 +75,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while fetching OSM file.")
                 .handled(true);
 
-        singletonFrom("quartz2://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{osm.download.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers fetch of OSM map over Norway.")
@@ -92,7 +92,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FILE_HANDLE, simple(blobStoreSubdirectoryForOsm + "/" + "norway-latest.osm.pbf.md5"))
                 .to("direct:uploadBlob")
                 // Fetch the actual file
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .streamCaching()
                 .to(osmMapUrl)
                 .convertBodyTo(InputStream.class)
@@ -117,7 +117,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
 
         from("direct:fetchOsmMapOverNorwayMd5")
                 .log(LoggingLevel.DEBUG, "Fetching MD5 sum for map over Norway")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .to(osmMapUrl + ".md5")
                 .convertBodyTo(String.class)
                 .process(p -> {

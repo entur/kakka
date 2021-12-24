@@ -64,41 +64,34 @@ public class BlobStoreService {
 	}
 
 	public BlobStoreFiles listBlobsInFolder(@Header(value = Exchange.FILE_PARENT) String folder, Exchange exchange) {
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		return repository.listBlobs(folder + "/");
 	}
 
 	public InputStream getBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		return repository.getBlob(name);
 	}
 
 	public void uploadBlob(@Header(value = Constants.FILE_HANDLE) String name,
 			                      @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream, Exchange exchange) {
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.uploadBlob(name, inputStream, makePublic);
 	}
 
 	public boolean deleteBlob(@Header(value = Constants.FILE_HANDLE) String name, Exchange exchange) {
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		return repository.delete(name);
 	}
 
 	public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
 
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyBlob(sourceName, targetName, makePublic);
 	}
 
 	public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
 		logger.info("Copying kingu file to marduk bucket");
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyKinguBlob(sourceName, targetName, makePublic);
 	}
 
 	public void copyGeoCoderBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName,  @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
 		logger.info("Copying geocoder netex file to kakka bucket");
-		ExchangeUtils.addHeadersAndAttachments(exchange);
 		repository.copyGeoCoderBlob(sourceName, targetName, makePublic);
 	}
 

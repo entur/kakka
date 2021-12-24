@@ -48,7 +48,7 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
 
         from("direct:tiamatExport")
                 .log(LoggingLevel.DEBUG, "Start Tiamat export")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .setBody(constant(null))
                 .setHeader(Exchange.HTTP_QUERY,header(Constants.QUERY_STRING))
                 .to(tiamatUrl + tiamatPublicationDeliveryPath + "/export/initiate/")

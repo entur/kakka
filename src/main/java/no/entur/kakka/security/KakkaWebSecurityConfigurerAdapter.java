@@ -22,7 +22,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @Profile("!test")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Component
 public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 

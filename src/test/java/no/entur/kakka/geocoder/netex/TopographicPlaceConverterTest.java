@@ -26,8 +26,8 @@ import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import org.springframework.util.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
@@ -120,7 +120,7 @@ public class TopographicPlaceConverterTest {
         boolean containsTopographicPlaces = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().stream().map(frame -> frame.getValue())
                                                     .filter(frame -> frame instanceof Site_VersionFrameStructure).anyMatch(frame -> ((Site_VersionFrameStructure) frame).getTopographicPlaces() != null && !CollectionUtils.isEmpty(((Site_VersionFrameStructure) frame).getTopographicPlaces().getTopographicPlace()));
 
-        Assert.assertTrue("Expected publication delivery to contain site frame with topograhpic places", containsTopographicPlaces);
+        Assertions.assertTrue(containsTopographicPlaces,"Expected publication delivery to contain site frame with topograhpic places");
         return publicationDeliveryStructure;
     }
 

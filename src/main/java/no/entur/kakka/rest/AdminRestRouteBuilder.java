@@ -114,7 +114,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
 
 
-        String commonApiDocEndpoint = "http4:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
+        String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
 
 
         rest("/geocoder_admin")

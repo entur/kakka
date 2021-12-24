@@ -18,8 +18,8 @@ package no.entur.kakka.geocoder.netex.pbf;
 
 
 import no.entur.kakka.domain.OSMPOIFilter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.TopographicPlace;
@@ -44,13 +44,13 @@ public class PbfTopographicPlaceReaderTest {
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 		reader.addToQueue(queue);
 
-		Assert.assertEquals(4, queue.size());
+		Assertions.assertEquals(4, queue.size());
 
 		for (TopographicPlace tp : queue) {
-			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
-			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
-			Assert.assertNotNull(tp.getName());
-			Assert.assertNotNull(tp.getCentroid());
+			Assertions.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
+			Assertions.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
+			Assertions.assertNotNull(tp.getName());
+			Assertions.assertNotNull(tp.getCentroid());
 		}
 
 	}
@@ -65,7 +65,7 @@ public class PbfTopographicPlaceReaderTest {
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 		reader.addToQueue(queue);
 
-		Assert.assertEquals(1, queue.size());
+		Assertions.assertEquals(1, queue.size());
 
 		List<String> categories = new ArrayList<>();
 
@@ -81,13 +81,13 @@ public class PbfTopographicPlaceReaderTest {
 				category.ifPresent(categories::add);
 			}
 
-			Assert.assertEquals(2,categories.size());
+			Assertions.assertEquals(2,categories.size());
 
-			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
-			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
-			Assert.assertNotNull(tp.getName());
-			Assert.assertNotNull(tp.getCentroid());
-			Assert.assertEquals("Operahuset i Oslo", tp.getName().getValue());
+			Assertions.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
+			Assertions.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
+			Assertions.assertNotNull(tp.getName());
+			Assertions.assertNotNull(tp.getCentroid());
+			Assertions.assertEquals("Operahuset i Oslo", tp.getName().getValue());
 		}
 
 	}
@@ -105,7 +105,7 @@ public class PbfTopographicPlaceReaderTest {
 		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 		reader.addToQueue(queue);
 
-		Assert.assertEquals(0, queue.size());
+		Assertions.assertEquals(0, queue.size());
 
 	}
 

@@ -28,8 +28,8 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -85,7 +85,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 	}
 
 	private void assertBlobs(String path, String... objectNames) {
-		Arrays.stream(objectNames).forEach(o -> Assert.assertNotNull(inMemoryBlobStoreRepository.getBlob(path + "/" + o)));
+		Arrays.stream(objectNames).forEach(o -> Assertions.assertNotNull(inMemoryBlobStoreRepository.getBlob(path + "/" + o)));
 	}
 
 	@Test
@@ -100,8 +100,8 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 		startUpdate(blobFolder, true);
 
 		assertBlobs(blobFolder,"1");
-		Assert.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/2"));
-		Assert.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/3"));
+		Assertions.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/2"));
+		Assertions.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/3"));
 	}
 
 
@@ -112,7 +112,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 			e.getIn().setHeader(Constants.KARTVERKET_FORMAT, "testFormat");
 		});
 
-		Assert.assertEquals(shouldChangeContent, Boolean.TRUE.equals(exchange.getIn().getHeader(Constants.CONTENT_CHANGED)));
+		Assertions.assertEquals(shouldChangeContent, Boolean.TRUE.equals(exchange.getIn().getHeader(Constants.CONTENT_CHANGED)));
 	}
 
 	private List<File> files(String... names) throws Exception {

@@ -32,8 +32,9 @@ public class TaskGenerator {
     public void addExportTasks(Exchange exchange) throws IOException {
         logger.info("Add Export Tasks");
         final List<ExportParams> exportJobs = tiamatExportConfig.getExportJobs();
-        ProducerTemplate template = exchange.getContext().createProducerTemplate();
-        exportJobs.forEach(exportJob -> template.sendBody(inComingNetexExport, exportJob.toString()));
+        try(ProducerTemplate template = exchange.getContext().createProducerTemplate()){
+            exportJobs.forEach(exportJob -> template.sendBody(inComingNetexExport, exportJob.toString()));
+        }
     }
 
 }

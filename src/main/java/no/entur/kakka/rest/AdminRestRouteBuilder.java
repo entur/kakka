@@ -17,13 +17,10 @@
 package no.entur.kakka.rest;
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.domain.BlobStoreFiles;
-import no.entur.kakka.domain.BlobStoreFiles.File;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
-import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
@@ -152,8 +149,8 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
         rest("/osmpoifilter")
                 .description("OSM POI Filters REST service")
-                .consumes("application/json")
-                .produces("application/json")
+                .consumes(JSON)
+                .produces(JSON)
                 .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
@@ -257,16 +254,6 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .routeId("admin-tariff-zone-upload-file")
                 .endRest();
 
-        from("direct:update-configuration")
-                .to("bean:customConfigurationService?method=updateCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(204))
-                .setBody(constant(""));
-
-        from("direct:add-configuration")
-                .to("bean:customConfigurationService?method=saveCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(204))
-                .setBody(constant(""));
-
         from("direct:validateProvider")
                 .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
                 .routeId("admin-validate-provider");
@@ -274,14 +261,9 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
     }
 
     private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {
-        return typeStrings.stream().map(s -> GeoCoderTaskType.valueOf(s)).collect(Collectors.toSet());
+        return typeStrings.stream().map(GeoCoderTaskType::valueOf).collect(Collectors.toSet());
     }
 
-    public static class ImportFilesSplitter {
-        public List<String> splitFiles(@Body BlobStoreFiles files) {
-            return files.getFiles().stream().map(File::getName).collect(Collectors.toList());
-        }
-    }
 }
 
 

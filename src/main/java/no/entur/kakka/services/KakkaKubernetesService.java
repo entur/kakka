@@ -17,14 +17,11 @@
 package no.entur.kakka.services;
 
 import org.rutebanken.hazelcasthelper.service.KubernetesService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public final class KakkaKubernetesService extends KubernetesService {
-    private static final Logger log = LoggerFactory.getLogger(KakkaKubernetesService.class);
 
     public KakkaKubernetesService(@Value("${rutebanken.kubernetes.url:}") String kubernetesUrl,
                                   @Value("${rutebanken.kubernetes.namespace:default}") String namespace,

@@ -58,7 +58,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     private static final String HEADER_EXPAND_ZIP = "EXPAND_ZIP";
     private static final String FILE_EXTENSION = "RutebankenFileExtension";
     private static final String CONVERSION_ROUTE = "RutebankenConversionRoute";
-    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
+    @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
     private String elasticsearchScratchUrl;
     @Value("${osm.pbf.blobstore.subdirectory:osm}")
     private String blobStoreSubdirectoryForOsm;

@@ -47,7 +47,7 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
     protected ProducerTemplate insertESDataTemplate;
     @Autowired
     private ModelCamelContext context;
-    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
+    @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
     private String elasticsearchScratchUrl;
     @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;

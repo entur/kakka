@@ -18,7 +18,7 @@ package no.entur.kakka.rest;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
 import org.apache.camel.Exchange;
@@ -48,7 +48,7 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
  * REST interface for backdoor triggering of messages
  */
 @Component
-public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
+public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
@@ -62,6 +62,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
     @Autowired
     private AuthorizationService authorizationService;
+
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
 
@@ -100,12 +101,13 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
         restConfiguration()
                 .component("servlet")
+                .contextPath("/services")
                 .bindingMode(RestBindingMode.json)
                 .endpointProperty("matchOnUriPrefix", "true")
+                .apiContextPath("/swagger.json")
                 .dataFormatProperty("prettyPrint", "true")
                 .apiContextPath(swaggerJsonPath)
-                .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0")
-                .contextPath("/services");
+                .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0");
 
         rest("")
                 .apiDocs(false)

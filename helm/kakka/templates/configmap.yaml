@@ -17,7 +17,7 @@ data:
     #spring.flyway.enabled=true
     server.port=8080
     camel.springboot.name=kakka
-    camel.component.servlet.mapping.context-path=/services/*
+    camel.servlet.mapping.context-path=/services/*
 
     # Tiamat
     tiamat.geocoder.export.autoStartup=true

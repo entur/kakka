@@ -4,7 +4,6 @@ import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = TestApp.class)
-@Disabled
 public class AdminRestRouteBuilderTest extends KakkaRouteBuilderIntegrationTestBase {
 
     @Produce("http:localhost:28081/services/osmpoifilter")

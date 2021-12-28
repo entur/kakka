@@ -41,6 +41,17 @@ public class ElasticsearchCommand {
     @JsonIgnore
     private Object source;
 
+    public static ElasticsearchCommand peliasIndexCommand(PeliasDocument document) {
+        if (document == null) {
+            return null;
+        }
+        ElasticsearchCommand command = new ElasticsearchCommand();
+        command.setIndex(new ActionMetaData("pelias", document.getLayer(), document.getSourceId()));
+        command.setSource(document);
+        return command;
+
+    }
+
     public ActionMetaData getIndex() {
         return index;
     }
@@ -79,17 +90,6 @@ public class ElasticsearchCommand {
 
     public void setSource(Object source) {
         this.source = source;
-    }
-
-    public static ElasticsearchCommand peliasIndexCommand(PeliasDocument document) {
-        if (document == null) {
-            return null;
-        }
-        ElasticsearchCommand command = new ElasticsearchCommand();
-        command.setIndex(new ActionMetaData("pelias", document.getLayer(), document.getSourceId()));
-        command.setSource(document);
-        return command;
-
     }
 
     public String toString() {

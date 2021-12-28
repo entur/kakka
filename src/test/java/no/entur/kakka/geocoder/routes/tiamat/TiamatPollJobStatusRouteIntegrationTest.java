@@ -20,20 +20,20 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import no.entur.kakka.geocoder.routes.tiamat.xml.JobStatus;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,48 +43,33 @@ import static org.apache.camel.builder.Builder.constant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
+    private static final String JOB_URL = "/job/1234";
+    @EndpointInject("mock:tiamat")
+    protected MockEndpoint tiamatMock;
+    @EndpointInject("mock:complete")
+    protected MockEndpoint completeEndpointMock;
+    @EndpointInject("mock:statusQueue")
+    protected MockEndpoint statusQueueMock;
+    @Produce("direct:checkTiamatJobStatus")
+    protected ProducerTemplate checkTiamatJobStatusTemplate;
     @Autowired
     private ModelCamelContext context;
-
     @Value("${tiamat-exporter.url}")
     private String tiamatUrl;
 
-    @EndpointInject(uri = "mock:tiamat")
-    protected MockEndpoint tiamatMock;
-
-
-    @EndpointInject(uri = "mock:complete")
-    protected MockEndpoint completeEndpointMock;
-
-    @EndpointInject(uri = "mock:statusQueue")
-    protected MockEndpoint statusQueueMock;
-
-
-    @Produce(uri = "direct:checkTiamatJobStatus")
-    protected ProducerTemplate checkTiamatJobStatusTemplate;
-
-    private static String JOB_URL = "/job/1234";
-
-    @Before
+    @BeforeEach
     public void setUp() {
         completeEndpointMock.reset();
         statusQueueMock.reset();
         tiamatMock.reset();
         try {
-            context.getRouteDefinition("tiamat-get-job-status").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
-                            .skipSendToOriginalEndpoint().to("mock:tiamat");
-                }
-            });
-            context.getRouteDefinition("tiamat-process-job-status-done").adviceWith(context, new AdviceWithRouteBuilder() {
-                @Override
-                public void configure() throws Exception {
-                    interceptSendToEndpoint("direct:updateStatus")
-                            .skipSendToOriginalEndpoint().to("mock:statusQueue");
-                }
-            });
+            AdviceWith.adviceWith(context, "tiamat-get-job-status",
+                    a -> a.interceptSendToEndpoint(tiamatUrl + JOB_URL + "/status")
+                            .skipSendToOriginalEndpoint().to("mock:tiamat"));
+
+            AdviceWith.adviceWith(context, "tiamat-process-job-status-done",
+                    a -> a.interceptSendToEndpoint("direct:updateStatus")
+                            .skipSendToOriginalEndpoint().to("mock:statusQueue"));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -102,7 +87,7 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         tiamatMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
-        Assert.assertTrue(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, Boolean.class));
+        Assertions.assertTrue(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, Boolean.class));
     }
 
     @Test
@@ -118,15 +103,15 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
 
         tiamatMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
-        Assert.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
-        Assert.assertNull(e.getException());
+        Assertions.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
+        Assertions.assertNull(e.getException());
     }
 
     @Test
     public void testFailed() throws Exception {
         tiamatMock.expectedMessageCount(1);
         statusQueueMock
-                .whenExchangeReceived(1, e -> Assert.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.FAILED.toString())));
+                .whenExchangeReceived(1, e -> Assertions.assertTrue(e.getIn().getBody(String.class).contains(JobEvent.State.FAILED.toString())));
         tiamatMock.returnReplyBody(constant(new ExportJob(JobStatus.FAILED)));
 
         context.start();
@@ -136,8 +121,8 @@ public class TiamatPollJobStatusRouteIntegrationTest extends KakkaRouteBuilderIn
         tiamatMock.assertIsSatisfied();
         completeEndpointMock.assertIsSatisfied();
         statusQueueMock.assertIsSatisfied();
-        Assert.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
-        Assert.assertNull(e.getException());
+        Assertions.assertNull(e.getProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK));
+        Assertions.assertNull(e.getException());
     }
 
 

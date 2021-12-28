@@ -22,13 +22,13 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 public class CountyToPeliasDocument extends TopographicPlaceAdapterToPeliasDocument {
 
 
-	public CountyToPeliasDocument(TopographicPlaceAdapter feature) {
-		super(feature);
-	}
+    public CountyToPeliasDocument(TopographicPlaceAdapter feature) {
+        super(feature);
+    }
 
-	@Override
-	protected String getLayer() {
-		return "county";
-	}
+    @Override
+    protected String getLayer() {
+        return "county";
+    }
 
 }

@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 @Profile("in-memory-blobstore")
 public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, byte[]> blobs = new HashMap<>();
+    private final Map<String, byte[]> blobs = new HashMap<>();
 
     @Override
     public BlobStoreFiles listBlobs(String prefix) {
@@ -53,9 +53,9 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
     public BlobStoreFiles listBlobs(Collection<String> prefixes) {
         logger.debug("list blobs called in in-memory blob store");
         List<BlobStoreFiles.File> files = blobs.keySet().stream()
-                                                  .filter(k -> prefixes.stream().anyMatch(prefix -> k.startsWith(prefix)))
-                                                  .map(k -> new BlobStoreFiles.File(k,new Date(), new Date(), 1234L))    //TODO Add real details?
-                                                  .collect(Collectors.toList());
+                .filter(k -> prefixes.stream().anyMatch(prefix -> k.startsWith(prefix)))
+                .map(k -> new BlobStoreFiles.File(k, new Date(), new Date(), 1234L))    //TODO Add real details?
+                .collect(Collectors.toList());
         BlobStoreFiles blobStoreFiles = new BlobStoreFiles();
         blobStoreFiles.add(files);
         return blobStoreFiles;
@@ -103,12 +103,12 @@ public class InMemoryBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override
     public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override

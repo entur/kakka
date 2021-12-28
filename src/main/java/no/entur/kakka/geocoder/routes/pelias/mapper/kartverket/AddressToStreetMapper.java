@@ -20,7 +20,7 @@ import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,9 +51,9 @@ public class AddressToStreetMapper {
 
     public List<PeliasDocument> createStreetPeliasDocumentsFromAddresses(Collection<PeliasDocument> addresses) {
         Collection<List<PeliasDocument>> addressesPerStreet =
-                addresses.stream().filter(a -> a.getAddressParts() != null && !StringUtils.isEmpty(a.getAddressParts().getStreet()))
-                        .collect(Collectors.groupingBy(a -> fromAddress(a), Collectors.mapping(Function.identity(), Collectors.toList()))).values();
-        return addressesPerStreet.stream().map(addressesOnStreet -> createPeliasStreetDocFromAddresses(addressesOnStreet)).collect(Collectors.toList());
+                addresses.stream().filter(a -> a.getAddressParts() != null && !ObjectUtils.isEmpty(a.getAddressParts().getStreet()))
+                        .collect(Collectors.groupingBy(this::fromAddress, Collectors.mapping(Function.identity(), Collectors.toList()))).values();
+        return addressesPerStreet.stream().map(this::createPeliasStreetDocFromAddresses).collect(Collectors.toList());
     }
 
 
@@ -97,9 +97,9 @@ public class AddressToStreetMapper {
 
     private class UniqueStreetKey {
 
-        private String streetName;
+        private final String streetName;
 
-        private String localityId;
+        private final String localityId;
 
         public UniqueStreetKey(String streetName, String localityId) {
             this.streetName = streetName;

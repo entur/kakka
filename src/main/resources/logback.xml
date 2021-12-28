@@ -17,40 +17,40 @@
 
 <configuration>
     <if condition='property("env").contains("dev")'>
-    <then>
-        <include resource="org/springframework/boot/logging/logback/base.xml" />
-    </then>
-    <else>
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-                <providers>
-                    <pattern>
+        <then>
+            <include resource="org/springframework/boot/logging/logback/base.xml"/>
+        </then>
+        <else>
+            <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
                         <pattern>
-                            {
-                            "serviceContext": {
+                            <pattern>
+                                {
+                                "serviceContext": {
                                 "service": "kakka"
-                            },
-                            "message": "%message\n%ex{full}",
-                            "severity": "%level",
-                            "breadcrumb": "%X{camel.breadcrumbId}",
-                            "correlationId": "%X{camel.correlationId}",
-                            "reportLocation": {
+                                },
+                                "message": "%message\n%ex{full}",
+                                "severity": "%level",
+                                "breadcrumb": "%X{camel.breadcrumbId}",
+                                "correlationId": "%X{camel.correlationId}",
+                                "reportLocation": {
                                 "filePath": "%logger",
                                 "lineNumber": "%line",
                                 "functionName": "%method"
-                            }
-                            }
+                                }
+                                }
+                            </pattern>
                         </pattern>
-                    </pattern>
-                </providers>
-            </encoder>
-        </appender>
-        <logger name="com" level="INFO"/>
-        <logger name="no" level="INFO"/>
-        <logger name="org" level="INFO"/>
-        <root level="INFO">
-            <appender-ref ref="console"/>
-        </root>
-    </else>
+                    </providers>
+                </encoder>
+            </appender>
+            <logger name="com" level="INFO"/>
+            <logger name="no" level="INFO"/>
+            <logger name="org" level="INFO"/>
+            <root level="INFO">
+                <appender-ref ref="console"/>
+            </root>
+        </else>
     </if>
 </configuration>

@@ -52,14 +52,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -96,24 +94,24 @@ public class AdminUnitRepositoryBuilder {
 
     private class CacheAdminUnitRepository implements AdminUnitRepository {
 
-        private Cache<String, String> idCache;
+        private final Cache<String, String> idCache;
 
-        private List<TopographicPlaceAdapter> localities;
+        private final List<TopographicPlaceAdapter> localities;
 
-        private List<TopographicPlaceAdapter> countries;
+        private final List<TopographicPlaceAdapter> countries;
 
-        private List<GroupOfStopPlaces> groupOfStopPlaces;
+        private final List<GroupOfStopPlaces> groupOfStopPlaces;
 
         public CacheAdminUnitRepository(Cache<String, String> idCache, List<TopographicPlaceAdapter> localities, List<TopographicPlaceAdapter> countries, List<GroupOfStopPlaces> groupOfStopPlaces) {
             this.idCache = idCache;
             this.localities = localities;
             this.countries = countries;
-            this.groupOfStopPlaces=groupOfStopPlaces;
+            this.groupOfStopPlaces = groupOfStopPlaces;
 
         }
 
         @Override
-        public GroupOfStopPlaces getGroupOfStopPlaces(String name){
+        public GroupOfStopPlaces getGroupOfStopPlaces(String name) {
             return groupOfStopPlaces.stream().filter(gosp -> gosp.getName().getValue().equals(name)).findFirst().orElse(null);
         }
 
@@ -125,7 +123,7 @@ public class AdminUnitRepositoryBuilder {
         @Override
         public TopographicPlaceAdapter getLocality(String id) {
             for (TopographicPlaceAdapter topographicPlace : localities) {
-                var topographicPlaceId=topographicPlace.getId();
+                var topographicPlaceId = topographicPlace.getId();
                 if (topographicPlaceId != null && topographicPlaceId.equals(id)) {
                     return topographicPlace;
                 }
@@ -149,9 +147,9 @@ public class AdminUnitRepositoryBuilder {
             }
 
             for (TopographicPlaceAdapter topographicPlace : topographicPlaces) {
-                var polygon=topographicPlace.getDefaultGeometry();
+                var polygon = topographicPlace.getDefaultGeometry();
                 if (polygon != null && polygon.covers(point)) {
-                        return topographicPlace;
+                    return topographicPlace;
                 }
             }
             return null;
@@ -190,13 +188,13 @@ public class AdminUnitRepositoryBuilder {
                 }
             }
             FileUtils.listFiles(
-                    new File(localWorkingDirectory), new String[]{"xml"}, true)
+                            new File(localWorkingDirectory), new String[]{"xml"}, true)
                     .forEach(f -> {
 
                         List<GroupOfStopPlaces> gosp = new ArrayList<>();
 
                         List<TopographicPlace> tp = new ArrayList<>();
-                        fromDeliveryPublicationStructure(tp,gosp,f);
+                        fromDeliveryPublicationStructure(tp, gosp, f);
 
                         if (!gosp.isEmpty()) {
                             gosp.forEach(this::addGroupOfStopPlaces);
@@ -284,15 +282,11 @@ public class AdminUnitRepositoryBuilder {
             if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
                 //Invalid Validity toDate < fromDate
                 return false;
-            } else if (fromDate != null && toDate == null) {
-                return true;
-            } else {
-                return false;
-            }
+            } else return fromDate != null && toDate == null;
         }
 
         private TopographicPlaceAdapter netexTopographicPlaceAdapter(TopographicPlace topographicPlace, Polygon geometry) {
-            var id= topographicPlace.getId();
+            var id = topographicPlace.getId();
             var isoCode = topographicPlace.getIsoCode();
             final String parentId;
             if (topographicPlace.getParentTopographicPlaceRef() != null) {

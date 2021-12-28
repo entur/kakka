@@ -39,13 +39,10 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
     // Using substitute layer for stops to avoid having to fork pelias (custom layers not configurable).
     public static final String STOP_PLACE_LAYER = "venue";
-
-    private static final String KEY_IS_PARENT_STOP_PLACE = "IS_PARENT_STOP_PLACE";
-
     public static final String SOURCE_PARENT_STOP_PLACE = "openstreetmap";
     public static final String SOURCE_CHILD_STOP_PLACE = "geonames";
-
-    private StopPlaceBoostConfiguration boostConfiguration;
+    private static final String KEY_IS_PARENT_STOP_PLACE = "IS_PARENT_STOP_PLACE";
+    private final StopPlaceBoostConfiguration boostConfiguration;
 
     public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration) {
         super();
@@ -112,7 +109,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
         }
         addAlternativeNameLabels(document, placeHierarchy);
-        if (document.getDefaultAlias() == null && document.getAliasMap()!=null && !document.getAliasMap().isEmpty()) {
+        if (document.getDefaultAlias() == null && document.getAliasMap() != null && !document.getAliasMap().isEmpty()) {
             String defaultAlias = Optional.of(document.getAliasMap().get(DEFAULT_LANGUAGE)).orElse(document.getAliasMap().values().iterator().next());
             document.getAliasMap().put("default", defaultAlias);
         }
@@ -130,7 +127,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         // Add parent info locality/county/country
         if (place.getTopographicPlaceRef() != null) {
-            Parent parent=document.getParent();
+            Parent parent = document.getParent();
             if (parent == null) {
                 parent = new Parent();
                 document.setParent(parent);
@@ -147,7 +144,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.LABEL.equals(an.getNameType()) && an.getName() != null).forEach(n -> document.addAlias(Optional.of(n.getName().getLang()).orElse("default"), n.getName().getValue()));
         }
-        if ((document.getAliasMap()==null || document.getAliasMap().isEmpty()) && placeHierarchy.getParent() != null) {
+        if ((document.getAliasMap() == null || document.getAliasMap().isEmpty()) && placeHierarchy.getParent() != null) {
             addAlternativeNameLabels(document, placeHierarchy.getParent());
         }
     }

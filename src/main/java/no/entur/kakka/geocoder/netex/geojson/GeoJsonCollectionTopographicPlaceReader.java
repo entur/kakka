@@ -35,13 +35,10 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GeoJsonCollectionTopographicPlaceReader implements TopographicPlaceReader {
 
-    private File[] files;
-
     private static final String LANGUAGE = "en";
-
     private static final String PARTICIPANT_REF = "KVE";
-
-    private GeojsonFeatureWrapperFactory wrapperFactory;
+    private final File[] files;
+    private final GeojsonFeatureWrapperFactory wrapperFactory;
 
 
     public GeoJsonCollectionTopographicPlaceReader(GeojsonFeatureWrapperFactory wrapperFactory, File... files) {

@@ -17,16 +17,16 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
+import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
+import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
+import no.entur.kakka.geocoder.routes.pelias.json.Parent;
+import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
+import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
-import no.entur.kakka.geocoder.routes.pelias.json.AddressParts;
-import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
-import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
-import no.entur.kakka.geocoder.routes.pelias.json.Parent;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
@@ -43,16 +43,16 @@ public class AddressStreamToElasticsearchCommandsTest {
         AddressStreamToElasticSearchCommands transformer = new AddressStreamToElasticSearchCommands(new AddressToPeliasMapper(ADDRESS_POPULARITY), new AddressToStreetMapper(ADDRESS_STREET_POPULARITY));
 
         Collection<ElasticsearchCommand> commands = transformer
-                                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv"));
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv"));
 
 
-        Assert.assertEquals(28, commands.size());
+        Assertions.assertEquals(28, commands.size());
 
 
         commands.forEach(c -> assertCommand(c));
 
         List<PeliasDocument> documents = commands.stream().map(c -> (PeliasDocument) c.getSource()).collect(Collectors.toList());
-        Assert.assertEquals("Should be 8 streets", 8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).collect(Collectors.toList()).size());
+        Assertions.assertEquals(8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).collect(Collectors.toList()).size(), "Should be 8 streets");
 
         PeliasDocument knownDocument = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().endsWith("416246828")).collect(Collectors.toList()).get(0);
         assertKnownAddress(knownDocument);
@@ -64,33 +64,33 @@ public class AddressStreamToElasticsearchCommandsTest {
 
         AddressParts addressParts = known.getAddressParts();
 
-        Assert.assertEquals("Vestlundveien", addressParts.getStreet());
-        Assert.assertEquals("25", addressParts.getNumber());
-        Assert.assertEquals("1820", addressParts.getZip());
-        Assert.assertEquals("Vestlundveien", addressParts.getName());
+        Assertions.assertEquals("Vestlundveien", addressParts.getStreet());
+        Assertions.assertEquals("25", addressParts.getNumber());
+        Assertions.assertEquals("1820", addressParts.getZip());
+        Assertions.assertEquals("Vestlundveien", addressParts.getName());
 
 
         Point utm33Point = new GeometryFactory().createPoint(new Coordinate(277680.73, 6615279.63));
         Point wgs84Point = GeometryTransformer.fromUTM(utm33Point, "33");
 
-        Assert.assertEquals(wgs84Point.getY(), known.getCenterPoint().getLat(), 0.0001);
-        Assert.assertEquals(wgs84Point.getX(), known.getCenterPoint().getLon(), 0.0001);
+        Assertions.assertEquals(wgs84Point.getY(), known.getCenterPoint().getLat(), 0.0001);
+        Assertions.assertEquals(wgs84Point.getX(), known.getCenterPoint().getLon(), 0.0001);
 
         Parent parent = known.getParent();
-        Assert.assertEquals("1820", parent.getPostalCodeId());
-        Assert.assertEquals("KVE:TopographicPlace:0123", parent.getLocalityId());
-        Assert.assertEquals("01230107", parent.getBoroughId());
-        Assert.assertEquals("Lund", parent.getBorough());
+        Assertions.assertEquals("1820", parent.getPostalCodeId());
+        Assertions.assertEquals("KVE:TopographicPlace:0123", parent.getLocalityId());
+        Assertions.assertEquals("01230107", parent.getBoroughId());
+        Assertions.assertEquals("Lund", parent.getBorough());
 
-        Assert.assertEquals(ADDRESS_POPULARITY, known.getPopularity());
+        Assertions.assertEquals(ADDRESS_POPULARITY, known.getPopularity());
 
-        Assert.assertEquals("Vestlundveien 25", known.getNameMap().get("default"));
-        Assert.assertEquals(Arrays.asList("vegadresse"), known.getCategory());
+        Assertions.assertEquals("Vestlundveien 25", known.getNameMap().get("default"));
+        Assertions.assertEquals(Arrays.asList("vegadresse"), known.getCategory());
     }
 
     private void assertCommand(ElasticsearchCommand command) {
-        Assert.assertNotNull(command.getIndex());
-        Assert.assertEquals("pelias", command.getIndex().getIndex());
-        Assert.assertEquals("address", command.getIndex().getType());
+        Assertions.assertNotNull(command.getIndex());
+        Assertions.assertEquals("pelias", command.getIndex().getIndex());
+        Assertions.assertEquals("address", command.getIndex().getType());
     }
 }

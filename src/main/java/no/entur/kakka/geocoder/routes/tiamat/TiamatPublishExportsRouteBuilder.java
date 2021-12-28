@@ -20,12 +20,12 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
-import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTaskType;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
 import no.entur.kakka.routes.file.FileUtils;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,11 +33,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.InputStream;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_POLL;
+
 /**
  * Routes for triggering regular exports of different datasets for backup and publish.
  * <p>
@@ -72,11 +72,11 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 exportConfigStrings.stream().filter(s -> !StringUtils.isEmpty(s)).map(configStr -> new TiamatExportTask(configStr)).collect(Collectors.toList());
 
 
-        singletonFrom("quartz2://kakka/tiamatPublishExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/tiamatPublishExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.export.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat exports for publish ")
-                .inOnly("direct:startFullTiamatPublishExport")
+                .to(ExchangePattern.InOnly,"direct:startFullTiamatPublishExport")
                 .routeId("tiamat-publish-export-quartz");
 
         from("direct:startFullTiamatPublishExport")
@@ -86,7 +86,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .otherwise()
                 .setBody(constant(new TiamatExportTasks(exportTasks).toString()))
                 .log(LoggingLevel.INFO, "Starting Tiamat exports: ${body}")
-                .inOnly("entur-google-pubsub:TiamatExportQueue")
+                .to(ExchangePattern.InOnly,"entur-google-pubsub:TiamatExportQueue")
                 .end()
                 .routeId("tiamat-publish-export-start-full");
 
@@ -170,16 +170,14 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-publish-exports-clean-current-task");
 
 
-
         from("direct:renameTiamatExportXmlFiles")
 
-                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(Exchange.FILE_PARENT, String.class) +"/content"))
-                .process(e -> FileUtils.renameFiles(e.getIn().getHeader(Exchange.FILE_PARENT, String.class)+"/content", "tiamat",e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).getCurrentTask().getName()))
-                .process(e -> e.getIn().setBody(ZipFileUtils.zipFilesInFolder(e.getIn().getHeader(Exchange.FILE_PARENT, String.class)+"/content", e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
+                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content"))
+                .process(e -> FileUtils.renameFiles(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content", "tiamat", e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).getCurrentTask().getName()))
+                .process(e -> e.getIn().setBody(ZipFileUtils.zipFilesInFolder(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content", e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
 
                 .routeId("tiamat-publish-exports-rename-xml-files");
     }
-
 
 
 }

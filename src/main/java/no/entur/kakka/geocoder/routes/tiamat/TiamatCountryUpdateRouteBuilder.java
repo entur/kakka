@@ -20,10 +20,9 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
+import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
-import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -102,7 +101,7 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-map-neighbouring-countries-to-netex");
 
         from("direct:updateNeighbouringCountriesInTiamat")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)

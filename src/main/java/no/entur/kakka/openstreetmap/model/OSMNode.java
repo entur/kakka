@@ -15,6 +15,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 package no.entur.kakka.openstreetmap.model;
+
 /**
  * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
  */

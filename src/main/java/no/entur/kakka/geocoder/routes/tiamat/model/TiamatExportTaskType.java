@@ -17,5 +17,5 @@
 package no.entur.kakka.geocoder.routes.tiamat.model;
 
 public enum TiamatExportTaskType {
-    ASYNC;
+    ASYNC
 }

@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
-import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
+import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.geocoder.sosi.SosiTopographicPlaceAdapterReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class KartverketSosiStreamToElasticsearchCommands {
 
 
-    private SosiElementWrapperFactory sosiElementWrapperFactory;
+    private final SosiElementWrapperFactory sosiElementWrapperFactory;
 
     private final long placeBoost;
 
@@ -44,7 +44,7 @@ public class KartverketSosiStreamToElasticsearchCommands {
 
     public Collection<ElasticsearchCommand> transform(InputStream placeNamesStream) {
         return new SosiTopographicPlaceAdapterReader(sosiElementWrapperFactory, placeNamesStream).read().stream()
-                       .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(d -> d != null).collect(Collectors.toList());
+                .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(d -> d != null).collect(Collectors.toList());
     }
 
     TopographicPlaceAdapterToPeliasDocument createMapper(TopographicPlaceAdapter wrapper) {

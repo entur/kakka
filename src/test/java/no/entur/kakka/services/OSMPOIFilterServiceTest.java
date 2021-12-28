@@ -1,25 +1,20 @@
 package no.entur.kakka.services;
 
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.repository.OSMPOIFilterRepository;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.*;
 
 public class OSMPOIFilterServiceTest {
 
     OSMPOIFilterRepositoryStub repository;
     OSMPOIFilterService service;
 
-    @Before
+    @BeforeEach
     public void init() {
         repository = new OSMPOIFilterRepositoryStub();
         service = new OSMPOIFilterServiceImpl(repository, 1);
@@ -27,18 +22,18 @@ public class OSMPOIFilterServiceTest {
 
     @Test
     public void testGet() {
-        Assert.assertEquals(0, service.getFilters().size());
+        Assertions.assertEquals(0, service.getFilters().size());
         repository.setFilters(getTestFilters(5));
-        Assert.assertEquals(5, service.getFilters().size());
+        Assertions.assertEquals(5, service.getFilters().size());
     }
 
     @Test
     public void testUpdateDeleteAll() {
         List<OSMPOIFilter> toBeDeleted = getTestFilters(5);
         repository.setFilters(toBeDeleted);
-        Assert.assertEquals(5, service.getFilters().size());
+        Assertions.assertEquals(5, service.getFilters().size());
         service.updateFilters(List.of());
-        Assert.assertEquals( 0, service.getFilters().size());
+        Assertions.assertEquals(0, service.getFilters().size());
     }
 
     @Test
@@ -70,7 +65,7 @@ public class OSMPOIFilterServiceTest {
         List<OSMPOIFilter> updatedFilters = service.getFilters();
 
         for (int i = 0; i < updatedFilters.size(); i++) {
-            Assert.assertEquals(toBeUpdated.get(i).getId(), updatedFilters.get(i).getId());
+            Assertions.assertEquals(toBeUpdated.get(i).getId(), updatedFilters.get(i).getId());
         }
     }
 
@@ -78,7 +73,7 @@ public class OSMPOIFilterServiceTest {
     public void testDefaultPriority() {
         OSMPOIFilter testFilter = new OSMPOIFilter();
         service.updateFilters(List.of(testFilter));
-        Assert.assertEquals(Integer.valueOf(1), repository.findAll().get(0).getPriority());
+        Assertions.assertEquals(Integer.valueOf(1), repository.findAll().get(0).getPriority());
     }
 
     private List<OSMPOIFilter> getTestFilters(int count) {

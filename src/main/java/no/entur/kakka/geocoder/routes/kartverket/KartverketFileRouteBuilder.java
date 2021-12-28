@@ -41,59 +41,59 @@ import static org.apache.camel.Exchange.FILE_PARENT;
 
 @Component
 public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
-	@Autowired
-	private IdempotentRepository idempotentDownloadRepository;
+    @Autowired
+    private IdempotentRepository idempotentDownloadRepository;
 
-	@Value("${kartverket.download.directory:files/kartverket}")
-	private String localDownloadDir;
+    @Value("${kartverket.download.directory:files/kartverket}")
+    private String localDownloadDir;
 
-	@Autowired
-	private BlobStoreService blobStoreService;
+    @Autowired
+    private BlobStoreService blobStoreService;
 
-	@Override
-	public void configure() throws Exception {
-		super.configure();
+    @Override
+    public void configure() throws Exception {
+        super.configure();
 
-		from("direct:uploadUpdatedFiles")
-				.setHeader(FILE_PARENT, simple(localDownloadDir + "/${date:now:yyyyMMddHHmmss}"))
-				.doTry()
-				.bean("kartverketService", "downloadFiles")
-				.process(e -> deleteNoLongerActiveFiles(e))
-				.to("direct:kartverketUploadOnlyUpdatedFiles")
-				.doFinally()
-				.to("direct:cleanUpLocalDirectory")
-				.routeId("upload-updated-files");
+        from("direct:uploadUpdatedFiles")
+                .setHeader(FILE_PARENT, simple(localDownloadDir + "/${date:now:yyyyMMddHHmmss}"))
+                .doTry()
+                .bean("kartverketService", "downloadFiles")
+                .process(e -> deleteNoLongerActiveFiles(e))
+                .to("direct:kartverketUploadOnlyUpdatedFiles")
+                .doFinally()
+                .to("direct:cleanUpLocalDirectory")
+                .routeId("upload-updated-files");
 
-		from("direct:kartverketUploadOnlyUpdatedFiles")
-				.split().body().aggregationStrategy(new MarkContentChangedAggregationStrategy())
-				.to("direct:kartverketUploadFileIfUpdated")
-				.routeId("kartverket-upload-only--updated-files");
+        from("direct:kartverketUploadOnlyUpdatedFiles")
+                .split().body().aggregationStrategy(new MarkContentChangedAggregationStrategy())
+                .to("direct:kartverketUploadFileIfUpdated")
+                .routeId("kartverket-upload-only--updated-files");
 
 
-		from("direct:kartverketUploadFileIfUpdated")
-				.setHeader(Exchange.FILE_NAME, simple(("${body.name}")))
-				.setHeader(Constants.FILE_HANDLE, simple("${header." + Constants.FOLDER_NAME + "}/${body.name}"))
-				.process(e -> e.getIn().setHeader("file_NameAndDigest", new FileNameAndDigest(e.getIn().getHeader(Constants.FILE_HANDLE, String.class),
-						                                                                             DigestUtils.md5Hex(e.getIn().getBody(InputStream.class)))))
-				.idempotentConsumer(header("file_NameAndDigest")).messageIdRepository(idempotentDownloadRepository)
-				.log(LoggingLevel.INFO, "Uploading ${header." + Constants.FILE_HANDLE + "}")
-				.to("direct:uploadBlob")
-				.setHeader(Constants.CONTENT_CHANGED, constant(true))
-				.end()
-				.routeId("upload-file-if-updated");
-	}
+        from("direct:kartverketUploadFileIfUpdated")
+                .setHeader(Exchange.FILE_NAME, simple(("${body.name}")))
+                .setHeader(Constants.FILE_HANDLE, simple("${header." + Constants.FOLDER_NAME + "}/${body.name}"))
+                .process(e -> e.getIn().setHeader("file_NameAndDigest", new FileNameAndDigest(e.getIn().getHeader(Constants.FILE_HANDLE, String.class),
+                        DigestUtils.md5Hex(e.getIn().getBody(InputStream.class)))))
+                .idempotentConsumer(header("file_NameAndDigest")).messageIdRepository(idempotentDownloadRepository)
+                .log(LoggingLevel.INFO, "Uploading ${header." + Constants.FILE_HANDLE + "}")
+                .to("direct:uploadBlob")
+                .setHeader(Constants.CONTENT_CHANGED, constant(true))
+                .end()
+                .routeId("upload-file-if-updated");
+    }
 
-	private void deleteNoLongerActiveFiles(Exchange e) {
-		List<File> activeFiles = e.getIn().getBody(List.class);
-		Set<String> activeFileNames = activeFiles.stream().map(File::getName).collect(Collectors.toSet());
-		BlobStoreFiles blobs = blobStoreService.listBlobsInFolder(e.getIn().getHeader(Constants.FOLDER_NAME, String.class), e);
+    private void deleteNoLongerActiveFiles(Exchange e) {
+        List<File> activeFiles = e.getIn().getBody(List.class);
+        Set<String> activeFileNames = activeFiles.stream().map(File::getName).collect(Collectors.toSet());
+        BlobStoreFiles blobs = blobStoreService.listBlobsInFolder(e.getIn().getHeader(Constants.FOLDER_NAME, String.class), e);
 
-		blobs.getFiles().stream().filter(b -> !activeFileNames.contains(Paths.get(b.getName()).getFileName().toString())).forEach(b -> deleteNoLongerActiveBlob(b, e));
+        blobs.getFiles().stream().filter(b -> !activeFileNames.contains(Paths.get(b.getName()).getFileName().toString())).forEach(b -> deleteNoLongerActiveBlob(b, e));
 
-	}
+    }
 
-	private void deleteNoLongerActiveBlob(BlobStoreFiles.File blob, Exchange e) {
-		log.info("Delete blob no longer part of Kartverekt dataset: " + blob);
-		blobStoreService.deleteBlob(blob.getName(), e);
-	}
+    private void deleteNoLongerActiveBlob(BlobStoreFiles.File blob, Exchange e) {
+        log.info("Delete blob no longer part of Kartverekt dataset: " + blob);
+        blobStoreService.deleteBlob(blob.getName(), e);
+    }
 }

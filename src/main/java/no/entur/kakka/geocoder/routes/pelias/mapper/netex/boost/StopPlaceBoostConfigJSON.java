@@ -25,7 +25,7 @@ public class StopPlaceBoostConfigJSON {
 
     public long defaultValue;
 
-    public Map<String,Double> interchangeFactors;
+    public Map<String, Double> interchangeFactors;
 
-    public Map<String, Map<String,Double>> stopTypeFactors;
+    public Map<String, Map<String, Double>> stopTypeFactors;
 }

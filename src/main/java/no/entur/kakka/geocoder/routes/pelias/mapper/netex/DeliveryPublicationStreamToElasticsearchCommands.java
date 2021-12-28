@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -57,17 +57,15 @@ import static javax.xml.bind.JAXBContext.newInstance;
 @Service
 public class DeliveryPublicationStreamToElasticsearchCommands {
 
-    private OSMPOIFilterService osmpoiFilterService;
-
-    public final static Logger logger= LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
-
-    private StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
+    public final static Logger logger = LoggerFactory.getLogger(DeliveryPublicationStreamToElasticsearchCommands.class);
+    private final OSMPOIFilterService osmpoiFilterService;
+    private final StopPlaceBoostConfiguration stopPlaceBoostConfiguration;
 
     private final long poiBoost;
 
     private final double gosBoostFactor;
 
-    private boolean gosInclude;
+    private final boolean gosInclude;
 
     private final List<String> poiFilter;
 
@@ -75,7 +73,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
                                                             @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService,@Value("${pelias.poi.include:true}") boolean mapPOIFromNetex) {
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService, @Value("${pelias.poi.include:true}") boolean mapPOIFromNetex) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
@@ -83,8 +81,8 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         this.osmpoiFilterService = osmpoiFilterService;
         this.mapPOIFromNetex = mapPOIFromNetex;
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !StringUtils.isEmpty(filter)).collect(Collectors.toList());
-            logger.info("pelias poiFilter is set to: " + poiFilter );
+            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).collect(Collectors.toList());
+            logger.info("pelias poiFilter is set to: " + poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();
             logger.info("No pelias poiFilter found");
@@ -115,7 +113,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
                     commands.addAll(stopPlaceCommands);
                 }
                 if (siteFrame.getTopographicPlaces() != null) {
-                    commands.addAll(addTopographicPlaceCommands(siteFrame.getTopographicPlaces().getTopographicPlace(),mapPOIFromNetex));
+                    commands.addAll(addTopographicPlaceCommands(siteFrame.getTopographicPlaces().getTopographicPlace(), mapPOIFromNetex));
                 }
                 if (siteFrame.getGroupsOfStopPlaces() != null) {
                     groupOfStopPlaces = siteFrame.getGroupsOfStopPlaces().getGroupOfStopPlaces();

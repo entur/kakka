@@ -25,12 +25,18 @@ import java.util.Map;
 
 public class OSMWithTags {
 
+    protected long id;
+    protected String creativeName;
     /* To save memory this is only created when an entity actually has tags. */
     private Map<String, String> _tags;
 
-    protected long id;
+    public static boolean isFalse(String tagValue) {
+        return ("no".equals(tagValue) || "0".equals(tagValue) || "false".equals(tagValue));
+    }
 
-    protected String creativeName;
+    public static boolean isTrue(String tagValue) {
+        return ("yes".equals(tagValue) || "1".equals(tagValue) || "true".equals(tagValue));
+    }
 
     /**
      * Gets the id.
@@ -116,7 +122,7 @@ public class OSMWithTags {
         tag = tag.toLowerCase();
         String value = getTag(tag);
         return ("designated".equals(value) || "official".equals(value)
-                        || "permissive".equals(value) || "unknown".equals(value));
+                || "permissive".equals(value) || "unknown".equals(value));
     }
 
     /**
@@ -169,14 +175,6 @@ public class OSMWithTags {
         if (out.isEmpty())
             return null;
         return out;
-    }
-
-    public static boolean isFalse(String tagValue) {
-        return ("no".equals(tagValue) || "0".equals(tagValue) || "false".equals(tagValue));
-    }
-
-    public static boolean isTrue(String tagValue) {
-        return ("yes".equals(tagValue) || "1".equals(tagValue) || "true".equals(tagValue));
     }
 
     /**
@@ -293,8 +291,8 @@ public class OSMWithTags {
     public boolean isThroughTrafficExplicitlyDisallowed() {
         String access = getTag("access");
         boolean noThruTraffic = "destination".equals(access) || "private".equals(access)
-                                        || "customers".equals(access) || "delivery".equals(access)
-                                        || "forestry".equals(access) || "agricultural".equals(access);
+                || "customers".equals(access) || "delivery".equals(access)
+                || "forestry".equals(access) || "agricultural".equals(access);
         return noThruTraffic;
     }
 
@@ -305,8 +303,8 @@ public class OSMWithTags {
         String parkingType = getTag("parking");
         String parkAndRide = getTag("park_ride");
         return isTag("amenity", "parking")
-                       && (parkingType != null && parkingType.contains("park_and_ride"))
-                       || (parkAndRide != null && !parkAndRide.equalsIgnoreCase("no"));
+                && (parkingType != null && parkingType.contains("park_and_ride"))
+                || (parkAndRide != null && !parkAndRide.equalsIgnoreCase("no"));
     }
 
     /**
@@ -314,7 +312,7 @@ public class OSMWithTags {
      */
     public boolean isBikeParking() {
         return isTag("amenity", "bicycle_parking") && !isTag("access", "private")
-                       && !isTag("access", "no");
+                && !isTag("access", "no");
     }
 
     public void setCreativeName(String creativeName) {

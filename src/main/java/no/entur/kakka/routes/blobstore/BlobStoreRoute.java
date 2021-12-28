@@ -55,7 +55,7 @@ public class BlobStoreRoute extends BaseRouteBuilder {
                 .end()
                 .bean("blobStoreService", "copyBlob")
                 .to("log:" + getClass().getName() + "?level=DEBUG&showAll=true&multiline=true")
-                .log(LoggingLevel.INFO,  "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
+                .log(LoggingLevel.INFO, "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
                 .routeId("blobstore-copy");
 
         from("direct:copyKinguBlob")
@@ -66,7 +66,7 @@ public class BlobStoreRoute extends BaseRouteBuilder {
                 .end()
                 .bean("blobStoreService", "copyKinguBlob")
                 .to("log:" + getClass().getName() + "?level=DEBUG&showAll=true&multiline=true")
-                .log(LoggingLevel.INFO,  "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
+                .log(LoggingLevel.INFO, "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
                 .routeId("blobstore-kingu-copy");
 
         from("direct:copyGeoCoderBlob")
@@ -77,7 +77,7 @@ public class BlobStoreRoute extends BaseRouteBuilder {
                 .end()
                 .bean("blobStoreService", "copyGeoCoderBlob")
                 .to("log:" + getClass().getName() + "?level=DEBUG&showAll=true&multiline=true")
-                .log(LoggingLevel.INFO,  "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
+                .log(LoggingLevel.INFO, "Returning from copying file ${header." + Constants.FILE_HANDLE + "} in blob store.")
                 .routeId("blobstore-geocoder-copy");
 
 

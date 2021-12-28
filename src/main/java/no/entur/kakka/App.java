@@ -46,10 +46,9 @@ import java.util.Set;
 @Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class, GooglePubSubCamelComponentConfig.class})
 public class App extends RouteBuilder {
 
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
     @Value("${shutdown.timeout:300}")
     private Long shutdownTimeout;
-
-    private static Logger logger = LoggerFactory.getLogger(App.class);
 
     // must have a main method spring-boot can run
     public static void main(String... args) {
@@ -59,13 +58,6 @@ public class App extends RouteBuilder {
 
         SpringApplication.run(App.class, args);
     }
-
-    @Override
-    public void configure() throws Exception {
-        getContext().getShutdownStrategy().setTimeout(shutdownTimeout);
-        getContext().setUseMDCLogging(true);
-    }
-
 
     private static void configureJsonPath() {
         Configuration.setDefaults(new Configuration.Defaults() {
@@ -88,6 +80,12 @@ public class App extends RouteBuilder {
                 return EnumSet.noneOf(Option.class);
             }
         });
+    }
+
+    @Override
+    public void configure() throws Exception {
+        getContext().getShutdownStrategy().setTimeout(shutdownTimeout);
+        getContext().setUseMDCLogging(true);
     }
 
 }

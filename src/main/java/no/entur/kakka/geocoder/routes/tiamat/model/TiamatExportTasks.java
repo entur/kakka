@@ -50,6 +50,15 @@ public class TiamatExportTasks {
         this(Arrays.asList(taskArray));
     }
 
+    public static TiamatExportTasks fromString(String string) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(string, TiamatExportTasks.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<TiamatExportTask> getTasks() {
         return tasks;
     }
@@ -58,12 +67,12 @@ public class TiamatExportTasks {
         this.tasks = tasks;
     }
 
-    public void setCurrentTask(TiamatExportTask currentTask) {
-        this.currentTask = currentTask;
-    }
-
     public TiamatExportTask getCurrentTask() {
         return currentTask;
+    }
+
+    public void setCurrentTask(TiamatExportTask currentTask) {
+        this.currentTask = currentTask;
     }
 
     @JsonIgnore
@@ -96,15 +105,6 @@ public class TiamatExportTasks {
             StringWriter writer = new StringWriter();
             mapper.writeValue(writer, this);
             return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static TiamatExportTasks fromString(String string) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(string, TiamatExportTasks.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

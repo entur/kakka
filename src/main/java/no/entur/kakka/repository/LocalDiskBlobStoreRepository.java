@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 @Profile("local-disk-blobstore")
 public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${blobstore.local.folder:files/blob}")
     private String baseFolder;
@@ -152,12 +152,12 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void copyKinguBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override
     public void copyGeoCoderBlob(String sourceObjectName, String targetObjectName, boolean makePublic) {
-        copyBlob(sourceObjectName,targetObjectName,makePublic);
+        copyBlob(sourceObjectName, targetObjectName, makePublic);
     }
 
     @Override

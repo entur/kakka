@@ -34,9 +34,9 @@ public class SosiTopographicPlaceReader implements TopographicPlaceReader {
     private static final String LANGUAGE = "en";
 
     private static final String PARTICIPANT_REF = "KVE";
-    private Collection<File> sosiFiles;
+    private final Collection<File> sosiFiles;
 
-    private SosiElementWrapperFactory wrapperFactory;
+    private final SosiElementWrapperFactory wrapperFactory;
 
     public SosiTopographicPlaceReader(SosiElementWrapperFactory wrapperFactory, Collection<File> sosiFiles) {
         this.sosiFiles = sosiFiles;

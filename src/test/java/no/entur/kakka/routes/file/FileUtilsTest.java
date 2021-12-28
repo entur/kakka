@@ -2,8 +2,8 @@ package no.entur.kakka.routes.file;
 
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.util.FileUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,25 +26,29 @@ public class FileUtilsTest {
         new File(folder + "/other.txt").createNewFile();
         FileUtils.renameFiles(folder, "stops", replaceText);
 
-        Assert.assertFalse(new File(folder + "/stops.txt").exists());
-        Assert.assertFalse(new File(folder + "/stops-22.txt").exists());
-        Assert.assertTrue(new File(folder + "/" + replaceText + ".txt").exists());
-        Assert.assertTrue(new File(folder + "/" + replaceText + "-22.txt").exists());
-        Assert.assertTrue(new File(folder + "/other.txt").exists());
+        Assertions.assertFalse(new File(folder + "/stops.txt").exists());
+        Assertions.assertFalse(new File(folder + "/stops-22.txt").exists());
+        Assertions.assertTrue(new File(folder + "/" + replaceText + ".txt").exists());
+        Assertions.assertTrue(new File(folder + "/" + replaceText + "-22.txt").exists());
+        Assertions.assertTrue(new File(folder + "/other.txt").exists());
     }
 
-    @Test(expected = KakkaException.class)
+    @Test
     public void testRenameFilesInZipFolderDoesNotExist() {
-        String replaceText = "YYYYYY";
-        String folder = "target/rename-test-not-existing";
-        FileUtils.renameFiles(folder, "stops", replaceText);
+        Assertions.assertThrows(KakkaException.class, () -> {
+            String replaceText = "YYYYYY";
+            String folder = "target/rename-test-not-existing";
+            FileUtils.renameFiles(folder, "stops", replaceText);
+        });
     }
 
-    @Test(expected = KakkaException.class)
+    @Test
     public void testRenameFilesInZipFolderNotADirectory() throws IOException {
-        String replaceText = "YYYYYY";
-        Path path = Files.createTempFile("rename-test-not-a-folder", "");
-        FileUtils.renameFiles(path.toString(), "stops", replaceText);
+        Assertions.assertThrows(KakkaException.class, () -> {
+            String replaceText = "YYYYYY";
+            Path path = Files.createTempFile("rename-test-not-a-folder", "");
+            FileUtils.renameFiles(path.toString(), "stops", replaceText);
+        });
     }
 
 }

@@ -30,7 +30,7 @@ public class SosiSpellingStatusCode {
 
     public static final String PRIVATE = "privat";
 
-    private static Set<String> ACTIVE_CODES = Sets.newHashSet(ACCEPTED, INTERNATIONAL, APPROVED, PRIVATE);
+    private static final Set<String> ACTIVE_CODES = Sets.newHashSet(ACCEPTED, INTERNATIONAL, APPROVED, PRIVATE);
 
     public static boolean isActive(String code) {
         return ACTIVE_CODES.contains(code);

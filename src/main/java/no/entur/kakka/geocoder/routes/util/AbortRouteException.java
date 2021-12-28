@@ -21,7 +21,7 @@ package no.entur.kakka.geocoder.routes.util;
  */
 public class AbortRouteException extends RuntimeException {
 
-	public AbortRouteException(String message) {
-		super(message);
-	}
+    public AbortRouteException(String message) {
+        super(message);
+    }
 }

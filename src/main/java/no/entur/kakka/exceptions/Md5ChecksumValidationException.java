@@ -19,14 +19,14 @@ package no.entur.kakka.exceptions;
 /**
  * To be thrown when there is some checksum validation problem
  */
-public class Md5ChecksumValidationException extends KakkaException{
+public class Md5ChecksumValidationException extends KakkaException {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public Md5ChecksumValidationException(String message) {
+    public Md5ChecksumValidationException(String message) {
         super(message);
     }
 }

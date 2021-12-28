@@ -17,13 +17,13 @@ data:
     #spring.flyway.enabled=true
     server.port=8080
     camel.springboot.name=kakka
-    camel.component.servlet.mapping.context-path=/services/*
+    camel.servlet.mapping.context-path=/services/*
 
     # Tiamat
     tiamat.geocoder.export.autoStartup=true
     tiamat.poi.update.enabled=false
-    tiamat.url=http4://tiamat:80
-    tiamat-exporter.url=http4://tiamat-exporter:80
+    tiamat.url=http://tiamat:80
+    tiamat-exporter.url=http://tiamat-exporter:80
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish

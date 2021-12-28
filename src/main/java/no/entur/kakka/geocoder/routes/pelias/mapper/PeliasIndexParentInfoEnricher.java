@@ -32,16 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 public class PeliasIndexParentInfoEnricher {
 
-    private static final Logger logger= LoggerFactory.getLogger(PeliasIndexParentInfoEnricher.class);
+    private static final Logger logger = LoggerFactory.getLogger(PeliasIndexParentInfoEnricher.class);
 
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -49,17 +45,17 @@ public class PeliasIndexParentInfoEnricher {
      * Enrich indexing commands with parent info if missing.
      */
     public void addMissingParentInfo(@Body Collection<ElasticsearchCommand> commands,
-            @ExchangeProperty(value = GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO) AdminUnitRepository adminUnitRepository) {
-        logger.debug("Start updating missing parent info for {} commands",commands.size());
+                                     @ExchangeProperty(value = GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO) AdminUnitRepository adminUnitRepository) {
+        logger.debug("Start updating missing parent info for {} commands", commands.size());
         var ref = new Object() {
             long commandIdx = 1;
         };
         commands.forEach(c -> {
             long startTime = System.nanoTime();
             addMissingParentInfo(c, adminUnitRepository);
-            long endTime =System.nanoTime();
-            long duration= (endTime-startTime)/1000000;
-            logger.debug("Updated {} / {} command in {} milliseconds", ref.commandIdx,commands.size(),duration);
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime) / 1000000;
+            logger.debug("Updated {} / {} command in {} milliseconds", ref.commandIdx, commands.size(), duration);
             ref.commandIdx++;
         });
     }
@@ -73,15 +69,15 @@ public class PeliasIndexParentInfoEnricher {
         if (isLocalityMissing(peliasDocument.getParent())) {
             long startTime = System.nanoTime();
             addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
-            long endTime =System.nanoTime();
-            long duration= (endTime-startTime)/1000000;
-            logger.debug("Locality is missing doing reverseGeoLookup for :" + peliasDocument.getCategory() + " type: " + peliasDocument.getLayer()+ "duration(ms): " + duration );
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime) / 1000000;
+            logger.debug("Locality is missing doing reverseGeoLookup for :" + peliasDocument.getCategory() + " type: " + peliasDocument.getLayer() + "duration(ms): " + duration);
         }
 
         long startTime = System.nanoTime();
         addAdminUnitNamesByIds(adminUnitRepository, peliasDocument);
-        long endTime =System.nanoTime();
-        long duration= (endTime-startTime)/1000000;
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
         logger.debug("addAdminUnitNamesByIds duration(ms): " + duration);
 
     }
@@ -95,8 +91,8 @@ public class PeliasIndexParentInfoEnricher {
             if (parent.getLocalityId() != null && parent.getLocality() == null) {
                 long startTime = System.nanoTime();
                 TopographicPlaceAdapter locality = adminUnitRepository.getLocality(parent.getLocalityId());
-                long endTime =System.nanoTime();
-                long duration= (endTime-startTime)/1000000;
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime) / 1000000;
                 logger.debug("1. Locality is missing get locality name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): " + duration);
                 if (locality != null) {
                     parent.setLocality(locality.getName());
@@ -106,21 +102,21 @@ public class PeliasIndexParentInfoEnricher {
                     // Locality id on document does not match any known locality, match on geography instead
                     long startTime1 = System.nanoTime();
                     addParentIdsByReverseGeoLookup(adminUnitRepository, peliasDocument);
-                    long endTime1 =System.nanoTime();
-                    long duration1= (endTime1-startTime1)/1000000;
-                    logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId()+ " duration: " + duration1);
+                    long endTime1 = System.nanoTime();
+                    long duration1 = (endTime1 - startTime1) / 1000000;
+                    logger.debug("2. Locality is still missing ,doing Reverse lookup again:  " + parent.getLocalityId() + " duration: " + duration1);
                     final String adminUnitName = adminUnitRepository.getAdminUnitName(parent.getLocalityId());
-                    long duration2= (endTime1-startTime1)/1000000;
-                    logger.debug("3. Once again setLocality by Id : " + parent.getLocalityId()+ " duration: " + duration2);
+                    long duration2 = (endTime1 - startTime1) / 1000000;
+                    logger.debug("3. Once again setLocality by Id : " + parent.getLocalityId() + " duration: " + duration2);
                     parent.setLocality(adminUnitName);
                 }
             }
             if (parent.getCountyId() != null && parent.getCounty() == null) {
                 long startTime = System.nanoTime();
                 final String adminUnitName = adminUnitRepository.getAdminUnitName(parent.getCountyId());
-                long endTime =System.nanoTime();
-                long duration= (endTime-startTime)/1000000;
-                logger.debug("County is missing get county name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): "+ duration ) ;
+                long endTime = System.nanoTime();
+                long duration = (endTime - startTime) / 1000000;
+                logger.debug("County is missing get county name by id: " + parent.getLocalityId() + " type: " + peliasDocument.getLayer() + " duration(ms): " + duration);
                 parent.setCounty(adminUnitName);
             }
         }
@@ -144,8 +140,7 @@ public class PeliasIndexParentInfoEnricher {
                 parent.setLocalityId(locality.getId());
                 parent.setCountyId(locality.getParentId());
                 parent.setCountryId(locality.getCountryRef());
-            }
-            else  {
+            } else {
                 TopographicPlaceAdapter country = adminUnitRepository.getCountry(point);
                 if (country != null) {
                     if (parent == null) {
@@ -157,6 +152,7 @@ public class PeliasIndexParentInfoEnricher {
             }
         }
     }
+
     private boolean isLocalityMissing(Parent parent) {
         return parent == null || parent.getLocalityId() == null;
     }

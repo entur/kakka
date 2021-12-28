@@ -18,8 +18,8 @@ package no.entur.kakka.geocoder.netex.pbf;
 
 
 import no.entur.kakka.domain.OSMPOIFilter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.TopographicPlace;
@@ -31,85 +31,84 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.stream.Collectors;
 
 public class PbfTopographicPlaceReaderTest {
 
-	@Test
-	public void testParsePbfSampleFile() throws Exception {
-		PbfTopographicPlaceReader reader =
-				new PbfTopographicPlaceReader(Arrays.asList(createFilter("leisure", "common"), createFilter("naptan:indicator", "")), IanaCountryTldEnumeration.NO,
-						                             new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
+    @Test
+    public void testParsePbfSampleFile() throws Exception {
+        PbfTopographicPlaceReader reader =
+                new PbfTopographicPlaceReader(Arrays.asList(createFilter("leisure", "common"), createFilter("naptan:indicator", "")), IanaCountryTldEnumeration.NO,
+                        new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
 
-		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
-		reader.addToQueue(queue);
+        BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+        reader.addToQueue(queue);
 
-		Assert.assertEquals(4, queue.size());
+        Assertions.assertEquals(4, queue.size());
 
-		for (TopographicPlace tp : queue) {
-			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
-			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
-			Assert.assertNotNull(tp.getName());
-			Assert.assertNotNull(tp.getCentroid());
-		}
+        for (TopographicPlace tp : queue) {
+            Assertions.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
+            Assertions.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
+            Assertions.assertNotNull(tp.getName());
+            Assertions.assertNotNull(tp.getCentroid());
+        }
 
-	}
+    }
 
-	@Test
-	public void testParseMultiPolygonPbfFile() throws Exception {
-		final List<OSMPOIFilter> osmPoiFilters = Arrays.asList(createFilter("tourism", "attraction"),createFilter("amenity", "theatre"));
-		PbfTopographicPlaceReader reader =
-				new PbfTopographicPlaceReader(osmPoiFilters, IanaCountryTldEnumeration.NO,
-						new File("src/test/resources/no/entur/kakka/geocoder/pbf/opera.pbf"));
+    @Test
+    public void testParseMultiPolygonPbfFile() throws Exception {
+        final List<OSMPOIFilter> osmPoiFilters = Arrays.asList(createFilter("tourism", "attraction"), createFilter("amenity", "theatre"));
+        PbfTopographicPlaceReader reader =
+                new PbfTopographicPlaceReader(osmPoiFilters, IanaCountryTldEnumeration.NO,
+                        new File("src/test/resources/no/entur/kakka/geocoder/pbf/opera.pbf"));
 
-		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
-		reader.addToQueue(queue);
+        BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+        reader.addToQueue(queue);
 
-		Assert.assertEquals(1, queue.size());
+        Assertions.assertEquals(1, queue.size());
 
-		List<String> categories = new ArrayList<>();
+        List<String> categories = new ArrayList<>();
 
-		for (TopographicPlace tp : queue) {
-			final List<KeyValueStructure> keyValue = tp.getKeyList().getKeyValue();
-			for (KeyValueStructure keyValueStructure : keyValue) {
-				var key = keyValueStructure.getKey();
-				var value = keyValueStructure.getValue();
-				var category= osmPoiFilters.stream()
-						.filter(f -> key.equals(f.getKey()) && value.equals(f.getValue()))
-						.map(OSMPOIFilter::getValue)
-						.findFirst();
-				category.ifPresent(categories::add);
-			}
+        for (TopographicPlace tp : queue) {
+            final List<KeyValueStructure> keyValue = tp.getKeyList().getKeyValue();
+            for (KeyValueStructure keyValueStructure : keyValue) {
+                var key = keyValueStructure.getKey();
+                var value = keyValueStructure.getValue();
+                var category = osmPoiFilters.stream()
+                        .filter(f -> key.equals(f.getKey()) && value.equals(f.getValue()))
+                        .map(OSMPOIFilter::getValue)
+                        .findFirst();
+                category.ifPresent(categories::add);
+            }
 
-			Assert.assertEquals(2,categories.size());
+            Assertions.assertEquals(2, categories.size());
 
-			Assert.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
-			Assert.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
-			Assert.assertNotNull(tp.getName());
-			Assert.assertNotNull(tp.getCentroid());
-			Assert.assertEquals("Operahuset i Oslo", tp.getName().getValue());
-		}
+            Assertions.assertEquals(IanaCountryTldEnumeration.NO, tp.getCountryRef().getRef());
+            Assertions.assertEquals(TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST, tp.getTopographicPlaceType());
+            Assertions.assertNotNull(tp.getName());
+            Assertions.assertNotNull(tp.getCentroid());
+            Assertions.assertEquals("Operahuset i Oslo", tp.getName().getValue());
+        }
 
-	}
+    }
 
 
-	/*
-	* If distance between outer polygon is more den ca 20 m, POi should be ignored.
-	*/
-	@Test
-	public void testIgnoreMultiPolygons() throws Exception {
-		PbfTopographicPlaceReader reader =
-				new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism","attraction")), IanaCountryTldEnumeration.NO,
-						new File("src/test/resources/no/entur/kakka/geocoder/pbf/uib.pbf"));
+    /*
+     * If distance between outer polygon is more den ca 20 m, POi should be ignored.
+     */
+    @Test
+    public void testIgnoreMultiPolygons() throws Exception {
+        PbfTopographicPlaceReader reader =
+                new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism", "attraction")), IanaCountryTldEnumeration.NO,
+                        new File("src/test/resources/no/entur/kakka/geocoder/pbf/uib.pbf"));
 
-		BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
-		reader.addToQueue(queue);
+        BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
+        reader.addToQueue(queue);
 
-		Assert.assertEquals(0, queue.size());
+        Assertions.assertEquals(0, queue.size());
 
-	}
+    }
 
-	private OSMPOIFilter createFilter(String key, String value) {
-		return OSMPOIFilter.fromKeyAndValue(key, value);
-	}
+    private OSMPOIFilter createFilter(String key, String value) {
+        return OSMPOIFilter.fromKeyAndValue(key, value);
+    }
 }

@@ -23,29 +23,29 @@ import java.util.Date;
 @Service
 public class PeliasUpdateStatusService {
 
-	public enum Status {IDLE, BUILDING, ABORT}
+    private Status status = Status.IDLE;
+    private Date started = new Date();
 
-	private Status status = Status.IDLE;
-	private Date started = new Date();
+    public Status getStatus() {
+        return status;
+    }
 
-	public Status getStatus() {
-		return status;
-	}
+    public void setIdle() {
+        status = Status.IDLE;
+        started = new Date();
+    }
 
-	public void setIdle() {
-		status = Status.IDLE;
-		started = new Date();
-	}
+    public void setBuilding() {
+        status = Status.BUILDING;
+        started = new Date();
+    }
 
-	public void setBuilding() {
-		status = Status.BUILDING;
-		started = new Date();
-	}
+    public void signalAbort() {
+        if (status == Status.BUILDING) {
+            status = Status.ABORT;
+            started = new Date();
+        }
+    }
 
-	public void signalAbort() {
-		if (status == Status.BUILDING) {
-			status = Status.ABORT;
-			started = new Date();
-		}
-	}
+    public enum Status {IDLE, BUILDING, ABORT}
 }

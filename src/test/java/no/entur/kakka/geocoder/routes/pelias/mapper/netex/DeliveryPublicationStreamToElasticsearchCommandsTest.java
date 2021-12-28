@@ -24,8 +24,8 @@ import no.entur.kakka.repository.OSMPOIFilterRepository;
 import no.entur.kakka.services.OSMPOIFilterRepositoryStub;
 import no.entur.kakka.services.OSMPOIFilterService;
 import no.entur.kakka.services.OSMPOIFilterServiceImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
@@ -44,12 +44,12 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
                 new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
-                                                                            POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true);
+                        POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true);
 
         Collection<ElasticsearchCommand> commands = mapper
-                                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assert.assertEquals(16, commands.size());
+        Assertions.assertEquals(16, commands.size());
         commands.forEach(c -> assertCommand(c));
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));
@@ -83,13 +83,13 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Collection<ElasticsearchCommand> commands = mapper
                 .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assert.assertEquals(15, commands.size());
+        Assertions.assertEquals(15, commands.size());
         commands.forEach(this::assertCommand);
 
 
         final List<PeliasDocument> collect = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(p -> p.getCategory().contains("poi")).collect(Collectors.toList());
 
-        Assert.assertTrue(collect.isEmpty());
+        Assertions.assertTrue(collect.isEmpty());
     }
 
     private PeliasDocument byId(Collection<ElasticsearchCommand> commands, String sourceId) {
@@ -97,81 +97,81 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
     }
 
     private void assertNotMapped(Collection<ElasticsearchCommand> commands, String sourceId) {
-        Assert.assertTrue("Id should not have been matched", commands.stream().map(c -> (PeliasDocument) c.getSource()).noneMatch(d -> d.getSourceId().equals(sourceId)));
+        Assertions.assertTrue(commands.stream().map(c -> (PeliasDocument) c.getSource()).noneMatch(d -> d.getSourceId().equals(sourceId)), "Id should not have been matched");
     }
 
     private void assertKnownMultimodalStopPlaceParent(PeliasDocument known) throws Exception {
-        Assert.assertEquals("QuayLessParentStop", known.getDefaultName());
-        Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
-        Assert.assertEquals(StopPlaceToPeliasMapper.SOURCE_PARENT_STOP_PLACE, known.getSource());
-        Assert.assertEquals(known.getCategory().size(), 2);
-        Assert.assertTrue(known.getCategory().containsAll(Arrays.asList("airport", "onstreetBus")));
-        Assert.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport", "onstreetbus")));
-        Assert.assertEquals("Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)", 5000, known.getPopularity().longValue());
+        Assertions.assertEquals("QuayLessParentStop", known.getDefaultName());
+        Assertions.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
+        Assertions.assertEquals(StopPlaceToPeliasMapper.SOURCE_PARENT_STOP_PLACE, known.getSource());
+        Assertions.assertEquals(known.getCategory().size(), 2);
+        Assertions.assertTrue(known.getCategory().containsAll(Arrays.asList("airport", "onstreetBus")));
+        Assertions.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport", "onstreetbus")));
+        Assertions.assertEquals(5000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)");
     }
 
     private void assertKnownMultimodalStopPlaceChild(PeliasDocument known) throws Exception {
-        Assert.assertEquals("Child stop - airport", known.getDefaultName());
-        Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
-        Assert.assertEquals(StopPlaceToPeliasMapper.SOURCE_CHILD_STOP_PLACE, known.getSource());
-        Assert.assertEquals("Parent label", known.getAliasMap().get("nor"));
-        Assert.assertEquals(known.getCategory().size(), 1);
-        Assert.assertTrue(known.getCategory().containsAll(Arrays.asList("airport")));
-        Assert.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport")));
-        Assert.assertEquals("Expected popularity to be default (1000) boosted by stop type boosts (airport=3)", 3000, known.getPopularity().longValue());
+        Assertions.assertEquals("Child stop - airport", known.getDefaultName());
+        Assertions.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
+        Assertions.assertEquals(StopPlaceToPeliasMapper.SOURCE_CHILD_STOP_PLACE, known.getSource());
+        Assertions.assertEquals("Parent label", known.getAliasMap().get("nor"));
+        Assertions.assertEquals(known.getCategory().size(), 1);
+        Assertions.assertTrue(known.getCategory().containsAll(Arrays.asList("airport")));
+        Assertions.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport")));
+        Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type boosts (airport=3)");
     }
 
     private void assertKnownStopPlace(PeliasDocument known, String defaultName) throws Exception {
-        Assert.assertEquals(defaultName, known.getDefaultName());
-        Assert.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("nor"));
-        Assert.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("display"));
-        Assert.assertEquals("Evenes", known.getAliasMap().get("nor"));
-        Assert.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
-        Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assert.assertEquals(Arrays.asList("airport"), known.getCategory());
-        Assert.assertEquals(Arrays.asList("airport"), known.getCategoryFilter());
-        Assert.assertEquals(68.490412, known.getCenterPoint().getLat(), 0.0001);
-        Assert.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
-        Assert.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
-        Assert.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
-        Assert.assertEquals("Expected popularity to be default (1000) boosted by stop type (airport)", 3000, known.getPopularity().longValue());
-        Assert.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
+        Assertions.assertEquals(defaultName, known.getDefaultName());
+        Assertions.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("nor"));
+        Assertions.assertEquals("Harstad/Narvik Lufthavn", known.getNameMap().get("display"));
+        Assertions.assertEquals("Evenes", known.getAliasMap().get("nor"));
+        Assertions.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
+        Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
+        Assertions.assertEquals(Arrays.asList("airport"), known.getCategory());
+        Assertions.assertEquals(Arrays.asList("airport"), known.getCategoryFilter());
+        Assertions.assertEquals(68.490412, known.getCenterPoint().getLat(), 0.0001);
+        Assertions.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
+        Assertions.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
+        Assertions.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
+        Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type (airport)");
+        Assertions.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
     }
 
 
     private void assertKnownGroupOfStopPlaces(PeliasDocument known, String defaultName) throws Exception {
-        Assert.assertEquals(defaultName, known.getDefaultName());
-        Assert.assertEquals("GoS Name", known.getNameMap().get("nor"));
-        Assert.assertEquals("GoS Name", known.getNameMap().get("display"));
-        Assert.assertEquals("address", known.getLayer());
-        Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assert.assertEquals(Arrays.asList("GroupOfStopPlaces"), known.getCategory());
-        Assert.assertEquals(Arrays.asList("groupofstopplaces"), known.getCategoryFilter());
-        Assert.assertEquals(60.002417, known.getCenterPoint().getLat(), 0.0001);
-        Assert.assertEquals(10.272200, known.getCenterPoint().getLon(), 0.0001);
+        Assertions.assertEquals(defaultName, known.getDefaultName());
+        Assertions.assertEquals("GoS Name", known.getNameMap().get("nor"));
+        Assertions.assertEquals("GoS Name", known.getNameMap().get("display"));
+        Assertions.assertEquals("address", known.getLayer());
+        Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
+        Assertions.assertEquals(Arrays.asList("GroupOfStopPlaces"), known.getCategory());
+        Assertions.assertEquals(Arrays.asList("groupofstopplaces"), known.getCategoryFilter());
+        Assertions.assertEquals(60.002417, known.getCenterPoint().getLat(), 0.0001);
+        Assertions.assertEquals(10.272200, known.getCenterPoint().getLon(), 0.0001);
 
-        Assert.assertEquals((3000 * 5000), known.getPopularity().longValue());
-        Assert.assertEquals("GoS description", known.getDescriptionMap().get("nor"));
+        Assertions.assertEquals((3000 * 5000), known.getPopularity().longValue());
+        Assertions.assertEquals("GoS description", known.getDescriptionMap().get("nor"));
     }
 
 
     private void assertKnownPoi(PeliasDocument known) throws Exception {
-        Assert.assertEquals("Stranda kyrkje", known.getDefaultName());
-        Assert.assertEquals("Stranda kyrkje", known.getNameMap().get("nor"));
-        Assert.assertEquals("address", known.getLayer());
-        Assert.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assert.assertEquals(Arrays.asList("poi"), known.getCategory());
-        Assert.assertEquals(Arrays.asList("poi"), known.getCategoryFilter());
-        Assert.assertEquals(62.308413, known.getCenterPoint().getLat(), 0.0001);
-        Assert.assertEquals(6.947573, known.getCenterPoint().getLon(), 0.0001);
-        Assert.assertEquals(POI_POPULARITY, known.getPopularity());
+        Assertions.assertEquals("Stranda kyrkje", known.getDefaultName());
+        Assertions.assertEquals("Stranda kyrkje", known.getNameMap().get("nor"));
+        Assertions.assertEquals("address", known.getLayer());
+        Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
+        Assertions.assertEquals(Arrays.asList("poi"), known.getCategory());
+        Assertions.assertEquals(Arrays.asList("poi"), known.getCategoryFilter());
+        Assertions.assertEquals(62.308413, known.getCenterPoint().getLat(), 0.0001);
+        Assertions.assertEquals(6.947573, known.getCenterPoint().getLon(), 0.0001);
+        Assertions.assertEquals(POI_POPULARITY, known.getPopularity());
     }
 
 
     private void assertCommand(ElasticsearchCommand command) {
-        Assert.assertNotNull(command.getIndex());
-        Assert.assertEquals("pelias", command.getIndex().getIndex());
-        Assert.assertNotNull(command.getIndex().getType());
+        Assertions.assertNotNull(command.getIndex());
+        Assertions.assertEquals("pelias", command.getIndex().getIndex());
+        Assertions.assertNotNull(command.getIndex().getType());
     }
 }
 

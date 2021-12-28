@@ -36,7 +36,7 @@ public class OsmUnmarshaller {
         namespaceFilter.setParent(xmlReader);
         Unmarshaller osmContextUnmarshaller = osmContext.createUnmarshaller();
 
-        if(performValidation) {
+        if (performValidation) {
             OsmSchemaValidator osmSchemaValidator = new OsmSchemaValidator();
             osmContextUnmarshaller.setSchema(osmSchemaValidator.getSchema());
         }

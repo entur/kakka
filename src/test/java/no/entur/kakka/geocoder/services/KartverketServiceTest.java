@@ -19,20 +19,23 @@ package no.entur.kakka.geocoder.services;
 
 import no.jskdata.Downloader;
 import no.jskdata.GeoNorgeDownloadAPI;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.util.UUID;
 
 public class KartverketServiceTest {
 
-	@Test
-	public void testAPIDownloaderIsUsedForUUIDs() {
-		Downloader downloader = new KartverketService().getDownloader(UUID.randomUUID().toString(), null);
-		Assert.assertTrue(downloader instanceof GeoNorgeDownloadAPI);
-	}
+    @Test
+    public void testAPIDownloaderIsUsedForUUIDs() {
+        Downloader downloader = new KartverketService().getDownloader(UUID.randomUUID().toString(), null);
+        Assertions.assertTrue(downloader instanceof GeoNorgeDownloadAPI);
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testWebPageDownloaderIsUsedForNonUUIDs() {
-		Downloader downloader = new KartverketService().getDownloader("not-a-uuid", null);
-	}
+    @Test
+    public void testWebPageDownloaderIsUsedForNonUUIDs() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            Downloader downloader = new KartverketService().getDownloader("not-a-uuid", null);
+        });
+    }
 }

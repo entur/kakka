@@ -30,12 +30,10 @@ import java.util.List;
 @Service
 public class AuthorizationService {
 
-    @Autowired
-    private RoleAssignmentExtractor roleAssignmentExtractor;
-
-
     @Value("${authorization.enabled:true}")
     protected boolean authorizationEnabled;
+    @Autowired
+    private RoleAssignmentExtractor roleAssignmentExtractor;
 
     public void verifyAtLeastOne(String... roles) {
         if (!authorizationEnabled) {

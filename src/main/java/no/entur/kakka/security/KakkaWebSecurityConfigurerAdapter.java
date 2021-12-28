@@ -3,7 +3,6 @@ package no.entur.kakka.security;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,7 +21,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @Profile("!test")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Component
 public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 

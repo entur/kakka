@@ -17,18 +17,17 @@
 package no.entur.kakka;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.model.ModelCamelContext;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.runner.RunWith;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.apache.camel.test.spring.junit5.UseAdviceWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-@RunWith(CamelSpringBootRunner.class)
-@ActiveProfiles({"default", "in-memory-blobstore", "google-pubsub-emulator", "test"})
+@CamelSpringBootTest
 @UseAdviceWith
+@ActiveProfiles({"test", "default", "in-memory-blobstore", "google-pubsub-emulator"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class KakkaRouteBuilderIntegrationTestBase {
 
@@ -40,13 +39,11 @@ public abstract class KakkaRouteBuilderIntegrationTestBase {
 
 
     protected void replaceEndpoint(String routeId, String originalEndpoint, String replacementEndpoint) throws Exception {
-        context.getRouteDefinition(routeId).adviceWith(context, new AdviceWithRouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                interceptSendToEndpoint(originalEndpoint)
-                        .skipSendToOriginalEndpoint().to(replacementEndpoint);
-            }
-        });
+
+        AdviceWith.adviceWith(context, routeId, a ->
+                a.interceptSendToEndpoint(originalEndpoint)
+                        .skipSendToOriginalEndpoint().to(replacementEndpoint));
+
     }
 
 

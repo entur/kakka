@@ -17,15 +17,12 @@
 package no.entur.kakka.rest;
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.domain.BlobStoreFiles;
-import no.entur.kakka.domain.BlobStoreFiles.File;
-import no.entur.kakka.domain.CustomConfiguration;
 import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.AuthorizationService;
-import org.apache.camel.Body;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
@@ -51,11 +48,12 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
  * REST interface for backdoor triggering of messages
  */
 @Component
-public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
+public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
+    public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
     private static final String PROVIDER_ID = "ProviderId";
-    public static final String FILE_HANDLE = "FileHandle";
+    private static final String JSON = "application/json";
     @Value("${server.port:8080}")
     private String port;
 
@@ -64,11 +62,16 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
 
     @Autowired
     private AuthorizationService authorizationService;
+
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
 
     @Override
     public void configure() throws Exception {
+
+        final String camelHttpPattern = "CamelHttp*";
+        final String swaggerJsonPath = "/swagger.json";
+
         super.configure();
 
         RestPropertyDefinition corsAllowedHeaders = new RestPropertyDefinition();
@@ -81,29 +84,30 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
         onException(AccessDeniedException.class)
                 .handled(true)
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(403))
-                .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(PLAIN))
                 .transform(exceptionMessage());
 
         onException(NotAuthenticatedException.class)
                 .handled(true)
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(401))
-                .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(PLAIN))
                 .transform(exceptionMessage());
 
         onException(NotFoundException.class)
                 .handled(true)
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(404))
-                .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(PLAIN))
                 .transform(exceptionMessage());
 
         restConfiguration()
                 .component("servlet")
+                .contextPath("/services")
                 .bindingMode(RestBindingMode.json)
                 .endpointProperty("matchOnUriPrefix", "true")
-                .dataFormatProperty("prettyPrint", "true")
                 .apiContextPath("/swagger.json")
-                .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0")
-                .contextPath("/services");
+                .dataFormatProperty("prettyPrint", "true")
+                .apiContextPath(swaggerJsonPath)
+                .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0");
 
         rest("")
                 .apiDocs(false)
@@ -114,20 +118,10 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
 
 
-        String commonApiDocEndpoint = "http4:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
+        String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
 
 
         rest("/geocoder_admin")
-                .post("/idempotentfilter/clean")
-                .description("Clean Idempotent repo for downloads")
-                .responseMessage().code(200).endResponseMessage()
-                .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-application-clean-idempotent-download-repos")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("direct:cleanIdempotentDownloadRepo")
-                .setBody(constant(null))
-                .endRest()
-
                 .post("/build_pipeline")
                 .param().name("task")
                 .type(RestParamType.query)
@@ -141,65 +135,24 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .route().routeId("admin-geocoder-update")
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .validate(header("task").isNotNull())
-                .removeHeaders("CamelHttp*")
+                .removeHeaders(camelHttpPattern)
                 .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .inOnly("direct:geoCoderStartBatch")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStartBatch")
                 .setBody(constant(null))
                 .endRest()
 
-                .get("/swagger.json")
+                .get(swaggerJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .route()
                 .to(commonApiDocEndpoint)
                 .endRest();
 
-        //TODO: deprecated , removed this endpoint , instead use osmpoifilter
-        rest("/custom_configurations")
-                .description("Custom configuration REST service")
-                .consumes("application/json")
-                .produces("application/json")
-
-                .get().description("Find all custom configurations").outType(CustomConfiguration[].class)
-                .responseMessage().code(200).message("Custom configuration returen successfully").endResponseMessage()
-                .to("bean:customConfigurationService?method=findAllCustomConfigurations")
-
-                .get("/{key}").description("Find configuration by key")
-                .outType(CustomConfiguration.class)
-                .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
-                .responseMessage().code(200).message("Configuration successfully returned").endResponseMessage()
-                .to("bean:customConfigurationService?method=getCustomConfigurationByKey(${header.key})")
-
-                .put("/{key}").description("Update configuration").type(CustomConfiguration.class)
-                .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
-                .param().name("body").type(RestParamType.body).description("The configuration to update").endParam()
-                .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
-                .route().routeId("poi-filter-update-route")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("direct:update-configuration")
-                .endRest()
-
-                .post().description("Add new configuration").type(CustomConfiguration.class)
-                .param().name("body").type(RestParamType.body).description("new configuraiton").endParam()
-                .responseMessage().code(204).message("Configuration successfully update").endResponseMessage()
-                .route().routeId("poi-filter-add-route")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("direct:add-configuration")
-                .endRest()
-
-                .delete("/{key}").description("Delete configuration")
-                .param().name("key").type(RestParamType.path).description("The key of the configuration").dataType("string").endParam()
-                .responseMessage().code(204).message("Configuration successfully deleted").endResponseMessage()
-                .route().routeId("poi-filter-delete-route")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("bean:customConfigurationService?method=deleteCustomConfiguration(${header.key})");
-
-
 
         rest("/osmpoifilter")
                 .description("OSM POI Filters REST service")
-                .consumes("application/json")
-                .produces("application/json")
+                .consumes(JSON)
+                .produces(JSON)
                 .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
@@ -218,13 +171,13 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .route()
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ORGANISATION_EDIT))
-                .removeHeaders("CamelHttp*")
+                .removeHeaders(camelHttpPattern)
                 .to("direct:updateAdminUnitsInOrgReg")
                 .setBody(simple("done"))
                 .routeId("admin-org-reg-import-admin-zones")
                 .endRest()
 
-                .get("/swagger.json")
+                .get(swaggerJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .route()
@@ -253,14 +206,14 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .route()
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .removeHeaders("CamelHttp*")
+                .removeHeaders(camelHttpPattern)
                 .removeHeaders("Authorization")
                 .to("direct:startFullTiamatPublishExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full")
                 .endRest()
 
-                .get("/swagger.json")
+                .get(swaggerJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .route()
@@ -275,7 +228,7 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .route()
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .removeHeaders("CamelHttp*")
+                .removeHeaders(camelHttpPattern)
                 .removeHeaders("Authorization")
                 .to("direct:startFullKinguPublishExport")
                 .setBody(simple("done"))
@@ -303,16 +256,6 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
                 .routeId("admin-tariff-zone-upload-file")
                 .endRest();
 
-        from("direct:update-configuration")
-                .to("bean:customConfigurationService?method=updateCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
-                .setBody(constant(""));
-
-        from("direct:add-configuration")
-                .to("bean:customConfigurationService?method=saveCustomConfiguration")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE,constant(204))
-                .setBody(constant(""));
-
         from("direct:validateProvider")
                 .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
                 .routeId("admin-validate-provider");
@@ -320,14 +263,9 @@ public class AdminRestRouteBuilder extends TransactionalBaseRouteBuilder {
     }
 
     private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {
-        return typeStrings.stream().map(s -> GeoCoderTaskType.valueOf(s)).collect(Collectors.toSet());
+        return typeStrings.stream().map(GeoCoderTaskType::valueOf).collect(Collectors.toSet());
     }
 
-    public static class ImportFilesSplitter {
-        public List<String> splitFiles(@Body BlobStoreFiles files) {
-            return files.getFiles().stream().map(File::getName).collect(Collectors.toList());
-        }
-    }
 }
 
 

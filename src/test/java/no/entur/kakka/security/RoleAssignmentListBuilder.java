@@ -24,7 +24,7 @@ import java.util.List;
 
 public class RoleAssignmentListBuilder {
 
-    private List<RoleAssignment> roleAssignments = new ArrayList<>();
+    private final List<RoleAssignment> roleAssignments = new ArrayList<>();
 
     public static RoleAssignmentListBuilder builder() {
         return new RoleAssignmentListBuilder();
@@ -41,7 +41,7 @@ public class RoleAssignmentListBuilder {
 
     public RoleAssignmentListBuilder withRoleForProvider(String role, String providerXmlns) {
         RoleAssignment roleForProvider = RoleAssignment.builder().withRole(role)
-                                                 .withOrganisation(providerXmlns).build();
+                .withOrganisation(providerXmlns).build();
 
         roleAssignments.add(roleForProvider);
         return this;

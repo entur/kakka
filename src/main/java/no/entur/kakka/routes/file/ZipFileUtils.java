@@ -31,7 +31,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipFileUtils {
-    private static Logger logger = LoggerFactory.getLogger(ZipFileUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZipFileUtils.class);
 
     public static void unzipFile(InputStream inputStream, String targetFolder) {
         try {
@@ -90,7 +90,7 @@ public class ZipFileUtils {
 
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
-                        fileOutputStream.write(buffer,0,len);
+                        fileOutputStream.write(buffer, 0, len);
                     }
                     fileOutputStream.close();
                 }

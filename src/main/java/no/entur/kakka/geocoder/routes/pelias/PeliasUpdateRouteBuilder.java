@@ -22,6 +22,7 @@ import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
 import no.entur.kakka.routes.status.JobEvent;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,35 +36,30 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
 @Component
 public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
+    private static final String NO_OF_REPLICAS = "RutebankenESNoOfReplicas";
     /**
      * One time per 24H on MON-FRI
      */
     @Value("${pelias.update.cron.schedule:0+0+23+?+*+MON-FRI}")
     private String cronSchedule;
-
-
     // Whether or not  to start a new es-scratch instance. Should only be set to false for local testing.
     @Value("${elasticsearch.scratch.start.new:true}")
     private boolean startNewEsScratch;
-
     @Autowired
     private PeliasUpdateStatusService updateStatusService;
-
     @Autowired
     private ExtendedKubernetesService extendedKubernetesService;
-
-    private static String NO_OF_REPLICAS = "RutebankenESNoOfReplicas";
 
     @Override
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom("quartz2://kakka/peliasUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/peliasUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{pelias.update.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")
                 .setBody(constant(PELIAS_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly, "direct:geoCoderStart")
                 .routeId("pelias-update-quartz");
 
         from(PELIAS_UPDATE_START.getEndpoint())
@@ -75,7 +71,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
                 .when(constant(startNewEsScratch))
                 .to("direct:startElasticsearchScratchInstance")
                 .otherwise()
-                .log(LoggingLevel.WARN,"Updating an existing es-scratch instance. Only for local testing!")
+                .log(LoggingLevel.WARN, "Updating an existing es-scratch instance. Only for local testing!")
                 .to("direct:insertElasticsearchIndexData")
                 .routeId("pelias-upload");
 
@@ -118,16 +114,16 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Scaling Elasticsearch scratch to ${header." + NO_OF_REPLICAS + "} replicas")
                 .choice()
                 .when(simple("${header." + NO_OF_REPLICAS + "} > 0"))
-                .bean(extendedKubernetesService,"scaleUpDeployment")
+                .bean(extendedKubernetesService, "scaleUpDeployment")
                 .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
                 .otherwise()
-                .bean(extendedKubernetesService,"scaleDownDeployment")
+                .bean(extendedKubernetesService, "scaleDownDeployment")
                 .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STATUS_POLL))
                 .routeId("pelias-es-scratch-rescale");
 
         from("direct:pollElasticsearchScratchStatus")
-                .bean(extendedKubernetesService,"getNoOfAvailableReplicas")
-                .log(LoggingLevel.DEBUG,"number of running replicas: ${body} ")
+                .bean(extendedKubernetesService, "getNoOfAvailableReplicas")
+                .log(LoggingLevel.DEBUG, "number of running replicas: ${body} ")
                 .choice()
                 .when(simple("${body} == ${header." + NO_OF_REPLICAS + "}"))
                 .toD("${header." + JOB_STATUS_ROUTING_DESTINATION + "}")
@@ -138,13 +134,13 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
         from("direct:getElasticsearchScratchStatus")
                 .setBody(constant(null))
-                .bean(extendedKubernetesService,"getNoOfAvailableReplicas")
+                .bean(extendedKubernetesService, "getNoOfAvailableReplicas")
                 .routeId("pelias-es-scratch-status");
 
 
         from("direct:buildElasticsearchImage")
                 .log(LoggingLevel.DEBUG, "Creating a job es-build-job to upload es data in gcs")
-                .bean(extendedKubernetesService,"startESDataUploadJob")
+                .bean(extendedKubernetesService, "startESDataUploadJob")
                 .to("direct:processPeliasDeployCompleted")
                 .routeId("pelias-es-build");
 

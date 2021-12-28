@@ -28,100 +28,94 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
-	@Autowired
-	private ModelCamelContext context;
+    private final String blobFolder = "blobTest";
+    @MockBean
+    public KartverketService kartverketService;
+    @Produce("direct:uploadUpdatedFiles")
+    protected ProducerTemplate uploadUpdatedFilesTemplate;
+    @Autowired
+    private ModelCamelContext context;
+    @Autowired
+    private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
+    @Autowired
+    private IdempotentRepository idempotentDownloadRepository;
 
-	@Autowired
-	private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
+    @Test
+    public void testNewFilesAreUploadedToBlobStore() throws Exception {
+        idempotentDownloadRepository.clear();
+        String[] fileNames = new String[]{"1", "2", "3"};
+        when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files(fileNames));
 
+        context.start();
+        startUpdate(blobFolder, true);
 
-	@Autowired
-	private IdempotentRepository idempotentDownloadRepository;
+        assertBlobs(blobFolder, fileNames);
 
-	@MockBean
-	public KartverketService kartverketService;
-
-	@Produce(uri = "direct:uploadUpdatedFiles")
-	protected ProducerTemplate uploadUpdatedFilesTemplate;
-
-	private String blobFolder = "blobTest";
-
-	@Test
-	public void testNewFilesAreUploadedToBlobStore() throws Exception {
-		idempotentDownloadRepository.clear();
-		String[] fileNames=new String[]{"1","2","3"};
-		when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files(fileNames));
-
-		context.start();
-		startUpdate(blobFolder, true);
-
-		assertBlobs(blobFolder,fileNames);
-
-		// Verify that second invocation does nothing if content is unchanged
-		startUpdate(blobFolder, false);
+        // Verify that second invocation does nothing if content is unchanged
+        startUpdate(blobFolder, false);
 
 
-		String otherBlobFolder = "otherBlobTest";
-		startUpdate(otherBlobFolder, true);
+        String otherBlobFolder = "otherBlobTest";
+        startUpdate(otherBlobFolder, true);
 
-		assertBlobs(otherBlobFolder,fileNames);
-	}
+        assertBlobs(otherBlobFolder, fileNames);
+    }
 
-	private void assertBlobs(String path, String... objectNames) {
-		Arrays.stream(objectNames).forEach(o -> Assert.assertNotNull(inMemoryBlobStoreRepository.getBlob(path + "/" + o)));
-	}
+    private void assertBlobs(String path, String... objectNames) {
+        Arrays.stream(objectNames).forEach(o -> Assertions.assertNotNull(inMemoryBlobStoreRepository.getBlob(path + "/" + o)));
+    }
 
-	@Test
-	public void testNoLongerActiveFilesAreDeletedFromBlobStore() throws Exception {
-		idempotentDownloadRepository.clear();
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", new StringInputStream("1"), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", new StringInputStream("2"), false);
-		inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", new StringInputStream("3"), false);
-		when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files("1"));
+    @Test
+    public void testNoLongerActiveFilesAreDeletedFromBlobStore() throws Exception {
+        idempotentDownloadRepository.clear();
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", new StringInputStream("1"), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", new StringInputStream("2"), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", new StringInputStream("3"), false);
+        when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files("1"));
 
-		context.start();
-		startUpdate(blobFolder, true);
+        context.start();
+        startUpdate(blobFolder, true);
 
-		assertBlobs(blobFolder,"1");
-		Assert.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/2"));
-		Assert.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/3"));
-	}
+        assertBlobs(blobFolder, "1");
+        Assertions.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/2"));
+        Assertions.assertNull(inMemoryBlobStoreRepository.getBlob(blobFolder + "/3"));
+    }
 
 
-	private void startUpdate(String blobFolder, boolean shouldChangeContent) {
-		Exchange exchange = uploadUpdatedFilesTemplate.request("direct:uploadUpdatedFiles", e -> {
-			e.getIn().setHeader(Constants.FOLDER_NAME, blobFolder);
-			e.getIn().setHeader(Constants.KARTVERKET_DATASETID, "testID");
-			e.getIn().setHeader(Constants.KARTVERKET_FORMAT, "testFormat");
-		});
+    private void startUpdate(String blobFolder, boolean shouldChangeContent) {
+        Exchange exchange = uploadUpdatedFilesTemplate.request("direct:uploadUpdatedFiles", e -> {
+            e.getIn().setHeader(Constants.FOLDER_NAME, blobFolder);
+            e.getIn().setHeader(Constants.KARTVERKET_DATASETID, "testID");
+            e.getIn().setHeader(Constants.KARTVERKET_FORMAT, "testFormat");
+        });
 
-		Assert.assertEquals(shouldChangeContent, Boolean.TRUE.equals(exchange.getIn().getHeader(Constants.CONTENT_CHANGED)));
-	}
+        Assertions.assertEquals(shouldChangeContent, Boolean.TRUE.equals(exchange.getIn().getHeader(Constants.CONTENT_CHANGED)));
+    }
 
-	private List<File> files(String... names) throws Exception {
-		List<File> files = Arrays.stream(names).map(n -> new File("target/files/" + n)).collect(Collectors.toList());
-		for (File file : files) {
-			FileUtils.writeStringToFile(file, file.getName());
-		}
-		return files;
-	}
+    private List<File> files(String... names) throws Exception {
+        List<File> files = Arrays.stream(names).map(n -> new File("target/files/" + n)).collect(Collectors.toList());
+        for (File file : files) {
+            FileUtils.writeStringToFile(file, file.getName(), Charset.defaultCharset());
+        }
+        return files;
+    }
 
 
 }

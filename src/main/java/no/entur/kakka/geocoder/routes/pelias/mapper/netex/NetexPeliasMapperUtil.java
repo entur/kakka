@@ -2,7 +2,6 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.netex;
 
 import net.opengis.gml._3.AbstractRingType;
 import net.opengis.gml._3.LinearRingType;
-
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 import org.rutebanken.netex.model.GroupOfEntities_VersionStructure;
@@ -26,10 +25,7 @@ public class NetexPeliasMapperUtil {
     }
 
     public static boolean isValid(GroupOfEntities_VersionStructure object) {
-        if (!CollectionUtils.isEmpty(object.getValidBetween()) && object.getValidBetween().stream().noneMatch(vb -> isValidNow(vb))) {
-            return false;
-        }
-        return true;
+        return CollectionUtils.isEmpty(object.getValidBetween()) || object.getValidBetween().stream().anyMatch(vb -> isValidNow(vb));
     }
 
     // Should compare instant with validbetween from/to in timezone defined in PublicationDelivery, but makes little difference in practice
@@ -40,9 +36,7 @@ public class NetexPeliasMapperUtil {
                 return false;
             }
 
-            if (validBetween.getToDate() != null && validBetween.getToDate().isBefore(now)) {
-                return false;
-            }
+            return validBetween.getToDate() == null || !validBetween.getToDate().isBefore(now);
         }
         return true;
     }

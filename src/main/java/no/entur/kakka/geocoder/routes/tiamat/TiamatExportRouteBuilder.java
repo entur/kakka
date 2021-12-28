@@ -18,8 +18,8 @@ package no.entur.kakka.geocoder.routes.tiamat;
 
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.geocoder.routes.tiamat.xml.ExportJob;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,9 +48,9 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
 
         from("direct:tiamatExport")
                 .log(LoggingLevel.DEBUG, "Start Tiamat export")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .setBody(constant(null))
-                .setHeader(Exchange.HTTP_QUERY,header(Constants.QUERY_STRING))
+                .setHeader(Exchange.HTTP_QUERY, header(Constants.QUERY_STRING))
                 .to(tiamatUrl + tiamatPublicationDeliveryPath + "/export/initiate/")
                 .convertBodyTo(ExportJob.class)
                 .setHeader(Constants.JOB_ID, simple("${body.id}"))
@@ -82,7 +82,7 @@ public class TiamatExportRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-export-upload-file-external");
 
         from("direct:kinguExportUploadFileExternal")
-                .log(LoggingLevel.INFO,"kingu export upload external")
+                .log(LoggingLevel.INFO, "kingu export upload external")
                 .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(true))
                 .to("direct:copyKinguBlob")
                 .routeId("kingu-export-upload-file-external");

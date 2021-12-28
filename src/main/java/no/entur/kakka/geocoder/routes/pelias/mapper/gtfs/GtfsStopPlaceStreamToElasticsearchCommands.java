@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class GtfsStopPlaceStreamToElasticsearchCommands {
 
-    private GtfsStopPlaceToPeliasMapper mapper;
+    private final GtfsStopPlaceToPeliasMapper mapper;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

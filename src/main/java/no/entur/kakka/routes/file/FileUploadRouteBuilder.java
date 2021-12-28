@@ -6,17 +6,16 @@ import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CloseShieldInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.UploadContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CloseShieldInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,18 +46,18 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
         from("direct:uploadFilesAndStartImport")
                 .process(this::convertBodyToFileItems)
                 .split().body()
-                .log(LoggingLevel.INFO,"Upload files and  start Import file name: ${header." + FILE_NAME +  "}")
+                .log(LoggingLevel.INFO, "Upload files and  start Import file name: ${header." + FILE_NAME + "}")
                 .choice()
                 .when(header(Constants.FILE_NAME).endsWith("xml"))
-                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) +".xml"))
+                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".xml"))
                 .setHeader(FILE_HANDLE, simple("tariffzones/netex/${header.providerId}/${header." + FILE_NAME + "}"))
                 .when(header(Constants.FILE_NAME).endsWith("osm"))
-                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) +".osm"))
+                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".osm"))
                 .setHeader(FILE_HANDLE, simple("tariffzones/osm/${header.providerId}/${header." + FILE_NAME + "}"))
                 .otherwise()
-                .log(LoggingLevel.INFO,"Invalid file upload")
+                .log(LoggingLevel.INFO, "Invalid file upload")
                 .end()
-                .process(e -> e.getIn().setHeader(FILE_CONTENT_HEADER, new CloseShieldInputStream(e.getIn().getBody(FileItem.class).getInputStream())))
+                .process(e -> e.getIn().setHeader(FILE_CONTENT_HEADER, CloseShieldInputStream.wrap(e.getIn().getBody(FileItem.class).getInputStream())))
                 .to("direct:uploadFileAndStartImport")
                 .routeId("files-upload");
 
@@ -66,11 +65,11 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
         // Upload single file
         from("direct:uploadFileAndStartImport").streamCaching()
                 .doTry()
-                .log(LoggingLevel.INFO,  "Uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.INFO, "Uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(header(FILE_CONTENT_HEADER))
                 .setHeader(Exchange.FILE_NAME, header(FILE_NAME))
                 .to("direct:uploadBlob")
-                .log(LoggingLevel.INFO,  "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.INFO, "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(constant(null))
                 .to(ExchangePattern.InOnly, "entur-google-pubsub:ProcessTariffZoneFileQueue")
                 .log(LoggingLevel.INFO, "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
@@ -93,11 +92,11 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
             List<FileItem> fileItems = upload.parseRequest(uploadContext);
 
             Optional<String> fileName = fileItems.stream().map(f -> f.getName()).findFirst();
-                LOGGER.debug("The multipart request contains {} file(s)", fileItems.size());
-                for (FileItem fileItem : fileItems) {
-                    LOGGER.debug("Received file {} (size: {})", fileItem.getName(), fileItem.getSize());
+            LOGGER.debug("The multipart request contains {} file(s)", fileItems.size());
+            for (FileItem fileItem : fileItems) {
+                LOGGER.debug("Received file {} (size: {})", fileItem.getName(), fileItem.getSize());
 
-                }
+            }
             fileName.ifPresent(s -> e.getIn().setHeader(FILE_NAME, s));
             e.getIn().setBody(fileItems);
         } catch (Exception ex) {

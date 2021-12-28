@@ -50,8 +50,8 @@ public class KartverketService {
     private int minBytes;
 
     public List<File> downloadFiles(@Header(value = Constants.KARTVERKET_DATASETID) String dataSetId,
-                                           @Header(value = Constants.KARTVERKET_FORMAT) String format,
-                                           @Header(value = Exchange.FILE_PARENT) String localDownloadDir) {
+                                    @Header(value = Constants.KARTVERKET_FORMAT) String format,
+                                    @Header(value = Exchange.FILE_PARENT) String localDownloadDir) {
         Downloader kd = getDownloader(dataSetId, format);
 
         return downloadFilesInternal(dataSetId, kd, localDownloadDir);

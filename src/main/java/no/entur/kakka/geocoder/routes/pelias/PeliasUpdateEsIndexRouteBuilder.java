@@ -28,10 +28,10 @@ import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.PredicateBuilder;
-import org.apache.camel.component.http4.HttpMethods;
-import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpMethods;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
-import org.apache.camel.processor.validation.PredicateValidationException;
+import org.apache.camel.support.processor.PredicateValidationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,45 +55,43 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
-    @Value("${elasticsearch.scratch.url:http4://es-scratch:9200}")
-    private String elasticsearchScratchUrl;
-
-    @Value("${osm.pbf.blobstore.subdirectory:osm}")
-    private String blobStoreSubdirectoryForOsm;
-
-    @Value("${osm.poi.update.enabled:false}")
-    private boolean routeEnabled;
-
-    @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
-    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-
-    @Value("${kartverket.blobstore.subdirectory:kartverket}")
-    private String blobStoreSubdirectoryForKartverket;
-
-    @Value("${goecoder.gtfs.blobstore.subdirectory:geocoder/gtfs}")
-    private String blobStoreSubdirectoryForGtfsStopPlaces;
-
-    @Value("${pelias.download.directory:files/pelias}")
-    private String localWorkingDirectory;
-
-    @Value("${pelias.insert.batch.size:10000}")
-    private int insertBatchSize;
-
-    @Value("${pelias.addresses.batch.size:10000}")
-    private int addressesBatchSize;
-
-    @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
-    private List<String> placeTypeWhiteList;
-
-    @Autowired
-    private PeliasUpdateStatusService updateStatusService;
-
-    @Autowired
-    private SosiFileFilter sosiFileFilter;
-
     private static final String HEADER_EXPAND_ZIP = "EXPAND_ZIP";
     private static final String FILE_EXTENSION = "RutebankenFileExtension";
     private static final String CONVERSION_ROUTE = "RutebankenConversionRoute";
+    @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
+    private String elasticsearchScratchUrl;
+    @Value("${osm.pbf.blobstore.subdirectory:osm}")
+    private String blobStoreSubdirectoryForOsm;
+    @Value("${osm.poi.update.enabled:false}")
+    private boolean routeEnabled;
+    @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
+    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
+    @Value("${kartverket.blobstore.subdirectory:kartverket}")
+    private String blobStoreSubdirectoryForKartverket;
+    @Value("${goecoder.gtfs.blobstore.subdirectory:geocoder/gtfs}")
+    private String blobStoreSubdirectoryForGtfsStopPlaces;
+    @Value("${pelias.download.directory:files/pelias}")
+    private String localWorkingDirectory;
+    @Value("${pelias.insert.batch.size:10000}")
+    private int insertBatchSize;
+    @Value("${pelias.addresses.batch.size:10000}")
+    private int addressesBatchSize;
+    @Value("#{'${geocoder.place.type.whitelist:tettsted,tettsteddel,tettbebyggelse,bygdelagBygd,grend,boligfelt,industriområde,bydel}'.split(',')}")
+    private List<String> placeTypeWhiteList;
+    Function<Pair<String, String>, Boolean> sosiMatcher = kv -> {
+        if (!"NAVNEOBJEKTTYPE".equals(kv.getKey())) {
+            return false;
+        }
+        if (CollectionUtils.isEmpty(placeTypeWhiteList)) {
+            return true;
+        }
+
+        return kv.getValue() != null && placeTypeWhiteList.contains(kv.getValue());
+    };
+    @Autowired
+    private PeliasUpdateStatusService updateStatusService;
+    @Autowired
+    private SosiFileFilter sosiFileFilter;
 
     @Override
     public void configure() throws Exception {
@@ -112,7 +110,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()
                 .stopOnException()
-                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData","direct:insertPOIData", "direct:insertGtfsStopPlaceData")
+                .to("direct:insertAddresses", "direct:insertPlaceNames", "direct:insertTiamatData", "direct:insertPOIData", "direct:insertGtfsStopPlaceData")
                 .end()
                 .endDoTry()
                 .doCatch(AbortRouteException.class)
@@ -133,7 +131,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:createPeliasIndex")
                 .to("direct:deletePeliasIndexIfExist")
                 .log(LoggingLevel.INFO, "Creating pelias index")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.PUT))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.PUT))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json; charset=utf-8"))
                 .process(e -> e.getIn().setBody(this.getClass().getResourceAsStream("/no/entur/kakka/routes/pelias/create_index.json")))
                 .convertBodyTo(String.class)
@@ -148,9 +146,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .to(elasticsearchScratchUrl + "/pelias")
                 .log(LoggingLevel.INFO, "Deleted pelias index")
                 .doCatch(HttpOperationFailedException.class).onWhen(exchange -> {
-            HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
-            return (ex.getStatusCode() == 404);
-        })
+                    HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
+                    return (ex.getStatusCode() == 404);
+                })
                 .log(LoggingLevel.INFO, "Pelias index did not already exist. Ignoring 404")
                 .end()
                 .routeId("pelias-delete-index-if-exists");
@@ -169,9 +167,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:insertPOIData")
                 .choice()
                 .when(constant(routeEnabled))
-                .log(LoggingLevel.INFO,"Start inserting POI data to ES")
+                .log(LoggingLevel.INFO, "Start inserting POI data to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForOsm))
-                .setHeader(WORKING_DIRECTORY, simple( localWorkingDirectory + "/poi"))
+                .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/poi"))
                 .setHeader(CONVERSION_ROUTE, constant("direct:convertToPeliasCommandsFromOSM"))
                 .setHeader(FILE_EXTENSION, constant("pbf"))
                 .to("direct:haltIfContentIsMissing")
@@ -242,7 +240,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .when(PredicateBuilder.and(header(FILE_HANDLE).endsWith(".zip"), header(HEADER_EXPAND_ZIP).isNotEqualTo(Boolean.FALSE)))
                 .to("direct:insertToPeliasFromZipArchive")
                 .when(PredicateBuilder.and(header("dataset").isEqualTo("addresses")))
-                .log(LoggingLevel.INFO,"processing addresses...")
+                .log(LoggingLevel.INFO, "processing addresses...")
                 .to("direct:convertToPeliasCommandsFromLargeAddresses")
                 .otherwise()
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${header." + FILE_HANDLE + "}")
@@ -260,7 +258,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${body.name}")
                 .choice()
                 .when(PredicateBuilder.and(header("dataset").isEqualTo("addresses")))
-                .log(LoggingLevel.INFO,"processing zip address file ...")
+                .log(LoggingLevel.INFO, "processing zip address file ...")
                 .to("direct:convertToPeliasCommandsFromLargeAddresses")
                 .otherwise()
                 .toD("${header." + CONVERSION_ROUTE + "}")
@@ -283,7 +281,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         from("direct:convertToPeliasCommandsFromLargeAddresses")
                 .log("Start processing large addresses file ....")
                 .split()
-                .tokenize("\n",addressesBatchSize)
+                .tokenize("\n", addressesBatchSize)
                 .streaming()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .log("Batch counter: converted ${header.CamelSplitIndex}++  addresses")
@@ -293,25 +291,25 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .end();
 
         from("direct:convertToPeliasCommandsFromTiamat")
-                .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands")
+                .log(LoggingLevel.INFO, "Transform deliveryPublicationStream To Elasticsearch Commands")
                 .bean("deliveryPublicationStreamToElasticsearchCommands", "transform")
-                .log(LoggingLevel.INFO,"Transform deliveryPublicationStream To Elasticsearch Commands completed")
+                .log(LoggingLevel.INFO, "Transform deliveryPublicationStream To Elasticsearch Commands completed")
                 .routeId("pelias-convert-commands-from-tiamat");
 
         from("direct:convertToPeliasCommandsFromOSM")
-                .log(LoggingLevel.INFO,"Transform pbf To Elasticsearch Commands")
-                .bean("pbfToElasticsearchCommands","transform")
-                .log(LoggingLevel.INFO,"Transform pbf To Elasticsearch Commands completed")
+                .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands")
+                .bean("pbfToElasticsearchCommands", "transform")
+                .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands completed")
                 .routeId("pelias-convert-commands-from-pbf");
 
 
         from("direct:invokePeliasBulkCommand")
                 .bean("peliasIndexValidCommandFilter")
                 .bean("peliasIndexParentInfoEnricher")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json; charset=utf-8"))
                 .split().exchange(e ->
-                                          Lists.partition(e.getIn().getBody(List.class), insertBatchSize)).stopOnException()
+                        Lists.partition(e.getIn().getBody(List.class), insertBatchSize)).stopOnException()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .to("direct:haltIfAborted")
                 .bean("elasticsearchCommandWriterService")
@@ -331,7 +329,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-halt-if-aborted");
     }
 
-
     private Collection<File> listFiles(Exchange e) {
         String fileExtension = e.getIn().getHeader(FILE_EXTENSION, String.class);
         String directory = e.getIn().getHeader(WORKING_DIRECTORY, String.class);
@@ -344,17 +341,5 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
         sosiFileFilter.filterElements(e.getIn().getBody(InputStream.class), filteredFile, sosiMatcher);
         e.getIn().setBody(new File(filteredFile));
     }
-
-
-    Function<Pair<String, String>, Boolean> sosiMatcher = kv -> {
-        if (!"NAVNEOBJEKTTYPE".equals(kv.getKey())) {
-            return false;
-        }
-        if (CollectionUtils.isEmpty(placeTypeWhiteList)) {
-            return true;
-        }
-
-        return kv.getValue() != null && placeTypeWhiteList.contains(kv.getValue());
-    };
 
 }

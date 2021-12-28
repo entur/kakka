@@ -27,7 +27,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.concurrent.BlockingQueue;
 
 import static javax.xml.bind.JAXBContext.newInstance;
@@ -40,12 +44,6 @@ public class TopographicPlaceNetexWriter {
     private static final JAXBContext topographicPlaceContext = createContext(org.rutebanken.netex.model.TopographicPlace.class);
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
-
-    public void stream(PublicationDeliveryStructure publicationDeliveryStructure, BlockingQueue<TopographicPlace> topographicPlacesQueue, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException {
-        String publicationDeliveryStructureXml = writePublicationDeliverySkeletonToString(publicationDeliveryStructure);
-        stream(publicationDeliveryStructureXml, topographicPlacesQueue, outputStream);
-    }
-
     private static JAXBContext createContext(Class clazz) {
         try {
             return newInstance(clazz);
@@ -53,6 +51,11 @@ public class TopographicPlaceNetexWriter {
             logger.warn("Could not create instance of jaxb context for class " + clazz, e);
             throw new RuntimeException(e);
         }
+    }
+
+    public void stream(PublicationDeliveryStructure publicationDeliveryStructure, BlockingQueue<TopographicPlace> topographicPlacesQueue, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException {
+        String publicationDeliveryStructureXml = writePublicationDeliverySkeletonToString(publicationDeliveryStructure);
+        stream(publicationDeliveryStructureXml, topographicPlacesQueue, outputStream);
     }
 
     private String writePublicationDeliverySkeletonToString(PublicationDeliveryStructure publicationDeliveryStructure) throws JAXBException {
@@ -109,9 +112,9 @@ public class TopographicPlaceNetexWriter {
     }
 
     private void marshallTopographicPlaces(BlockingQueue<org.rutebanken.netex.model.TopographicPlace> topographicPlaceQueue,
-                                                  BufferedWriter bufferedWriter,
-                                                  Marshaller topographicPlaceMarshaller,
-                                                  String lineSeparator) throws InterruptedException, JAXBException, IOException {
+                                           BufferedWriter bufferedWriter,
+                                           Marshaller topographicPlaceMarshaller,
+                                           String lineSeparator) throws InterruptedException, JAXBException, IOException {
         logger.info("Marshaling topographic places");
 
         int count = 0;

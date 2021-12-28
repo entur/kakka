@@ -31,31 +31,31 @@ import java.util.function.Function;
 
 public class FeatureJSONCollection {
 
-	private InputStream inputStream;
+    private final InputStream inputStream;
 
-	public FeatureJSONCollection(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+    public FeatureJSONCollection(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
-	public void forEach(Consumer<SimpleFeature> action) {
+    public void forEach(Consumer<SimpleFeature> action) {
 
-		FeatureIterator<SimpleFeature> itr;
-		try {
-			itr = new FeatureJSON().streamFeatureCollection(inputStream);
-		} catch (IOException ioE) {
-			throw new FileValidationException("Failed to stream FeatureJSON: " + ioE.getMessage(), ioE);
-		}
+        FeatureIterator<SimpleFeature> itr;
+        try {
+            itr = new FeatureJSON().streamFeatureCollection(inputStream);
+        } catch (IOException ioE) {
+            throw new FileValidationException("Failed to stream FeatureJSON: " + ioE.getMessage(), ioE);
+        }
 
-		while (itr.hasNext()) {
-			SimpleFeature simpleFeature = itr.next();
-			action.accept(simpleFeature);
-		}
-	}
+        while (itr.hasNext()) {
+            SimpleFeature simpleFeature = itr.next();
+            action.accept(simpleFeature);
+        }
+    }
 
-	public <R> List<R> mapToList(Function<SimpleFeature, ? extends R> mapper) {
-		List<R> list = new ArrayList<>();
-		forEach(f -> list.add(mapper.apply(f)));
-		return list;
-	}
+    public <R> List<R> mapToList(Function<SimpleFeature, ? extends R> mapper) {
+        List<R> list = new ArrayList<>();
+        forEach(f -> list.add(mapper.apply(f)));
+        return list;
+    }
 
 }

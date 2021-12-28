@@ -22,6 +22,7 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.exceptions.Md5ChecksumValidationException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
  * This is expected to be https://download.geofabrik.de/europe/norway-latest.osm.pbf
  *
  * <p>
- *     The MD5 sum is found by adding <code>.md5</code> to the URL
+ * The MD5 sum is found by adding <code>.md5</code> to the URL
  * </p>
  * <p>
  *     <ul>
@@ -54,11 +55,13 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
 
     private static final String FINISHED = "FINISHED";
 
-    /** One time per 24H on MON-FRI */
+    /**
+     * One time per 24H on MON-FRI
+     */
     @Value("${fetch.osm.cron.schedule:0+*+*/23+?+*+MON-FRI}")
     private String cronSchedule;
 
-    @Value("${fetch.osm.map.url:https4://download.geofabrik.de/europe/norway-latest.osm.pbf}")
+    @Value("${fetch.osm.map.url:https://download.geofabrik.de/europe/norway-latest.osm.pbf}")
     private String osmMapUrl;
 
     /**
@@ -75,7 +78,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while fetching OSM file.")
                 .handled(true);
 
-        singletonFrom("quartz2://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/fetchOsmMap?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{osm.download.autoStartup:true}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers fetch of OSM map over Norway.")
@@ -92,7 +95,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FILE_HANDLE, simple(blobStoreSubdirectoryForOsm + "/" + "norway-latest.osm.pbf.md5"))
                 .to("direct:uploadBlob")
                 // Fetch the actual file
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .streamCaching()
                 .to(osmMapUrl)
                 .convertBodyTo(InputStream.class)
@@ -111,13 +114,13 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FINISHED, constant("true"))
                 .log(LoggingLevel.INFO, "Map was updated, therefore triggering Geocoder POI update")
                 .setBody(constant(PELIAS_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .log(LoggingLevel.DEBUG, "Processing of OSM map finished")
                 .routeId("osm-fetch-map");
 
         from("direct:fetchOsmMapOverNorwayMd5")
                 .log(LoggingLevel.DEBUG, "Fetching MD5 sum for map over Norway")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.GET))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.GET))
                 .to(osmMapUrl + ".md5")
                 .convertBodyTo(String.class)
                 .process(p -> {
@@ -150,7 +153,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .setBody(simple("No need to updated the map file, as the MD5 sum has not changed"))
                 .otherwise()
                 .log(LoggingLevel.INFO, "Need to update the map file. Calling the update map route")
-                .inOnly("direct:fetchOsmMapOverNorway")
+                .to(ExchangePattern.InOnly,"direct:fetchOsmMapOverNorway")
                 .setBody(simple("Need to fetch map file. Called update map route"))
                 .end()
                 .routeId("osm-check-for-newer-map");

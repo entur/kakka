@@ -1,7 +1,6 @@
 tiamat:
-    export-jobs:
-      -
-        name: Oslo
-        countyReferences: KVE:TopographicPlace:03
-        stopPlaceSearch:
-          versionValidity: CURRENT
+  export-jobs:
+    - name: Oslo
+      countyReferences: KVE:TopographicPlace:03
+      stopPlaceSearch:
+        versionValidity: CURRENT

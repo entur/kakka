@@ -2,7 +2,7 @@ CREATE TABLE custom_configuration
 (
     id    SERIAL PRIMARY KEY,
     key   VARCHAR(200) NOT NULL UNIQUE,
-    value VARCHAR  NOT NULL
+    value VARCHAR      NOT NULL
 );
 
 INSERT INTO custom_configuration

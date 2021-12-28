@@ -50,9 +50,9 @@ public class Constants {
     public static final String ET_CLIENT_NAME_HEADER = "ET-Client-Name";
     public static final String ET_CLIENT_ID_HEADER = "ET-Client-ID";
 
-    public static final String FILE_TARGET_MD5 = "RutebankenMd5SumRecordedForTargetFile" ;
-    public static final String CAMEL_ALL_HTTP_HEADERS = "CamelHttp*" ;
+    public static final String FILE_TARGET_MD5 = "RutebankenMd5SumRecordedForTargetFile";
+    public static final String CAMEL_ALL_HTTP_HEADERS = "CamelHttp*";
 
-    public static final String SOURCE_CONTAINER_NAME= "sourceContainerName";
+    public static final String SOURCE_CONTAINER_NAME = "sourceContainerName";
 }
 

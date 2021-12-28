@@ -19,14 +19,14 @@ package no.entur.kakka.geocoder.routes.tiamat;
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.geocoder.netex.TopographicPlaceConverter;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.security.AuthorizationHeaderProcessor;
+import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.services.OSMPOIFilterService;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,9 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.List;
 
-import static no.entur.kakka.geocoder.GeoCoderConstants.*;
+import static no.entur.kakka.geocoder.GeoCoderConstants.GEOCODER_NEXT_TASK;
+import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_START;
+import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_PLACES_OF_INTEREST_UPDATE_START;
 
 // TODO specific per source?
 @Component
@@ -83,12 +85,12 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom("quartz2://kakka/tiamatPlaceOfInterestUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+        singletonFrom("quartz://kakka/tiamatPlaceOfInterestUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.poi.update.autoStartup:false}}")
                 .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat update of place of interest.")
                 .setBody(constant(TIAMAT_PLACES_OF_INTEREST_UPDATE_START))
-                .inOnly("direct:geoCoderStart")
+                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .routeId("tiamat-poi-update-quartz");
 
         from(TIAMAT_PLACES_OF_INTEREST_UPDATE_START.getEndpoint())
@@ -128,7 +130,7 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .routeId("tiamat-map-poi-osm-to-netex");
 
         from("direct:updatePlaceOfInterestInTiamat")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .setHeader(Exchange.HTTP_QUERY, simple("eraseTopographicPlaceWithIdPrefixAndType=" + eraseTopographicPlaceWithIdPrefixAndTypeValue))
                 .process("authorizationHeaderProcessor")

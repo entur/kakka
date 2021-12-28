@@ -17,14 +17,14 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
 
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.entur.kakka.geocoder.routes.pelias.json.GeoPoint;
 import no.entur.kakka.geocoder.routes.pelias.json.Parent;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +80,10 @@ public abstract class TopographicPlaceAdapterToPeliasDocument {
 
     protected Parent getParent() {
         return Parent.builder()
-                       .withCountryId("NOR")
-                       .withLocalityId(getLocalityId())
-                       .withCountyId(getCountyId())
-                       .build();
+                .withCountryId("NOR")
+                .withLocalityId(getLocalityId())
+                .withCountyId(getCountyId())
+                .build();
     }
 
     protected GeoPoint mapCenterPoint() {

@@ -16,12 +16,12 @@
 
 package no.entur.kakka.geocoder.sosi;
 
-import org.locationtech.jts.geom.Geometry;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import no.vegvesen.nvdb.sosi.Sosi;
 import no.vegvesen.nvdb.sosi.document.SosiDocument;
 import no.vegvesen.nvdb.sosi.document.SosiElement;
 import no.vegvesen.nvdb.sosi.reader.SosiReader;
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,24 +35,15 @@ import java.util.Map;
 
 public class SosiTopographicPlaceAdapterReader {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private static final String AREA_TYPE = "FLATE";
-
     private static final String SVERM_TYPE = "SVERM";
-
     private static final String POINT_TYPE = "PUNKT";
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Map<String, TopographicPlaceAdapter> adapterMap = new HashMap<>();
+    private final SosiElementWrapperFactory wrapperFactory;
     private InputStream sosiInputStream;
-
     private File sosiFile;
-
     private SosiCoordinates coordinates;
-
-
-    private Map<String, TopographicPlaceAdapter> adapterMap = new HashMap<>();
-
-    private SosiElementWrapperFactory wrapperFactory;
 
     public SosiTopographicPlaceAdapterReader(SosiElementWrapperFactory wrapperFactory, InputStream sosiInputStream) {
         this.sosiInputStream = sosiInputStream;
@@ -96,7 +87,7 @@ public class SosiTopographicPlaceAdapterReader {
 
     private void collectAdminUnits(SosiElement sosiElement) {
 
-        if ((sosiElement.getName().equals(SVERM_TYPE) || sosiElement.getName().equals(AREA_TYPE)|| sosiElement.getName().equals(POINT_TYPE)) && sosiElement.hasSubElements()) {
+        if ((sosiElement.getName().equals(SVERM_TYPE) || sosiElement.getName().equals(AREA_TYPE) || sosiElement.getName().equals(POINT_TYPE)) && sosiElement.hasSubElements()) {
 
             TopographicPlaceAdapter area = wrapperFactory.createWrapper(sosiElement, coordinates);
             if (area != null) {

@@ -18,39 +18,37 @@ package no.entur.kakka.repository;
 
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
-import no.entur.kakka.config.IdempotentRepositoryConfig;
 import no.entur.kakka.domain.FileNameAndDigest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class UniqueDigestPerFilenameIdempotentRepositoryTest extends KakkaRouteBuilderIntegrationTestBase {
 
-	@Autowired
-	private UniqueDigestPerFileNameIdempotentRepository idempotentRepository;
+    @Autowired
+    private UniqueDigestPerFileNameIdempotentRepository idempotentRepository;
 
-	@Test
-	public void testNonUniqueFileNameAndDigestCombinationIsRejected() {
-		idempotentRepository.clear();
-		FileNameAndDigest fileNameAndDigest = new FileNameAndDigest("fileName", "digestOne");
-		Assert.assertTrue(idempotentRepository.add(fileNameAndDigest.toString()));
+    @Test
+    public void testNonUniqueFileNameAndDigestCombinationIsRejected() {
+        idempotentRepository.clear();
+        FileNameAndDigest fileNameAndDigest = new FileNameAndDigest("fileName", "digestOne");
+        Assertions.assertTrue(idempotentRepository.add(fileNameAndDigest.toString()));
+        Assertions.assertFalse(idempotentRepository.add(fileNameAndDigest.toString()));
+    }
 
-		Assert.assertFalse(idempotentRepository.add(fileNameAndDigest.toString()));
-	}
-
-	@Test
-	public void testUniqueCombinationAllowed() {
-		idempotentRepository.clear();
-		FileNameAndDigest fileNameAndDigest1 = new FileNameAndDigest("fileNameOne", "digestOne");
-		Assert.assertTrue(idempotentRepository.add(fileNameAndDigest1.toString()));
-		FileNameAndDigest fileNameAndDigest2 = new FileNameAndDigest("fileNameTwo", "digestTwo");
-		Assert.assertTrue(idempotentRepository.add(fileNameAndDigest2.toString()));
+    @Test
+    public void testUniqueCombinationAllowed() {
+        idempotentRepository.clear();
+        FileNameAndDigest fileNameAndDigest1 = new FileNameAndDigest("fileNameOne", "digestOne");
+        Assertions.assertTrue(idempotentRepository.add(fileNameAndDigest1.toString()));
+        FileNameAndDigest fileNameAndDigest2 = new FileNameAndDigest("fileNameTwo", "digestTwo");
+        Assertions.assertTrue(idempotentRepository.add(fileNameAndDigest2.toString()));
 
 
-		FileNameAndDigest uniqueCombination = new FileNameAndDigest(fileNameAndDigest1.getFileName(), fileNameAndDigest2.getDigest());
-		Assert.assertTrue(idempotentRepository.add(uniqueCombination.toString()));
-	}
+        FileNameAndDigest uniqueCombination = new FileNameAndDigest(fileNameAndDigest1.getFileName(), fileNameAndDigest2.getDigest());
+        Assertions.assertTrue(idempotentRepository.add(uniqueCombination.toString()));
+    }
 
 }

@@ -16,13 +16,13 @@
 
 package no.entur.kakka.geocoder.sosi;
 
-import org.locationtech.jts.geom.Coordinate;
 import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketCoordinatSystemMapper;
 import no.vegvesen.nvdb.sosi.document.SosiElement;
 import no.vegvesen.nvdb.sosi.document.SosiNumber;
 import no.vegvesen.nvdb.sosi.document.SosiSerialNumber;
 import no.vegvesen.nvdb.sosi.document.SosiValue;
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +33,10 @@ import java.util.Map;
 
 public class SosiCoordinates {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Map<Long, List<Coordinate>> coordinatesMap = new HashMap<>();
     private double unit = 0.01;
-
     private String utmZone = "33";
-
-
-    private Map<Long, List<Coordinate>> coordinatesMap = new HashMap<>();
 
     public SosiCoordinates(SosiElement head) {
         SosiElement transpar = head.findSubElement(se -> "TRANSPAR".equals(se.getName())).get();

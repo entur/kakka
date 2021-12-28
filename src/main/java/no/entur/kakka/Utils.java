@@ -24,16 +24,16 @@ public class Utils {
         }
 
         if (url.contains("https")) {
-            return url.replaceFirst("https", "https4");
+            return url.replaceFirst("https", "https");
         }
-        return url.replaceFirst("http", "http4");
+        return url.replaceFirst("http", "http");
     }
 
     public static Long getLastPathElementOfUrl(String url) {
         if (url == null) {
             throw new IllegalArgumentException("Url is null");
         }
-        return Long.valueOf(url.substring(url.lastIndexOf('/') + 1, url.length()));
+        return Long.valueOf(url.substring(url.lastIndexOf('/') + 1));
     }
 
 

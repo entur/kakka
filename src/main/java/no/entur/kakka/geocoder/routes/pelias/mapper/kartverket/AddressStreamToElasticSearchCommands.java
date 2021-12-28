@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class AddressStreamToElasticSearchCommands {
 
-    private AddressToPeliasMapper addressMapper;
+    private final AddressToPeliasMapper addressMapper;
 
-    private AddressToStreetMapper addressToStreetMapper;
+    private final AddressToStreetMapper addressToStreetMapper;
 
     @Autowired
     public AddressStreamToElasticSearchCommands(AddressToPeliasMapper addressMapper, AddressToStreetMapper addressToStreetMapper) {
@@ -47,7 +47,7 @@ public class AddressStreamToElasticSearchCommands {
 
         // Create documents for all individual addresses
         List<PeliasDocument> peliasDocuments = addresses.stream().map(a -> addressMapper.toPeliasDocument(a))
-                                                       .sorted(Comparator.comparing(PeliasDocument::getDefaultName)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(PeliasDocument::getDefaultName)).collect(Collectors.toList());
 
         // Create separate document per unique street
         peliasDocuments.addAll(addressToStreetMapper.createStreetPeliasDocumentsFromAddresses(peliasDocuments));

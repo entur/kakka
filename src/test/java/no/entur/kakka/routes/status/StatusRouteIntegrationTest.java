@@ -21,8 +21,8 @@ import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
 public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 
-    @Produce(uri = "direct:updateStatus")
+    @Produce("direct:updateStatus")
     protected ProducerTemplate updateStatus;
 
     @Test
@@ -41,11 +41,11 @@ public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTest
         updateStatus.sendBody(status().toString());
 
         List<PubsubMessage> messages = pubSubTemplate.pullAndAck(StatusRouteBuilder.JOB_EVENT_QUEUE, 1, false);
-        Assert.assertEquals(messages.size(), 1);
+        Assertions.assertEquals(messages.size(), 1);
         PubsubMessage pubsubMessage = messages.get(0);
-        Assert.assertTrue(pubsubMessage.getData().size() > 0);
+        Assertions.assertTrue(pubsubMessage.getData().size() > 0);
         String body = pubsubMessage.getData().toStringUtf8();
-        Assert.assertTrue(body.contains("EXPORT"));
+        Assertions.assertTrue(body.contains("EXPORT"));
 
     }
 

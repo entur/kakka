@@ -17,19 +17,19 @@
 package no.entur.kakka.geocoder.services;
 
 
-import org.locationtech.jts.geom.Point;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
+import org.locationtech.jts.geom.Point;
 import org.rutebanken.netex.model.GroupOfStopPlaces;
 
 public interface AdminUnitRepository {
 
-	String getAdminUnitName(String id);
+    String getAdminUnitName(String id);
 
-	TopographicPlaceAdapter getLocality(String id);
+    TopographicPlaceAdapter getLocality(String id);
 
-	TopographicPlaceAdapter getLocality(Point point);
+    TopographicPlaceAdapter getLocality(Point point);
 
-	TopographicPlaceAdapter getCountry(Point point);
+    TopographicPlaceAdapter getCountry(Point point);
 
-	GroupOfStopPlaces getGroupOfStopPlaces(String name);
+    GroupOfStopPlaces getGroupOfStopPlaces(String name);
 }

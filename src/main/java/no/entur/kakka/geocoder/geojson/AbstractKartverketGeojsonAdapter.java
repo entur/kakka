@@ -27,44 +27,43 @@ import java.util.Map;
 
 public abstract class AbstractKartverketGeojsonAdapter extends AbstractGeojsonAdapter implements TopographicPlaceAdapter {
 
-	public String getIsoCode() {
-		return null;
-	}
+    public AbstractKartverketGeojsonAdapter(SimpleFeature feature) {
+        super(feature);
+    }
 
-	public String getParentId() {
-		return null;
-	}
+    public String getIsoCode() {
+        return null;
+    }
 
-	public String getName() {
-		return getProperty("navn");
-	}
+    public String getParentId() {
+        return null;
+    }
 
-	public AbstractKartverketGeojsonAdapter(SimpleFeature feature) {
-		super(feature);
-	}
+    public String getName() {
+        return getProperty("navn");
+    }
 
+    protected String pad(long val, int length) {
+        return StringUtils.leftPad("" + val, length, "0");
+    }
 
-	protected String pad(long val, int length) {
-		return StringUtils.leftPad("" + val, length, "0");
-	}
+    @Override
+    public Map<String, String> getAlternativeNames() {
+        return new HashMap<>();
+    }
 
-	@Override
-	public Map<String, String> getAlternativeNames() {
-		return new HashMap<>();
-	}
+    @Override
+    public String getCountryRef() {
+        return "NOR";
+    }
 
-	@Override
-	public String getCountryRef() {
-		return "NOR";
-	}
+    @Override
+    public List<String> getCategories() {
+        return null;
+    }
 
-	@Override
-	public List<String> getCategories() {
-		return null;
-	}
-
-	@Override
-	public boolean isValid() {
-		return true;
-	}
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 }

@@ -20,8 +20,8 @@ package no.entur.kakka.geocoder.routes.pelias.mapper.geojson;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.routes.pelias.elasticsearch.ElasticsearchCommand;
 import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Collection;
@@ -29,30 +29,30 @@ import java.util.stream.Collectors;
 
 public class FylkeToElasticsearchCommandTest {
 
-	@Test
-	public void testTransform() throws Exception {
-		KartverketGeoJsonStreamToElasticsearchCommands transformer = new KartverketGeoJsonStreamToElasticsearchCommands(new GeojsonFeatureWrapperFactory(null),1);
-		Collection<ElasticsearchCommand> commands = transformer
-				                                            .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/geojson/fylker.geojson"));
+    @Test
+    public void testTransform() throws Exception {
+        KartverketGeoJsonStreamToElasticsearchCommands transformer = new KartverketGeoJsonStreamToElasticsearchCommands(new GeojsonFeatureWrapperFactory(null), 1);
+        Collection<ElasticsearchCommand> commands = transformer
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/geojson/fylker.geojson"));
 
-		Assert.assertEquals(4, commands.size());
+        Assertions.assertEquals(4, commands.size());
 
-		commands.forEach(c -> assertCommand(c));
+        commands.forEach(c -> assertCommand(c));
 
-		PeliasDocument kalland = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> "Buskerud".equals(d.getDefaultName())).collect(Collectors.toList()).get(0);
-		assertBuskerud(kalland);
-	}
+        PeliasDocument kalland = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> "Buskerud".equals(d.getDefaultName())).collect(Collectors.toList()).get(0);
+        assertBuskerud(kalland);
+    }
 
-	private void assertBuskerud(PeliasDocument buskerud) {
-		Assert.assertNotNull(buskerud.getShape());
-		Assert.assertEquals("NOR", buskerud.getParent().getCountryId());
-		Assert.assertEquals("06", buskerud.getSourceId());
-	}
+    private void assertBuskerud(PeliasDocument buskerud) {
+        Assertions.assertNotNull(buskerud.getShape());
+        Assertions.assertEquals("NOR", buskerud.getParent().getCountryId());
+        Assertions.assertEquals("06", buskerud.getSourceId());
+    }
 
-	private void assertCommand(ElasticsearchCommand command) {
-		Assert.assertNotNull(command.getIndex());
-		Assert.assertEquals("pelias", command.getIndex().getIndex());
-		Assert.assertEquals("county", command.getIndex().getType());
-	}
+    private void assertCommand(ElasticsearchCommand command) {
+        Assertions.assertNotNull(command.getIndex());
+        Assertions.assertEquals("pelias", command.getIndex().getIndex());
+        Assertions.assertEquals("county", command.getIndex().getType());
+    }
 
 }

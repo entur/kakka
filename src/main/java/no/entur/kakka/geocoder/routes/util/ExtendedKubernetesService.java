@@ -1,10 +1,10 @@
 package no.entur.kakka.geocoder.routes.util;
 
-import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.CronJobSpec;
-import io.fabric8.kubernetes.api.model.batch.Job;
-import io.fabric8.kubernetes.api.model.batch.JobBuilder;
-import io.fabric8.kubernetes.api.model.batch.JobSpec;
+import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
+import io.fabric8.kubernetes.api.model.batch.v1.CronJobSpec;
+import io.fabric8.kubernetes.api.model.batch.v1.Job;
+import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
+import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
@@ -64,11 +64,11 @@ public class ExtendedKubernetesService {
 
         log.info("Creating es build job with name {} ", jobName);
         Job job = buildJobFromCronJobSpecTemplate(specTemplate, jobName);
-        kubernetesClient.batch().jobs().inNamespace(kubernetesNamespace).create(job);
+        kubernetesClient.batch().v1().jobs().inNamespace(kubernetesNamespace).create(job);
     }
 
     protected CronJobSpec getCronJobSpecTemplate(KubernetesClient client) {
-        List<CronJob> matchingJobs = client.batch().cronjobs().inNamespace(kubernetesNamespace).withLabel("app", esDataUploadCronJobName).list().getItems();
+        List<CronJob> matchingJobs = client.batch().v1().cronjobs().inNamespace(kubernetesNamespace).withLabel("app", esDataUploadCronJobName).list().getItems();
         if (matchingJobs.isEmpty()) {
             throw new RuntimeException("Job with label=" + esDataUploadCronJobName + " not found in namespace " + kubernetesNamespace);
         }
@@ -82,7 +82,7 @@ public class ExtendedKubernetesService {
 
         JobSpec jobSpec = specTemplate.getJobTemplate().getSpec();
 
-        Job job = new JobBuilder()
+        return new JobBuilder()
                 .withSpec(jobSpec).
                 withNewMetadata()
                 .withName(jobName)
@@ -96,8 +96,6 @@ public class ExtendedKubernetesService {
                 .endTemplate()
                 .endSpec()
                 .build();
-        return job;
-
     }
 
 }

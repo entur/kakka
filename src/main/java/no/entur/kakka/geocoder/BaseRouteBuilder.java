@@ -2,14 +2,14 @@ package no.entur.kakka.geocoder;
 
 
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
-import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.master.MasterConsumer;
+import org.apache.camel.component.hazelcast.policy.HazelcastRoutePolicy;
 import org.apache.camel.model.RouteDefinition;
+import org.apache.camel.spi.RoutePolicy;
 import org.apache.camel.spi.Synchronization;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.entur.pubsub.camel.EnturGooglePubSubConstants;
@@ -99,10 +99,18 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
     }
 
     protected boolean isLeader(String routeId) {
+        // for testing in a local environment
+        if (!kubernetesEnabled) {
+            return true;
+        }
 
-        Consumer consumer = getContext().getRoute(routeId).getConsumer();
-        if (consumer instanceof MasterConsumer) {
-            return ((MasterConsumer) consumer).isMaster();
+        List<RoutePolicy> routePolicyList = getContext().getRoute(routeId).getRoutePolicyList();
+        if (routePolicyList != null) {
+            for (RoutePolicy routePolicy : routePolicyList) {
+                if (routePolicy instanceof HazelcastRoutePolicy) {
+                    return ((HazelcastRoutePolicy) (routePolicy)).isLeader();
+                }
+            }
         }
         return false;
     }

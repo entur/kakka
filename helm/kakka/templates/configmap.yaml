@@ -18,6 +18,9 @@ data:
     server.port=8080
     camel.springboot.name=kakka
     camel.servlet.mapping.context-path=/services/*
+    camel.cluster.kubernetes.enabled=true
+    camel.cluster.kubernetes.cluster-labels[app]=kakka
+    camel.cluster.kubernetes.config-map-name=kakka-leaders
 
     # Tiamat
     tiamat.geocoder.export.autoStartup=true

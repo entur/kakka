@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "common.labels" . | indent 4 }}
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: kakka-service-account
@@ -22,7 +22,7 @@ subjects:
     name: kakka-service-account
     namespace: {{ .Release.Namespace }}
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kakka-service-account
@@ -39,5 +39,15 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments"]
     verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [ "" ]
+      resources: [ "configmaps" ]
+      verbs: [ "get", "watch", "list", "create" ]
+        - apiGroups: [ "" ]
+          resources: [ "configmaps" ]
+          resourceNames: [ "kakka-leaders" ]
+          verbs: [ "get", "watch", "list", "update", "patch", "delete" ]
+        - apiGroups: [ "coordination.k8s.io" ]
+          resources: [ "leases" ]
+          verbs: [ "create", "get", "update", "list" ]
 
 {{- end }}

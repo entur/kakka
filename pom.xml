@@ -113,7 +113,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>hazelcast-helper</artifactId>
+            <artifactId>hazelcast4-helper</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>
@@ -228,6 +228,18 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-netty4-http</artifactId>
             <version>3.0.0-M4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-master-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-kubernetes-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-file-starter</artifactId>
         </dependency>
 
         <!-- Other -->

@@ -2,23 +2,26 @@ package no.entur.kakka.geocoder;
 
 
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import no.entur.kakka.exceptions.KakkaException;
+import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.hazelcast.policy.HazelcastRoutePolicy;
+import org.apache.camel.component.master.MasterConsumer;
 import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.spi.RoutePolicy;
 import org.apache.camel.spi.Synchronization;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.entur.pubsub.camel.EnturGooglePubSubConstants;
+import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static no.entur.kakka.Constants.SINGLETON_ROUTE_DEFINITION_GROUP_NAME;
 
 /**
  * Defines common route behavior.
@@ -36,6 +39,9 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
 
     @Value("${rutebanken.kubernetes.enabled:true}")
     private boolean kubernetesEnabled;
+
+    @Value("${quartz.lenient.fire.time.ms:180000}")
+    private int lenientFireTimeMs;
 
 
     @Override
@@ -83,15 +89,54 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
      * Create a new singleton route definition from URI. Only one such route should be active throughout the cluster at any time.
      */
     protected RouteDefinition singletonFrom(String uri) {
-        return this.from(uri).group(SINGLETON_ROUTE_DEFINITION_GROUP_NAME);
+        String lockName = getMasterLockName(uri);
+        return this.from("master:" + lockName + ':' + uri);
     }
 
     /**
-     * Singleton route is only active if it is started and this node is the cluster leader for the route
+     * Create a lock name for an endpoint URI. The lock name should be unique across the Camel context so that each
+     * route gets its own lock.
+     * When using a file-based implementation for the camel-master lock (for local testing), the lock is created as a file in the local file system.
+     * Thus the lock name should be a valid file name.
+     * The lock name is built by stripping the component type (example: "google-pubsub:") and the endpoint parameters.
+     * (example: "?synchronousPull=true")
+     * @param uri the endpoint URI
+     * @return a lock name
      */
-    protected boolean isSingletonRouteActive(String routeId) {
-        return isStarted(routeId) && isLeader(routeId);
+    private String getMasterLockName(String uri) {
+        if (uri.indexOf('?') != -1) {
+            return uri.substring(uri.lastIndexOf(':') + 1, uri.indexOf('?'));
+        }
+        return uri.substring(uri.lastIndexOf(':') + 1);
     }
+
+    /**
+     * Quartz should only trigger if singleton route is started, this node is the cluster leader for the route and fireTime is (almost) same as scheduledFireTime.
+     * <p>
+     * To avoid multiple firings in cluster and re-firing as route is resumed upon change of leadership.
+     */
+    protected boolean shouldQuartzRouteTrigger(Exchange e, String cron) {
+        CronExpression cronExpression;
+        String cleanCron = cron.replace("+", " ");
+        try {
+            cronExpression = new CronExpression(cleanCron);
+        } catch (ParseException pe) {
+            throw new KakkaException("Invalid cron: " + cleanCron, pe);
+        }
+        return isStarted(e.getFromRouteId()) && isLeader(e.getFromRouteId()) && isScheduledQuartzFiring(e, cronExpression);
+    }
+
+    private boolean isScheduledQuartzFiring(Exchange exchange, CronExpression cron) {
+        Date now = new Date();
+        Date scheduledFireTime = cron.getNextValidTimeAfter(DateUtils.addMilliseconds(now, -lenientFireTimeMs));
+        boolean isScheduledFiring = scheduledFireTime.equals(now) || scheduledFireTime.before(now);
+
+        if (!isScheduledFiring) {
+            log.warn("Ignoring quartz trigger for route {} at scheduled time {} as this is probably not a match for cron expression {} (checked at {})", exchange.getFromRouteId(), scheduledFireTime.getTime(), cron.getCronExpression(), now.getTime());
+        }
+        return isScheduledFiring;
+    }
+    
 
     protected boolean isStarted(String routeId) {
         ServiceStatus status = getContext().getRouteController().getRouteStatus(routeId);
@@ -104,13 +149,9 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
             return true;
         }
 
-        List<RoutePolicy> routePolicyList = getContext().getRoute(routeId).getRoutePolicyList();
-        if (routePolicyList != null) {
-            for (RoutePolicy routePolicy : routePolicyList) {
-                if (routePolicy instanceof HazelcastRoutePolicy) {
-                    return ((HazelcastRoutePolicy) (routePolicy)).isLeader();
-                }
-            }
+        Consumer consumer = getContext().getRoute(routeId).getConsumer();
+        if (consumer instanceof MasterConsumer) {
+            return ((MasterConsumer) consumer).isMaster();
         }
         return false;
     }

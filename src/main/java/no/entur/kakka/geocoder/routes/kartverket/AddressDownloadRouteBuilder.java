@@ -50,7 +50,7 @@ public class AddressDownloadRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/addressDownload?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{kartverket.address.download.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers address download.")
                 .setBody(constant(KARTVERKET_ADDRESS_DOWNLOAD))
                 .to(ExchangePattern.InOnly,"direct:geoCoderStart")

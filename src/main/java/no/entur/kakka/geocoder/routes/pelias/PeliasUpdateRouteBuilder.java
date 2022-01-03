@@ -56,7 +56,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/peliasUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{pelias.update.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")
                 .setBody(constant(PELIAS_UPDATE_START))
                 .to(ExchangePattern.InOnly, "direct:geoCoderStart")

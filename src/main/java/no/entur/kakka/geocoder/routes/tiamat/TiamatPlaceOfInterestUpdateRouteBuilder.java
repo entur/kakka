@@ -87,7 +87,7 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/tiamatPlaceOfInterestUpdate?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.poi.update.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat update of place of interest.")
                 .setBody(constant(TIAMAT_PLACES_OF_INTEREST_UPDATE_START))
                 .to(ExchangePattern.InOnly,"direct:geoCoderStart")

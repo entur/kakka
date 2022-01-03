@@ -45,7 +45,7 @@ public class PlaceNamesDownloadRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/placeNamesDownload?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{kartverket.place.names.download.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers download of place names.")
                 .setBody(constant(GeoCoderConstants.KARTVERKET_PLACE_NAMES_DOWNLOAD))
                 .to(ExchangePattern.InOnly, "direct:geoCoderStart")

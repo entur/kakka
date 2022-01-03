@@ -33,14 +33,14 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/kinguPublishExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{kingu.export.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers Kingu exports for publish ")
                 .to(ExchangePattern.InOnly,"direct:startFullKinguPublishExport")
                 .routeId("kingu-publish-export-quartz");
 
         singletonFrom("quartz://kakka/kinguPublishExportMidday?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{kingu.export.mid.day.autoStartup:false}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronScheduleMidDay))
                 .log(LoggingLevel.INFO, "Quartz triggers mid day Kingu exports for publish ")
                 .to(ExchangePattern.InOnly,"direct:startFullKinguPublishExport")
                 .routeId("kingu-publish-export-mid-day-quartz");

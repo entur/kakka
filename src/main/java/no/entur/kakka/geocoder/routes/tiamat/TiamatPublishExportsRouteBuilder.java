@@ -74,7 +74,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("quartz://kakka/tiamatPublishExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.export.autoStartup:true}}")
-                .filter(e -> isSingletonRouteActive(e.getFromRouteId()))
+                .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat exports for publish ")
                 .to(ExchangePattern.InOnly,"direct:startFullTiamatPublishExport")
                 .routeId("tiamat-publish-export-quartz");

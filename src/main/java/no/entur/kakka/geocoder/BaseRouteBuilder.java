@@ -37,9 +37,6 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
     @Value("${kakka.camel.redelivery.backoff.multiplier:3}")
     private int backOffMultiplier;
 
-    @Value("${rutebanken.kubernetes.enabled:true}")
-    private boolean kubernetesEnabled;
-
     @Value("${quartz.lenient.fire.time.ms:180000}")
     private int lenientFireTimeMs;
 
@@ -136,7 +133,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
         }
         return isScheduledFiring;
     }
-    
+
 
     protected boolean isStarted(String routeId) {
         ServiceStatus status = getContext().getRouteController().getRouteStatus(routeId);
@@ -144,11 +141,6 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
     }
 
     protected boolean isLeader(String routeId) {
-        // for testing in a local environment
-        if (!kubernetesEnabled) {
-            return true;
-        }
-
         Consumer consumer = getContext().getRoute(routeId).getConsumer();
         if (consumer instanceof MasterConsumer) {
             return ((MasterConsumer) consumer).isMaster();

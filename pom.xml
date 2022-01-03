@@ -113,11 +113,6 @@
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
-            <artifactId>hazelcast4-helper</artifactId>
-            <version>${entur.helpers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.entur.helpers</groupId>
             <artifactId>organisation</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
@@ -207,10 +202,6 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-parser</artifactId>
             <version>${swagger-java-parser-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-hazelcast-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>

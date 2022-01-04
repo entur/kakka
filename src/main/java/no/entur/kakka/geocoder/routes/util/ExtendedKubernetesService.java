@@ -1,10 +1,11 @@
 package no.entur.kakka.geocoder.routes.util;
 
-import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
-import io.fabric8.kubernetes.api.model.batch.v1.CronJobSpec;
+
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
+import io.fabric8.kubernetes.api.model.batch.v1beta1.CronJob;
+import io.fabric8.kubernetes.api.model.batch.v1beta1.CronJobSpec;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class ExtendedKubernetesService {
@@ -68,14 +68,12 @@ public class ExtendedKubernetesService {
     }
 
     protected CronJobSpec getCronJobSpecTemplate(KubernetesClient client) {
-        List<CronJob> matchingJobs = client.batch().v1().cronjobs().inNamespace(kubernetesNamespace).withLabel("app", esDataUploadCronJobName).list().getItems();
-        if (matchingJobs.isEmpty()) {
+        CronJob matchingJob = client.batch().v1beta1().cronjobs().inNamespace(kubernetesNamespace).withName(esDataUploadCronJobName).get();
+        if (matchingJob == null) {
             throw new RuntimeException("Job with label=" + esDataUploadCronJobName + " not found in namespace " + kubernetesNamespace);
         }
-        if (matchingJobs.size() > 1) {
-            throw new RuntimeException("Found multiple jobs matching label app=" + esDataUploadCronJobName + " in namespace " + kubernetesNamespace);
-        }
-        return matchingJobs.get(0).getSpec();
+
+        return matchingJob.getSpec();
     }
 
     protected Job buildJobFromCronJobSpecTemplate(CronJobSpec specTemplate, String jobName) {

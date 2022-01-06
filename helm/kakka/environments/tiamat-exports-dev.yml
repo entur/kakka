@@ -2,6 +2,7 @@ tiamat:
     export-jobs:
       -
         name: tiamat_export_geocoder
+        serviceFrameExportMode: ALL
         topographicPlaceExportMode: ALL
         groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:

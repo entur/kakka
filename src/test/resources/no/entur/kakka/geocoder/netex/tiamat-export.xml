@@ -201,6 +201,7 @@
                     <OtherTransportModes></OtherTransportModes>
                     <tariffZones>
                         <TariffZoneRef ref="AKT:TariffZone:505"/>
+                        <TariffZoneRef ref="AKT:FareZone:55"/>
                     </tariffZones>
                     <StopPlaceType>airport</StopPlaceType>
                     <quays>

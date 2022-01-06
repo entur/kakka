@@ -27,6 +27,7 @@ import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.NameTypeEnumeration;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopTypeEnumeration;
+import org.rutebanken.netex.model.TariffZoneRef;
 import org.rutebanken.netex.model.VehicleModeEnumeration;
 import org.springframework.util.CollectionUtils;
 
@@ -119,10 +120,22 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         document.setPopularity(popularity);
 
         if (place.getTariffZones() != null && place.getTariffZones().getTariffZoneRef() != null) {
-            document.setTariffZones(place.getTariffZones().getTariffZoneRef().stream().map(zoneRef -> zoneRef.getRef()).collect(Collectors.toList()));
+            document.setTariffZones(place.getTariffZones().getTariffZoneRef().stream()
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr,"TariffZone"))
+                    .map(zoneRef -> zoneRef.getRef())
+                    .collect(Collectors.toList()));
+
+            document.setFareZones(place.getTariffZones().getTariffZoneRef().stream()
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr,"FareZone"))
+                    .map(zoneRef -> zoneRef.getRef())
+                    .collect(Collectors.toList()));
             // A bug in elasticsearch 2.3.4 used for pelias causes prefix queries for array values to fail, thus making it impossible to query by tariff zone prefixes. Instead adding
             // tariff zone authorities as a distinct indexed value.
-            document.setTariffZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream().map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct().collect(Collectors.toList()));
+            document.setTariffZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream()
+                    .map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct()
+                    .collect(Collectors.toList()));
+
+
         }
 
         // Add parent info locality/county/country
@@ -134,6 +147,12 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
             }
             parent.setLocalityId(place.getTopographicPlaceRef().getRef());
         }
+    }
+
+    private boolean isTariffZoneOrFareZone(TariffZoneRef tariffZoneRef, String type) {
+        final String ref = tariffZoneRef.getRef();
+        return ref.contains(type);
+
     }
 
     /**

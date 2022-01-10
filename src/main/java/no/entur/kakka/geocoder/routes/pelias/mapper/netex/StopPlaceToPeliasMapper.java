@@ -121,17 +121,23 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         if (place.getTariffZones() != null && place.getTariffZones().getTariffZoneRef() != null) {
             document.setTariffZones(place.getTariffZones().getTariffZoneRef().stream()
-                    .filter(tzr -> isTariffZoneOrFareZone(tzr,"TariffZone"))
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr, "TariffZone"))
                     .map(zoneRef -> zoneRef.getRef())
                     .collect(Collectors.toList()));
 
             document.setFareZones(place.getTariffZones().getTariffZoneRef().stream()
-                    .filter(tzr -> isTariffZoneOrFareZone(tzr,"FareZone"))
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr, "FareZone"))
                     .map(zoneRef -> zoneRef.getRef())
                     .collect(Collectors.toList()));
             // A bug in elasticsearch 2.3.4 used for pelias causes prefix queries for array values to fail, thus making it impossible to query by tariff zone prefixes. Instead adding
             // tariff zone authorities as a distinct indexed value.
             document.setTariffZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream()
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr, "TariffZone"))
+                    .map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct()
+                    .collect(Collectors.toList()));
+
+            document.setFareZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream()
+                    .filter(tzr -> isTariffZoneOrFareZone(tzr, "FareZone"))
                     .map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct()
                     .collect(Collectors.toList()));
 

@@ -135,6 +135,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(Arrays.asList("AKT:TariffZone:505"), known.getTariffZones());
         Assertions.assertEquals(Arrays.asList("AKT:FareZone:55"), known.getFareZones());
         Assertions.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
+        Assertions.assertEquals(Arrays.asList("AKT"), known.getFareZoneAuthorities());
         Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type (airport)");
         Assertions.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
     }

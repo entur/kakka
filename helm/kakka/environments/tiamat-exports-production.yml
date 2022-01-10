@@ -2,12 +2,14 @@ tiamat:
     export-jobs:
       -
         name: tiamat_export_geocoder
+        serviceFrameExportMode: ALL
         topographicPlaceExportMode: ALL
         groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT_FUTURE
       -
         name: Full
+        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         topographicPlaceExportMode: ALL
@@ -16,6 +18,7 @@ tiamat:
           versionValidity: ALL
       -
         name: CurrentAndFuture
+        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         groupOfStopPlacesExportMode: ALL
@@ -23,6 +26,7 @@ tiamat:
           versionValidity: CURRENT_FUTURE
       -
         name: Current
+        serviceFrameExportMode: ALL
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         groupOfStopPlacesExportMode: ALL

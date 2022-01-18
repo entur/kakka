@@ -78,7 +78,7 @@ public class StopPlaceBoostConfigurationTest {
 
     @Test
     public void subModeNotFoundShouldYieldDefaultForStopType() {
-        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, AirSubmodeEnumeration.CANAL_BARGE)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
+        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, AirSubmodeEnumeration.DOMESTIC_FLIGHT)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
     }
 
     @Test

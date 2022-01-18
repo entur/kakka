@@ -29,7 +29,7 @@
         <jskdata.version>1.0.15</jskdata.version>
 
         <auth0.version>1.26.0</auth0.version>
-        <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
+        <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.0.61</entur.helpers.version>
         <guava.version>30.0-jre</guava.version>
 

@@ -39,6 +39,7 @@ data:
     tiamat.change.log.download.directory=/tmp/tiamat/changelog
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
+    tiamat.tariffzones.update.directory=/tmp/tiamat/tariffZones/
     tiamat.publish.export={{.Values.configMap.tiamatExport}}
     tiamat.poi.update.directory=/tmp/tiamat/poi/update
     tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml

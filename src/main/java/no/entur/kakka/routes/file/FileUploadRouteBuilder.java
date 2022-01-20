@@ -24,11 +24,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static no.entur.kakka.Constants.FILE_HANDLE;
 import static no.entur.kakka.Constants.FILE_NAME;
+import static no.entur.kakka.Constants.XML;
 
 @Component
 public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
@@ -48,12 +51,8 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .split().body()
                 .log(LoggingLevel.INFO, "Upload files and  start Import file name: ${header." + FILE_NAME + "}")
                 .choice()
-                .when(header(Constants.FILE_NAME).endsWith("xml"))
-                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".xml"))
-                .setHeader(FILE_HANDLE, simple("tariffzones/netex/${header.providerId}/${header." + FILE_NAME + "}"))
-                .when(header(Constants.FILE_NAME).endsWith("osm"))
-                .setHeader(FILE_NAME, simple("TariffZones_${header.providerId}_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".osm"))
-                .setHeader(FILE_HANDLE, simple("tariffzones/osm/${header.providerId}/${header." + FILE_NAME + "}"))
+                .when(header(Constants.FILE_NAME).endsWith(XML))
+                .process(this::setHeaders)
                 .otherwise()
                 .log(LoggingLevel.INFO, "Invalid file upload")
                 .end()
@@ -78,6 +77,16 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .end()
                 .routeId("file-upload-and-start-import");
 
+    }
+
+    private void setHeaders(Exchange e) {
+        final String providerId = e.getIn().getHeader("providerId", String.class);
+        final String newFileName = "TariffZones_" + providerId + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".xml";
+        final String newFileHandle = "tariffzones/netex/" + providerId + "/" + newFileName;
+        Map<String,Object> headers = new HashMap<>();
+        headers.put(FILE_NAME,simple(newFileName));
+        headers.put(FILE_HANDLE,simple(newFileHandle));
+        e.getIn().setHeaders(headers);
     }
 
     private void convertBodyToFileItems(Exchange e) {

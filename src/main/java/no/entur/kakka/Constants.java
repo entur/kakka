@@ -54,5 +54,7 @@ public class Constants {
     public static final String CAMEL_ALL_HTTP_HEADERS = "CamelHttp*";
 
     public static final String SOURCE_CONTAINER_NAME = "sourceContainerName";
+
+    public static final String XML = "xml";
 }
 

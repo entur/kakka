@@ -21,7 +21,6 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.geocoder.netex.TariffZoneConverter;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -36,31 +35,27 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
+import static no.entur.kakka.Constants.XML;
+
 
 @Component
 public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
     public static final Logger logger = LoggerFactory.getLogger(TiamatTariffZonesUpdateRouteBuilder.class);
     private final BlobStoreService blobStoreService;
-    private final TariffZoneConverter tariffZoneConverter;
-    @Value("${tiamat.tariffzones.blobstore.xml.directory:tariffzones/netex}")
-    private String blobStoreXmldirectory;
-    @Value("${tiamat.tariffzones.blobstore.osm.directory:tariffzones/osm}")
-    private String blobStoreOsmdirectory;
+    @Value("${tiamat.tariffzones.blobstore.netex.directory:tariffzones/netex}")
+    private String blobStoreNetexDirectory;
     @Value("${tiamat.url}")
     private String tiamatUrl;
     @Value("${tiamat.publication.delivery.path:/services/stop_places/netex}")
     private String tiamatPublicationDeliveryPath;
-    @Value("${tiamat.tariffzones.update.directory:files/tiamat/tariffZones}")
+    @Value("${tiamat.tariffzones.update.directory:files/tiamat/tariffZones/}")
     private String localWorkingDirectory;
 
 
     @Autowired
-    public TiamatTariffZonesUpdateRouteBuilder(BlobStoreService blobStoreService,
-                                               TariffZoneConverter tariffZoneConverter
-    ) {
+    public TiamatTariffZonesUpdateRouteBuilder(BlobStoreService blobStoreService) {
         this.blobStoreService = blobStoreService;
-        this.tariffZoneConverter = tariffZoneConverter;
     }
 
     @Override
@@ -78,13 +73,8 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:fetchTariffZones")
                 .choice()
-                .when(header(Constants.FILE_NAME).endsWith("xml"))
+                .when(header(Constants.FILE_NAME).endsWith(XML))
                 .log(LoggingLevel.INFO, "Updating tariff_zone_netex_file: ${header." + Constants.FILE_NAME + "}")
-                .to("direct:updateTariffZonesInTiamat")
-                .log(LoggingLevel.INFO, "Finished updating tariff zones in Tiamat")
-                .when(header(Constants.FILE_NAME).endsWith("osm"))
-                .log(LoggingLevel.INFO, "Converting tariff_zone_osm_file: ${header." + Constants.FILE_NAME + "}")
-                .to("direct:mapTariffZonesToNetex")
                 .to("direct:updateTariffZonesInTiamat")
                 .log(LoggingLevel.INFO, "Finished updating tariff zones in Tiamat")
                 .otherwise()
@@ -99,10 +89,9 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
         from("direct:fetchTariffZones")
                 .log(LoggingLevel.DEBUG, getClass().getName(), "Fetching tariff zones ...")
 
-                .process(e -> {
-                    String dir = getBlobDir(e.getIn().getHeader(Constants.FILE_NAME, String.class));
-                    e.getIn().setBody(blobStoreService.listBlobsInFolder(dir, e).getFiles().stream().filter(f -> f.getName().equals(e.getIn().getHeader(Constants.FILE_HANDLE))).collect(Collectors.toList()));
-                })
+                .process(e -> e.getIn().setBody(blobStoreService.listBlobsInFolder(blobStoreNetexDirectory, e).getFiles().stream()
+                        .filter(f -> f.getName().equals(e.getIn().getHeader(Constants.FILE_HANDLE)))
+                        .collect(Collectors.toList())))
                 .split().body()
                 .setHeader(Constants.FILE_HANDLE, simple("${body.name}"))
                 .process(e -> e.getIn().setHeader(Exchange.FILE_NAME, Paths.get(e.getIn().getBody(BlobStoreFiles.File.class).getName()).getFileName()))
@@ -110,17 +99,11 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("file:" + localWorkingDirectory)
                 .routeId("tiamat-fetch-tariff-zones");
 
-        from("direct:mapTariffZonesToNetex")
-                .log(LoggingLevel.DEBUG, getClass().getName(), "Mapping Tariff zones to Netex ...")
-                .process(e -> tariffZoneConverter.toNetexFile(e, localWorkingDirectory))
-                .routeId("tiamat-osm-tariff-zones-to-netex");
-
 
         from("direct:updateTariffZonesInTiamat")
-                .log(LoggingLevel.INFO, "updating tiamat via import endpoint {}", localWorkingDirectory + "/" + header(Constants.FILE_NAME))
+                .log(LoggingLevel.INFO, "updating tiamat via import endpoint {}", localWorkingDirectory + header(Constants.FILE_NAME))
                 .process(e -> {
-                    final String pathname = localWorkingDirectory + "/" + e.getIn().getHeader(Constants.FILE_NAME);
-                    logger.info("local file path is: {}", pathname);
+                    final String pathname = localWorkingDirectory + e.getIn().getHeader(Constants.FILE_NAME);
                     e.getIn().setBody(new File(pathname));
                 })
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
@@ -128,17 +111,5 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-tariff-zones-update-start");
-
     }
-
-    private String getBlobDir(String fileName) {
-        if (fileName.endsWith("osm")) {
-            return blobStoreOsmdirectory;
-        } else if (fileName.endsWith("xml")) {
-            return blobStoreXmldirectory;
-        } else {
-            throw new KakkaException();
-        }
-    }
-
 }

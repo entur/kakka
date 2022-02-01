@@ -28,8 +28,64 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.UUID;
 
+import static no.entur.kakka.Constants.ANTU_VALIDATION_REPORT_ID;
+import static no.entur.kakka.Constants.DATASET_REFERENTIAL;
+import static no.entur.kakka.Constants.PROVIDER_ID;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JobEvent {
+
+    /**
+     * The file extension is neither .zip nor .ZIP.
+     */
+    public static final String JOB_ERROR_FILE_UNKNOWN_FILE_EXTENSION = "ERROR_FILE_UNKNOWN_FILE_EXTENSION";
+
+    /**
+     * The file is not a zip archive.
+     */
+    public static final String JOB_ERROR_FILE_NOT_A_ZIP_FILE = "ERROR_FILE_NOT_A_ZIP_FILE";
+
+    /**
+     * The file has already been imported.
+     */
+    public static final String JOB_ERROR_DUPLICATE_FILE = "ERROR_FILE_DUPLICATE";
+
+
+    /**
+     * The file is neither a NeTEx archive nor a GTFS archive.
+     */
+    public static final String JOB_ERROR_UNKNOWN_FILE_TYPE = "ERROR_FILE_UNKNOWN_FILE_TYPE";
+
+    /**
+     * The archive contains file names that are not UTF8-encoded.
+     */
+    public static final String JOB_ERROR_FILE_ZIP_CONTAINS_SUB_DIRECTORIES = "ERROR_FILE_ZIP_CONTAINS_SUB_DIRECTORIES";
+
+    /**
+     * The archive contains file names that are not UTF8-encoded.
+     */
+    public static final String JOB_ERROR_INVALID_ZIP_ENTRY_ENCODING = "ERROR_FILE_INVALID_ZIP_ENTRY_ENCODING";
+
+    /**
+     * The archive contains XML files with an invalid encoding.
+     */
+    public static final String JOB_ERROR_INVALID_XML_ENCODING = "ERROR_FILE_INVALID_XML_ENCODING_ERROR";
+
+    /**
+     * The archive contains invalid XML file.
+     */
+    public static final String JOB_ERROR_INVALID_XML_CONTENT = "ERROR_FILE_INVALID_XML_CONTENT";
+
+    /**
+     * The exported dataset is empty (no active timetable data found).
+     */
+    public static final String JOB_ERROR_NETEX_EXPORT_EMPTY = "ERROR_NETEX_EXPORT_EMPTY_EXPORT";
+
+    /**
+     * There is no data to be validated. Check the status of the latest data import.
+     */
+    public static final String JOB_ERROR_VALIDATION_NO_DATA = "ERROR_VALIDATION_NO_DATA";
+
 
     public String name;
     public String correlationId;
@@ -58,6 +114,10 @@ public class JobEvent {
         return new Builder();
     }
 
+    public static Builder providerJobBuilder(Exchange exchange) {
+        return new ExchangeStatusBuilder(exchange).initProviderJob();
+    }
+
     public static Builder systemJobBuilder(Exchange exchange) {
         return new ExchangeStatusBuilder(exchange).initSystemJob();
     }
@@ -75,7 +135,9 @@ public class JobEvent {
     }
 
 
-    public enum JobDomain {GEOCODER, TIAMAT}
+    public enum JobDomain {GEOCODER, TIAMAT, TARIFFZONE}
+
+    public enum TaiffZoneAction {FILE_TRANSFER, FILE_CLASSIFICATION, PREVALIDATION, IMPORT, EXPORT, VALIDATION_LEVEL_1, VALIDATION_LEVEL_2, CLEAN, DATASPACE_TRANSFER, IMPORT_NETEX}
 
     public enum State {PENDING, STARTED, TIMEOUT, FAILED, OK, DUPLICATE, CANCELLED}
 
@@ -88,6 +150,12 @@ public class JobEvent {
 
         public Builder jobDomain(JobDomain jobDomain) {
             jobEvent.domain = jobDomain;
+            return this;
+        }
+
+        public Builder tariffZoneAction(TaiffZoneAction action) {
+            jobEvent.action = action.toString();
+            jobDomain(JobDomain.TARIFFZONE);
             return this;
         }
 
@@ -162,6 +230,16 @@ public class JobEvent {
         private ExchangeStatusBuilder(Exchange exchange) {
             super();
             this.exchange = exchange;
+        }
+
+        private Builder initProviderJob() {
+            jobEvent.name = exchange.getIn().getHeader(Constants.FILE_NAME, String.class);
+            String providerId = exchange.getIn().getHeader(PROVIDER_ID, String.class);
+            jobEvent.providerId = Long.valueOf(providerId);
+            jobEvent.correlationId = exchange.getIn().getHeader(Constants.CORRELATION_ID, String.class);
+            jobEvent.externalId = exchange.getIn().getHeader(ANTU_VALIDATION_REPORT_ID, Long.class);
+            jobEvent.referential = exchange.getIn().getHeader(DATASET_REFERENTIAL, String.class);
+            return this;
         }
 
         private Builder initSystemJob() {

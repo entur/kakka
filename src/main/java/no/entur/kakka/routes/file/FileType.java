@@ -14,31 +14,18 @@
  *
  */
 
-package no.entur.kakka.exceptions;
+package no.entur.kakka.routes.file;
 
-/**
- * Parent class of kakka exceptions
- */
-public class KakkaException extends RuntimeException {
-// TODO split
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    public KakkaException() {
-        super();
-    }
-
-    public KakkaException(String message) {
-        super(message);
-    }
-
-    public KakkaException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
-    public KakkaException(Throwable throwable) {
-        super(throwable);
-    }
+public enum FileType {
+    NOT_A_ZIP_FILE,
+    INVALID_FILE_NAME,
+    GTFS,
+    ZIP_CONTAINS_SUBDIRECTORIES,
+    ZIP_CONTAINS_MORE_THAN_ONE_FILE,
+    NETEXPROFILE,
+    UNKNOWN_FILE_TYPE,
+    UNKNOWN_FILE_EXTENSION,
+    INVALID_ZIP_FILE_ENTRY_NAME_ENCODING,
+    INVALID_ZIP_FILE_ENTRY_CONTENT_ENCODING,
+    INVALID_ZIP_FILE_ENTRY_XML_CONTENT
 }

@@ -17,16 +17,26 @@
 package no.entur.kakka.routes.file;
 
 import no.entur.kakka.exceptions.KakkaException;
+import no.entur.kakka.exceptions.KakkaZipFileEntryNameEncodingException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.MalformedInputException;
+import java.nio.file.Files;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -140,4 +150,68 @@ public class ZipFileUtils {
         }
     }
 
+    /**
+     * Test if the given byte arrray contains a zip file.
+     * The test is performed by matching the magic number at the beginning of the array with the zip file magic number
+     * (PK\x03\x04). Magic numbers for empty archives (PK\x05\x06) or spanned archives (PK\x07\x08) are rejected.
+     *
+     * @param data
+     * @return
+     */
+    public static boolean isZipFile(byte[] data) {
+        if (data == null || data.length < 4) {
+            return false;
+        }
+        try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(data))) {
+            return in.readInt() == 0x504b0304;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * List the entries in the zip file.
+     * The byte array is first saved to disk to avoid using a ZipInputStream that would parse the whole stream to
+     * find entries.
+     * @param data a byte array containing a zip archive.
+     * @return the list of entries in the zip archive.
+     * @throws IOException
+     * @throws KakkaZipFileEntryNameEncodingException if an entry is not UTF8-encoded.
+     */
+    public static Set<ZipEntry> listFilesInZip(byte[] data) throws IOException {
+        File tmpFile = KakkaFileUtils.createTempFile(data, "kakka-list-files-in-zip-", ".zip");
+        Set<ZipEntry> fileList = listFilesInZip(tmpFile);
+        Files.delete(tmpFile.toPath());
+        return fileList;
+    }
+
+    /**
+     * List the entries in the zip file.
+     * The byte array is first saved to disk to avoid using a ZipInputStream that would parse the whole stream to
+     * find entries.
+     * @param file the zip archive.
+     * @return the list of entries in the zip archive.
+     * @throws IOException
+     * @throws KakkaZipFileEntryNameEncodingException if an entry is not UTF8-encoded.
+     */
+    public static Set<ZipEntry> listFilesInZip(File file) {
+        try (ZipFile zipFile = new ZipFile(file)) {
+            return zipFile.stream().collect(Collectors.toSet());
+        } catch (IllegalArgumentException e) {
+            Throwable rootCause = ExceptionUtils.getRootCause(e);
+            if (rootCause instanceof MalformedInputException) {
+                throw new KakkaZipFileEntryNameEncodingException(e);
+            } else {
+                throw new KakkaException(e);
+            }
+        } catch (ZipException e) {
+            if ("invalid CEN header (bad entry name)".equals(e.getMessage())) {
+                throw new KakkaZipFileEntryNameEncodingException(e);
+            } else {
+                throw new KakkaException(e);
+            }
+        } catch (IOException e) {
+            throw new KakkaException(e);
+        }
+    }
 }

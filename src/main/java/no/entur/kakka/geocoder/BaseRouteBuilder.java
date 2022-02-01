@@ -2,7 +2,9 @@ package no.entur.kakka.geocoder;
 
 
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
+import no.entur.kakka.repository.ProviderRepository;
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExtendedExchange;
@@ -16,11 +18,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.entur.pubsub.camel.EnturGooglePubSubConstants;
 import org.quartz.CronExpression;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,9 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
 
     @Value("${quartz.lenient.fire.time.ms:180000}")
     private int lenientFireTimeMs;
+
+    @Autowired
+    private ProviderRepository providerRepository;
 
 
     @Override
@@ -146,6 +153,18 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
             return ((MasterConsumer) consumer).isMaster();
         }
         return false;
+    }
+
+    protected String correlation() {
+        return "[providerId=${header." + Constants.PROVIDER_ID + "}  correlationId=${header." + Constants.CORRELATION_ID + "}] ";
+    }
+
+    protected void setCorrelationIdIfMissing(Exchange e) {
+        e.getIn().setHeader(Constants.CORRELATION_ID, e.getIn().getHeader(Constants.CORRELATION_ID, UUID.randomUUID().toString()));
+    }
+
+    protected ProviderRepository getProviderRepository() {
+        return providerRepository;
     }
 
     private static class AckSynchronization implements Synchronization {

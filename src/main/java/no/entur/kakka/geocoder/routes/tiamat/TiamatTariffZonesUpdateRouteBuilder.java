@@ -21,9 +21,12 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.routes.file.ZipFileUtils;
+import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.component.http.HttpMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +35,14 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static no.entur.kakka.Constants.XML;
+import static no.entur.kakka.Constants.FILE_NAME;
 
 
 @Component
@@ -43,7 +50,7 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
 
     public static final Logger logger = LoggerFactory.getLogger(TiamatTariffZonesUpdateRouteBuilder.class);
     private final BlobStoreService blobStoreService;
-    @Value("${tiamat.tariffzones.blobstore.netex.directory:tariffzones/netex}")
+    @Value("${tiamat.tariffzones.blobstore.netex.directory:tariffzones}")
     private String blobStoreNetexDirectory;
     @Value("${tiamat.url}")
     private String tiamatUrl;
@@ -66,22 +73,27 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while updating  TariffZone file.")
                 .handled(true);
 
-        from("entur-google-pubsub:ProcessTariffZoneFileQueue").streamCaching()
-                .log(LoggingLevel.INFO, "Starting update of tariff zones in Tiamat: ${header." + Constants.FILE_HANDLE + "}")
+        from("entur-google-pubsub:TiamatTariffZoneImportQueue").streamCaching()
+                .log(LoggingLevel.INFO, correlation() + "Starting update of tariff zones in Tiamat: ${header." + Constants.FILE_HANDLE + "}")
+                .process(e -> JobEvent.providerJobBuilder(e).tariffZoneAction(JobEvent.TaiffZoneAction.IMPORT).state(JobEvent.State.PENDING).build())
+                .to("direct:updateStatus")
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))
                 .doTry()
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:fetchTariffZones")
                 .choice()
-                .when(header(Constants.FILE_NAME).endsWith(XML))
-                .log(LoggingLevel.INFO, "Updating tariff_zone_netex_file: ${header." + Constants.FILE_NAME + "}")
+                .when(body().isNull())
+                .log(LoggingLevel.WARN, correlation() + "Import failed because blob could not be found")
+                .process(e -> JobEvent.providerJobBuilder(e).tariffZoneAction(JobEvent.TaiffZoneAction.CLEAN.IMPORT).state(JobEvent.State.FAILED).build())
+                .otherwise()
+                .log(LoggingLevel.INFO, "Updating tariff_zone_netex_file: ${header." + Constants.FILE_HANDLE + "}")
                 .to("direct:updateTariffZonesInTiamat")
                 .log(LoggingLevel.INFO, "Finished updating tariff zones in Tiamat")
-                .otherwise()
-                .log(LoggingLevel.INFO, "Invalid Tariff zone file")
+                .process(e -> JobEvent.providerJobBuilder(e).tariffZoneAction(JobEvent.TaiffZoneAction.EXPORT).state(JobEvent.State.OK).build())
                 .endDoTry()
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
+                .to("direct:updateStatus")
                 .end()
 
                 .routeId("tiamat-tariff-zones-update");
@@ -95,18 +107,21 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .split().body()
                 .setHeader(Constants.FILE_HANDLE, simple("${body.name}"))
                 .process(e -> e.getIn().setHeader(Exchange.FILE_NAME, Paths.get(e.getIn().getBody(BlobStoreFiles.File.class).getName()).getFileName()))
+                .log(LoggingLevel.INFO, getClass().getName(), "to route getBlob in fetchTariffZone")
                 .to("direct:getBlob")
-                .to("file:" + localWorkingDirectory)
+                .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), localWorkingDirectory))
                 .routeId("tiamat-fetch-tariff-zones");
 
 
         from("direct:updateTariffZonesInTiamat")
-                .log(LoggingLevel.INFO, "updating tiamat via import endpoint {}", localWorkingDirectory + header(Constants.FILE_NAME))
+                .log(LoggingLevel.INFO, correlation() + "updating tiamat via import endpoint {}", localWorkingDirectory + header(FILE_NAME))
                 .process(e -> {
-                    final String pathname = localWorkingDirectory + e.getIn().getHeader(Constants.FILE_NAME);
-                    e.getIn().setBody(new File(pathname));
+                    final String pathname = localWorkingDirectory;
+                    final File file = new File(pathname);
+                    final Optional<File> optionalFile = Arrays.stream(Objects.requireNonNull(file.listFiles())).findFirst();
+                    optionalFile.ifPresent(f -> e.getIn().setBody(f));
                 })
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http.HttpMethods.POST))
+                .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.POST))
                 .setHeader(Exchange.CONTENT_TYPE, simple(MediaType.APPLICATION_XML))
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)

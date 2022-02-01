@@ -43,6 +43,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static no.entur.kakka.Constants.CODE_SPACE;
+import static no.entur.kakka.Constants.PROVIDER_ID;
+import static no.entur.kakka.Constants.TARIFF_ZONE_TYPE;
 
 /**
  * REST interface for backdoor triggering of messages
@@ -52,7 +55,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
-    private static final String PROVIDER_ID = "ProviderId";
+
     private static final String JSON = "application/json";
     @Value("${server.port:8080}")
     private String port;
@@ -65,6 +68,9 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
+
+    @Value("#{'${tariff.zone.types:tariffzone,farezone}'.split(',')}")
+    private List<String> tariffZoneTypes;
 
     @Override
     public void configure() throws Exception {
@@ -236,10 +242,11 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .endRest();
 
 
-        rest("/tariff_zone_admin/{providerId}")
-                .post("/files")
+        rest("/tariff_zone_admin/{tariffZoneType}/{codespace}")
+                .post("/upload")
                 .description("Upload tariff zone netex file for import into Tiamat")
-                .param().name("providerId").type(RestParamType.path).description("Tariff zone Provider id e.g RUT,AKT,KOL").dataType("string").endParam()
+                .param().name("codespace").type(RestParamType.path).description("Tariff zone codespace e.g RUT,AKT,KOL").dataType("string").endParam()
+                .param().name("tariffZoneType").type(RestParamType.path).description("Tariff zone type e.g tariffZone or farezone").dataType("string").endParam()
                 .consumes(MULTIPART_FORM_DATA)
                 .produces(PLAIN)
                 .bindingMode(RestBindingMode.off)
@@ -247,9 +254,13 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .responseMessage().code(500).message("Invalid providerId").endResponseMessage()
                 .route()
                 .streamCaching()
-                .setHeader(PROVIDER_ID, header("providerId"))
+                .setHeader(CODE_SPACE, header("codespace"))
+                .log(LoggingLevel.INFO, correlation() + "Received file from provider ${header.codespace} through the HTTP endpoint")
+                .to("direct:validateReferential")
+                .process(e -> e.getIn().setHeader(PROVIDER_ID, getProviderRepository().getProviderId(e.getIn().getHeader(CODE_SPACE, String.class))))
+                .setHeader(TARIFF_ZONE_TYPE, header("tariffZoneType"))
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .to("direct:validateProvider")
+                .to("direct:validateTariffZoneType")
                 .log(LoggingLevel.INFO, "Upload files and start import pipeline")
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
                 .to("direct:uploadFilesAndStartImport")
@@ -257,8 +268,16 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .endRest();
 
         from("direct:validateProvider")
-                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
+                .validate(e -> getProviderRepository().getProvider(e.getIn().getHeader(PROVIDER_ID, Long.class)) != null).id("validate-provider")
                 .routeId("admin-validate-provider");
+
+        from("direct:validateReferential")
+                .validate(e -> getProviderRepository().getProviderId(e.getIn().getHeader(CODE_SPACE, String.class)) != null).id("validate-referential")
+                .routeId("admin-validate-referential");
+
+        from("direct:validateTariffZoneType")
+                .validate(e -> tariffZoneTypes.stream().anyMatch(t -> t.equals(e.getIn().getHeader(TARIFF_ZONE_TYPE, String.class))))
+                .routeId("admin-validate-tariff-zone-type");
 
     }
 

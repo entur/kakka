@@ -16,6 +16,7 @@
 
 package no.entur.kakka.config;
 
+import org.entur.oauth2.AuthorizedWebClientBuilder;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.OAuth2TokenService;
 import org.entur.oauth2.RoRJwtDecoderBuilder;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configure Spring Beans for OAuth2 resource server and OAuth2 client security.
@@ -35,12 +37,14 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 @Configuration
 public class OAuth2Config {
 
+    private static final String CLIENT_REGISTRATION_ID = "kakka";
+
     @Bean
     TokenService tokenService(OAuth2ClientProperties properties, @Value("${kakka.oauth2.client.audience}") String audience) {
         return new OAuth2TokenService.Builder()
                 .withOAuth2ClientProperties(properties)
                 .withAudience(audience)
-                .withClientRegistrationId("kakka")
+                .withClientRegistrationId(CLIENT_REGISTRATION_ID)
                 .build();
     }
 
@@ -69,6 +73,24 @@ public class OAuth2Config {
         return new RoRJwtDecoderBuilder().withIssuer(rorAuth0Issuer)
                 .withAudience(rorAuth0Audience)
                 .withAuth0ClaimNamespace(rorAuth0ClaimNamespace)
+                .build();
+    }
+
+    /**
+     * Return a WebClient for authorized API calls.
+     * The WebClient inserts a JWT bearer token in the Authorization HTTP header.
+     * The JWT token is obtained from the configured Authorization Server.
+     *
+     * @param properties The spring.security.oauth2.client.registration.* properties
+     * @param audience   The API audience, required for obtaining a token from Auth0
+     * @return a WebClient for authorized API calls.
+     */
+    @Bean
+    WebClient webClient(WebClient.Builder webClientBuilder, OAuth2ClientProperties properties, @Value("${kakka.oauth2.client.audience}") String audience) {
+        return new AuthorizedWebClientBuilder(webClientBuilder)
+                .withOAuth2ClientProperties(properties)
+                .withAudience(audience)
+                .withClientRegistrationId(CLIENT_REGISTRATION_ID)
                 .build();
     }
 

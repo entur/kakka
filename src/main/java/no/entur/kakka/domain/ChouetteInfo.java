@@ -14,31 +14,30 @@
  *
  */
 
-package no.entur.kakka.exceptions;
+package no.entur.kakka.domain;
 
-/**
- * Parent class of kakka exceptions
- */
-public class KakkaException extends RuntimeException {
-// TODO split
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-    public KakkaException() {
-        super();
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ChouetteInfo {
+
+    public Long id;
+    public String referential;
+
+
+    @Override
+    public String toString() {
+        return "ChouetteInfo{" +
+                       "id=" + id +
+                       ", referential='" + referential + '\'' +
+                       '}';
     }
 
-    public KakkaException(String message) {
-        super(message);
+    public Long getId() {
+        return id;
     }
 
-    public KakkaException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
-    public KakkaException(Throwable throwable) {
-        super(throwable);
+    public String getReferential() {
+        return referential;
     }
 }

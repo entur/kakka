@@ -25,10 +25,12 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import no.entur.kakka.config.GcsStorageConfig;
 import no.entur.kakka.config.IdempotentRepositoryConfig;
 import no.entur.kakka.config.TransactionManagerConfig;
+import no.entur.kakka.repository.CacheProviderRepository;
 import org.apache.camel.builder.RouteBuilder;
 import org.entur.pubsub.camel.config.GooglePubSubCamelComponentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,8 +49,15 @@ import java.util.Set;
 public class App extends RouteBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);
+
     @Value("${shutdown.timeout:300}")
     private Long shutdownTimeout;
+
+    @Value("${kakka.provider.service.retry.interval:5000}")
+    private Integer providerRetryInterval;
+
+    @Autowired
+    private CacheProviderRepository providerRepository;
 
     // must have a main method spring-boot can run
     public static void main(String... args) {
@@ -84,8 +93,23 @@ public class App extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        waitForProviderRepository();
         getContext().getShutdownStrategy().setTimeout(shutdownTimeout);
         getContext().setUseMDCLogging(true);
+        getContext().setUseBreadcrumb(true);
+        getContext().setMessageHistory(true);
+    }
+
+    protected void waitForProviderRepository() throws InterruptedException {
+        while (!providerRepository.isReady()){
+            try {
+                providerRepository.populate();
+            } catch (Exception e) {
+                logger.warn("Provider Repository not available. Waiting {} secs before retrying...", providerRetryInterval/1000, e);
+                Thread.sleep(providerRetryInterval);
+            }
+        }
+        logger.info("Provider Repository available. Starting camel routes...");
     }
 
 }

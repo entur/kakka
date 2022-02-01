@@ -33,5 +33,8 @@ public class TestApp extends App {
         SpringApplication.run(TestApp.class, args);
     }
 
+    @Override
+    protected void waitForProviderRepository() {
 
+    }
 }

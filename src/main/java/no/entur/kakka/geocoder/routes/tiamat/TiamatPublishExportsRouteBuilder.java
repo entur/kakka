@@ -21,7 +21,7 @@ import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTask;
 import no.entur.kakka.geocoder.routes.tiamat.model.TiamatExportTasks;
-import no.entur.kakka.routes.file.FileUtils;
+import no.entur.kakka.routes.file.KakkaFileUtils;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
@@ -173,7 +173,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
         from("direct:renameTiamatExportXmlFiles")
 
                 .process(e -> ZipFileUtils.unzipFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content"))
-                .process(e -> FileUtils.renameFiles(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content", "tiamat", e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).getCurrentTask().getName()))
+                .process(e -> KakkaFileUtils.renameFiles(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content", "tiamat", e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).getCurrentTask().getName()))
                 .process(e -> e.getIn().setBody(ZipFileUtils.zipFilesInFolder(e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/content", e.getIn().getHeader(Exchange.FILE_PARENT, String.class) + "/exp.zip")))
 
                 .routeId("tiamat-publish-exports-rename-xml-files");

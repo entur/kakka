@@ -14,31 +14,20 @@
  *
  */
 
-package no.entur.kakka.exceptions;
+package no.entur.kakka.repository;
 
-/**
- * Parent class of kakka exceptions
- */
-public class KakkaException extends RuntimeException {
-// TODO split
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
-    public KakkaException() {
-        super();
-    }
+import no.entur.kakka.domain.Provider;
 
-    public KakkaException(String message) {
-        super(message);
-    }
+import java.util.Collection;
 
-    public KakkaException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
+public interface ProviderRepository {
 
-    public KakkaException(Throwable throwable) {
-        super(throwable);
-    }
+    Collection<Provider> getProviders();
+
+    Provider getProvider(Long id);
+
+    String getReferential(Long id);
+
+    Long getProviderId(String referential);
 }

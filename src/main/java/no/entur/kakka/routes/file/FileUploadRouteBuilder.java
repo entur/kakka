@@ -3,6 +3,7 @@ package no.entur.kakka.routes.file;
 import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
@@ -24,14 +25,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import static no.entur.kakka.Constants.CODE_SPACE;
+import static no.entur.kakka.Constants.CORRELATION_ID;
 import static no.entur.kakka.Constants.FILE_HANDLE;
 import static no.entur.kakka.Constants.FILE_NAME;
-import static no.entur.kakka.Constants.XML;
+import static no.entur.kakka.Constants.TARIFF_ZONE_TYPE;
+import static no.entur.kakka.Constants.ZIP;
 
 @Component
 public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
@@ -49,9 +51,10 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
         from("direct:uploadFilesAndStartImport")
                 .process(this::convertBodyToFileItems)
                 .split().body()
-                .log(LoggingLevel.INFO, "Upload files and  start Import file name: ${header." + FILE_NAME + "}")
+                .process(this::setCorrelationIdIfMissing)
+                .log(LoggingLevel.INFO, correlation() + "Upload files and  start Import file name: ${header." + FILE_NAME + "}")
                 .choice()
-                .when(header(Constants.FILE_NAME).endsWith(XML))
+                .when(header(Constants.FILE_NAME).endsWith(ZIP))
                 .process(this::setHeaders)
                 .otherwise()
                 .log(LoggingLevel.INFO, "Invalid file upload")
@@ -63,30 +66,34 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
 
         // Upload single file
         from("direct:uploadFileAndStartImport").streamCaching()
+                .log(LoggingLevel.INFO, "Update status correlationId: ${header." + CORRELATION_ID + "}")
+                .process(e -> JobEvent.providerJobBuilder(e).tariffZoneAction(JobEvent.TaiffZoneAction.FILE_TRANSFER).state(JobEvent.State.STARTED).build())
+                .to(ExchangePattern.InOnly, "direct:updateStatus")
                 .doTry()
-                .log(LoggingLevel.INFO, "Uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.INFO, correlation() +"Uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(header(FILE_CONTENT_HEADER))
                 .setHeader(Exchange.FILE_NAME, header(FILE_NAME))
                 .to("direct:uploadBlob")
-                .log(LoggingLevel.INFO, "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.INFO, correlation() + "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(constant(null))
                 .to(ExchangePattern.InOnly, "entur-google-pubsub:ProcessTariffZoneFileQueue")
-                .log(LoggingLevel.INFO, "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.INFO, correlation() + "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
                 .doCatch(Exception.class)
-                .log(LoggingLevel.WARN, "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")
+                .log(LoggingLevel.WARN, correlation() + "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")
+                .process(e -> JobEvent.providerJobBuilder(e).tariffZoneAction(JobEvent.TaiffZoneAction.FILE_TRANSFER).state(JobEvent.State.FAILED).build()).to(ExchangePattern.InOnly, "direct:updateStatus")
                 .end()
                 .routeId("file-upload-and-start-import");
 
     }
 
     private void setHeaders(Exchange e) {
-        final String providerId = e.getIn().getHeader("providerId", String.class);
-        final String newFileName = "TariffZones_" + providerId + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".xml";
-        final String newFileHandle = "tariffzones/netex/" + providerId + "/" + newFileName;
-        Map<String,Object> headers = new HashMap<>();
-        headers.put(FILE_NAME,simple(newFileName));
-        headers.put(FILE_HANDLE,simple(newFileHandle));
-        e.getIn().setHeaders(headers);
+        final String codespace = e.getIn().getHeader(CODE_SPACE, String.class);
+        final String tariffZoneType = e.getIn().getHeader(TARIFF_ZONE_TYPE, String.class);
+        final String newFileName = tariffZoneType + "_" + codespace + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".zip";
+        final String newFileHandle = tariffZoneType + "s/" + codespace + "/" + newFileName;
+
+        e.getIn().setHeader(FILE_NAME,simple(newFileName));
+        e.getIn().setHeader(FILE_HANDLE,simple(newFileHandle));
     }
 
     private void convertBodyToFileItems(Exchange e) {

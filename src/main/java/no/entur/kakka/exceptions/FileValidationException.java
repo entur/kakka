@@ -31,4 +31,8 @@ public class FileValidationException extends KakkaException {
     public FileValidationException(String message, Throwable throwable) {
         super(message, throwable);
     }
+
+    public FileValidationException(Throwable cause) {
+        super(cause);
+    }
 }

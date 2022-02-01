@@ -24,7 +24,7 @@ public class FileUtilsTest {
         new File(folder + "/stops.txt").createNewFile();
         new File(folder + "/stops-22.txt").createNewFile();
         new File(folder + "/other.txt").createNewFile();
-        FileUtils.renameFiles(folder, "stops", replaceText);
+        KakkaFileUtils.renameFiles(folder, "stops", replaceText);
 
         Assertions.assertFalse(new File(folder + "/stops.txt").exists());
         Assertions.assertFalse(new File(folder + "/stops-22.txt").exists());
@@ -38,7 +38,7 @@ public class FileUtilsTest {
         Assertions.assertThrows(KakkaException.class, () -> {
             String replaceText = "YYYYYY";
             String folder = "target/rename-test-not-existing";
-            FileUtils.renameFiles(folder, "stops", replaceText);
+            KakkaFileUtils.renameFiles(folder, "stops", replaceText);
         });
     }
 
@@ -47,7 +47,7 @@ public class FileUtilsTest {
         Assertions.assertThrows(KakkaException.class, () -> {
             String replaceText = "YYYYYY";
             Path path = Files.createTempFile("rename-test-not-a-folder", "");
-            FileUtils.renameFiles(path.toString(), "stops", replaceText);
+            KakkaFileUtils.renameFiles(path.toString(), "stops", replaceText);
         });
     }
 

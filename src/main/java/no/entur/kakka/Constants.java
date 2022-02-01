@@ -56,5 +56,22 @@ public class Constants {
     public static final String SOURCE_CONTAINER_NAME = "sourceContainerName";
 
     public static final String XML = "xml";
+    public static final String ZIP = "zip";
+
+    public static final String EXPORT_STATUS="exportStatus";
+
+    public static final String PROVIDER_ID = "providerId";
+    public static final String CODE_SPACE ="codespace";
+    public static final String TARIFF_ZONE_TYPE = "tariffZoneType";
+    public static final String ORIGINAL_PROVIDER_ID = "originalProviderId";
+    public static final String ANTU_VALIDATION_REPORT_ID = "antuValidationReportId";
+    public static final String DATASET_REFERENTIAL ="datasetReferential";
+
+    public static final String USERNAME ="username";
+    public static final String JOB_ERROR_CODE = "jobErrorCode";
+
+    public static final String CORRELATION_ID = "correlationId";
+
+    public static final String FILE_TYPE = "fileType";
 }
 

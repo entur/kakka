@@ -3,6 +3,7 @@ package no.entur.kakka.geocoder.routes.util;
 
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
+import io.fabric8.kubernetes.api.model.batch.v1.JobList;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
 import io.fabric8.kubernetes.api.model.batch.v1beta1.CronJob;
 import io.fabric8.kubernetes.api.model.batch.v1beta1.CronJobSpec;
@@ -16,10 +17,16 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ExtendedKubernetesService {
     private static final Logger log = LoggerFactory.getLogger(ExtendedKubernetesService.class);
+
+    private static final String COMPLETE = "Complete";
+
     private final KubernetesClient kubernetesClient;
 
     @Value("${kakka.remote.kubernetes.namespace:default}")
@@ -58,6 +65,10 @@ public class ExtendedKubernetesService {
     }
 
     public void startESDataUploadJob() {
+        //TODO: Current Kubernetes version 1.20 does not support manually created jobs, there manually deleting previously completed jobs.
+        log.info("Deleting previously completed jobs.");
+        deleteCompletedJobs();
+
         CronJobSpec specTemplate = getCronJobSpecTemplate(kubernetesClient);
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(Date.from(Instant.now()));
         String jobName = esDataUploadCronJobName + '-' + timestamp;
@@ -79,11 +90,14 @@ public class ExtendedKubernetesService {
     protected Job buildJobFromCronJobSpecTemplate(CronJobSpec specTemplate, String jobName) {
 
         JobSpec jobSpec = specTemplate.getJobTemplate().getSpec();
+        Map<String,String> labels= new HashMap<>();
+        labels.put("app",esDataUploadCronJobName);
 
         return new JobBuilder()
                 .withSpec(jobSpec).
                 withNewMetadata()
                 .withName(jobName)
+                .withLabels(labels)
                 .endMetadata()
                 .editOrNewSpec()
                 .editTemplate()
@@ -94,6 +108,19 @@ public class ExtendedKubernetesService {
                 .endTemplate()
                 .endSpec()
                 .build();
+    }
+
+    private void deleteCompletedJobs() {
+        try {
+            final JobList jobList = kubernetesClient.batch().v1().jobs().inNamespace(kubernetesNamespace).withLabel("app",esDataUploadCronJobName).list();
+            var completedJobs =jobList.getItems().stream()
+                    .filter(job -> job.getStatus() != null && job.getStatus().getConditions().stream().anyMatch(jobCondition -> jobCondition.getType().equals(COMPLETE)))
+                    .collect(Collectors.toList());
+            log.info("Delete {} completed es-build-upload jobs", completedJobs.size());
+            kubernetesClient.batch().v1().jobs().delete(completedJobs);
+        } catch (Exception e) {
+            log.warn("Error while deleting completed jobs; {}", e.getMessage());
+        }
     }
 
 }

@@ -69,3 +69,27 @@ variable "kingu_storage_bucket" {
 variable "kakka_target_storage_bucket" {
   description = "kakka target storage bucket"
 }
+
+variable "db_region" {
+  description = "GCP  region"
+  default = "europe-west1"
+}
+
+variable "db_zone" {
+  description = "GCP zone"
+  default = "europe-west1-b"
+}
+
+variable "db_tier" {
+  description = "Database instance tier"
+  default = "db-custom-1-3840"
+}
+
+variable "db_availability" {
+  description = "Database availability"
+  default = "ZONAL"
+}
+
+variable "ror-kakka-db-username" {
+  description = "kakka database username"
+}

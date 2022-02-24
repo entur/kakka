@@ -1,5 +1,5 @@
 sql:
-  instance: entur-ror-dev:europe-west1:kakka-db-pg13=tcp:5432
+  instance: entur-ror-dev:europe-west1:kakka-db=tcp:5432
 
 configMap:
   gcsBlobstore: kakka-dev

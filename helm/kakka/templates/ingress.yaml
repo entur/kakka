@@ -14,7 +14,8 @@ spec:
   - host: timetable-admin-v1-export{{ .Values.ingress.domainName }}
     http:
       paths:
-        - backend:
+        - pathType: ImplementationSpecific
+          backend:
             service:
               name: {{ template "kakka.name" . }}
               port:
@@ -37,7 +38,8 @@ spec:
   - host: timetable-admin-v1-geocoder{{ .Values.ingress.domainName }}
     http:
       paths:
-        - backend:
+        - pathType: ImplementationSpecific
+          backend:
             service:
               name: {{ template "kakka.name" . }}
               port:
@@ -60,7 +62,8 @@ spec:
   - host: timetable-admin-v1-poi-filter{{ .Values.ingress.domainName }}
     http:
       paths:
-        - backend:
+        - pathType: ImplementationSpecific
+          backend:
             service:
               name: {{ template "kakka.name" . }}
               port:

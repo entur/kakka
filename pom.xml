@@ -33,7 +33,6 @@
         <entur.helpers.version>1.0.61</entur.helpers.version>
         <guava.version>30.0-jre</guava.version>
 
-
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.4</commons-fileupload.version>
 

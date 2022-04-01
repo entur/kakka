@@ -8,6 +8,9 @@ configMap:
   blobstoreTargetProjectId: entur-ror-dev
   pubsubProjectId: entur-ror-dev
   gcsSourceBlobstore: kingu-dev
+  tiamatUrl: http://tiamat.dev.entur.internal:80
+  tiamatExporterUrl: http://tiamat-exporter.dev.entur.internal:80
+  babaUrl: http://baba.dev.entur.internal/services/organisations/
   auth0:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/

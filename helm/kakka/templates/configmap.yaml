@@ -25,8 +25,8 @@ data:
     # Tiamat
     tiamat.geocoder.export.autoStartup=true
     tiamat.poi.update.enabled=false
-    tiamat.url=http://tiamat:80
-    tiamat-exporter.url=http://tiamat-exporter:80
+    tiamat.url={{ .Values.configMap.tiamatUrl }}
+    tiamat-exporter.url= {{ .Values.configMap.tiamatExporterUrl }}
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
@@ -111,7 +111,7 @@ data:
 
     # Other
     quartz.enabled=true
-    organisations.api.url=http://baba/services/organisations/
+    organisations.api.url= {{ .Values.configMap.babaUrl }}
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
     kakka.remote.kubernetes.namespace = {{.Values.env }}
     # Convert POIs directly from osm file

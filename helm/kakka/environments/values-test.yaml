@@ -1,3 +1,4 @@
+env: test
 sql:
   instance: entur-ror-test:europe-west1:kakka-db=tcp:5432
 

@@ -1,3 +1,4 @@
+env: prod
 sql:
   instance: entur-ror-prod:europe-west1:kakka-db=tcp:5432
 

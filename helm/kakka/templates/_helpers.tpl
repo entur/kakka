@@ -31,6 +31,7 @@ app: {{ template "kakka.name" . }}
 chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 release: {{ .Release.Name }}
 team: ror
+environment: {{.Values.env }}
 slack: talk-ror
 type: geocoder
 namespace: {{ .Release.Namespace }}

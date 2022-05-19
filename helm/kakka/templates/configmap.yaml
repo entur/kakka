@@ -113,7 +113,7 @@ data:
     quartz.enabled=true
     organisations.api.url= {{ .Values.configMap.babaUrl }}
     osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
-    kakka.remote.kubernetes.namespace = {{.Values.env }}
+    kakka.remote.kubernetes.namespace = {{ .Release.Namespace }}
     # Convert POIs directly from osm file
     osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # TariffZone Import valid providers/authority

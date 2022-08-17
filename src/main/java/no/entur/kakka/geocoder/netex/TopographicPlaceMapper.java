@@ -161,7 +161,7 @@ public class TopographicPlaceMapper {
 
 
     protected MultilingualString multilingualString(String val) {
-        return new MultilingualString().withLang("no").withValue(val);
+        return new MultilingualString().withLang("nor").withValue(val);
     }
 
 }

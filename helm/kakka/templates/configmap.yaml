@@ -109,6 +109,13 @@ data:
     management.endpoint.prometheus.enabled=true
     management.endpoints.web.exposure.include=info,health,prometheus
 
+    #logging
+    logging.level.no.entur.kakka=WARN
+    logging.level.com.conveyal=WARN
+    logging.level.org.apache.camel=WARN
+
+
+
     # Other
     quartz.enabled=true
     organisations.api.url= {{ .Values.configMap.babaUrl }}

@@ -111,9 +111,7 @@ data:
     management.endpoints.web.exposure.include=info,health,prometheus
 
     #logging
-    logging.level.no.entur.kakka=WARN
     logging.level.com.conveyal=WARN
-    logging.level.org.apache.camel=WARN
 
 
 

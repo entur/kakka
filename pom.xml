@@ -31,6 +31,7 @@
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.0.61</entur.helpers.version>
+        <entur.gcp-storage.version>1.83</entur.gcp-storage.version>
         <guava.version>30.0-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
@@ -82,9 +83,9 @@
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>gcp-storage</artifactId>
-            <version>${entur.helpers.version}</version>
+            <version>${entur.gcp-storage.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>

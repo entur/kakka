@@ -39,12 +39,7 @@ public class GcsStorageConfig {
 
     @Bean
     public Storage storage() {
-        if (credentialPath == null || credentialPath.isEmpty()) {
-            //Used default gcp credentials
-            return BlobStoreHelper.getStorage(projectId);
-        } else {
-            return BlobStoreHelper.getStorage(credentialPath, projectId);
-        }
+        return BlobStoreHelper.getStorage(credentialPath, projectId);
     }
 
     @Bean

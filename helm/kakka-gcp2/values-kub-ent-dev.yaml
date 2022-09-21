@@ -44,3 +44,8 @@ ingress:
 
 sql:
   instance: ent-tiamat-dev:europe-west1:kakka-db=tcp:5432
+
+esData:
+  gcpProject: entur-dev-1287
+  gcsBucket: gs://kakka-dev/es-data/
+  slackUrl: ror-dev-slack-url

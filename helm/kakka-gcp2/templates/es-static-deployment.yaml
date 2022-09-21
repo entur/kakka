@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: es-scratch
+    shortname: es-scratch
+    team: ror
+    common: 1.2.4
+    environment: dev
+  name: es-scratch
+  namespace: kakka
+spec:
+  selector:
+    matchLabels:
+      app: es-scratch
+  replicas: 0
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        app:  es-scratch
+        shortname: es-scratch
+        team: ror
+        common: 1.2.4
+        environment: {{ .Values.common.env}}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: failure-domain.beta.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - europe-west1-b
+      serviceAccountName: application
+
+      containers:
+        - name: es-scratch
+          image: eu.gcr.io/entur-system-1287/elasticsearch:2.3.4
+          imagePullPolicy: Always
+          env:
+          - name: TZ
+            value: Europe/Oslo
+          ports:
+            - containerPort: 9200
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2000Mi"
+            requests:
+              cpu: 500m
+              memory: "1500Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          livenessProbe:
+            httpGet:
+              path: _cluster/health?wait_for_status=green&timeout=120s
+              port: 9200
+            failureThreshold: 6
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: _cluster/health?wait_for_status=green&timeout=120s
+              port: 9200
+            failureThreshold: 3
+            periodSeconds: 5
+          startupProbe:
+            tcpSocket:
+              port: 9200
+            failureThreshold: 300
+            periodSeconds: 1
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: es-scratch-data
+      volumes:
+        - gcePersistentDisk:
+            fsType: ext4
+            pdName: ror-es-scratch-disk
+          name: es-scratch-data
+      topologySpreadConstraints:
+        - maxSkew: 3
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: es-scratch
+        - maxSkew: 5
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: es-scratch
+      restartPolicy: Always
+      securityContext:
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+

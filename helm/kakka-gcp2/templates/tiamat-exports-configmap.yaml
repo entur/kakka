@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kakka-tiamat-export-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kakka.labels" . | indent 4 }}
+data:
+  tiamat-exports.yml: |-{{ range .Files.Lines .Values.configMap.tiamatExportConfig}}
+    {{ . }}{{ end }}

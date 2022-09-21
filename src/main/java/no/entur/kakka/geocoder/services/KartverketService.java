@@ -40,12 +40,6 @@ import java.util.UUID;
 @Service
 public class KartverketService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    @Value("${kartverket.username}")
-    private String username;
-
-    @Value("${kartverket.password}")
-    private String password;
-
     @Value("${kartverket.file.min.bytes:1000}")
     private int minBytes;
 

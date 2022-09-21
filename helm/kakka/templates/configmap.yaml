@@ -48,7 +48,6 @@ data:
     kingu.export.mid.day.autoStartup =true
 
     # Kartverket
-    kartverket.username=erlendnils1
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos

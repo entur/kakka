@@ -16,7 +16,6 @@ resource "kubernetes_secret" "ror-kakka-secrets" {
   }
   data = {
     "ror-kakka-db-password" = var.ror-kakka-db-password
-    "ror-kakka-kartverket-password" = var.ror-kakka-kartverket-password
     "ror-kakka-auth0-secret" = var.ror-kakka-auth0-secret
   }
 }

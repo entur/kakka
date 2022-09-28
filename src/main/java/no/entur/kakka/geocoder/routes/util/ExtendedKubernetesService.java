@@ -61,7 +61,7 @@ public class ExtendedKubernetesService {
     }
 
     public int getNoOfAvailableReplicas() {
-        var deployment = kubernetesClient.apps().deployments().withName("es-scratch").get();
+        var deployment = kubernetesClient.apps().deployments().withName(elasticsearchScratchDeploymentName).get();
         Integer noOfAvailableReplicas = deployment.getStatus().getAvailableReplicas();
         return noOfAvailableReplicas == null ? 0 : noOfAvailableReplicas;
 

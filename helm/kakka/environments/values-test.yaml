@@ -39,6 +39,9 @@ configMap:
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
     geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
+  elasticsearchDeploymentName: es-scratch
+  elasticsearchUploadJobEnabled: true
+  elasticsearchUrl: http://es-scratch:9200
 
 ingress:
   enabled: true

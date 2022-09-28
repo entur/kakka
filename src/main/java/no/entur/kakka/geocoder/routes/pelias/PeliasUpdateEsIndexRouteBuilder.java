@@ -64,6 +64,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     private String blobStoreSubdirectoryForOsm;
     @Value("${osm.poi.update.enabled:false}")
     private boolean routeEnabled;
+    @Value("${pelias.address.update.enabled:true}")
+    private boolean insertAddressRouteEnabled;
     @Value("${tiamat.export.blobstore.subdirectory:tiamat/geocoder}")
     private String blobStoreSubdirectoryForTiamatGeoCoderExport;
     @Value("${kartverket.blobstore.subdirectory:kartverket}")
@@ -155,6 +157,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:insertAddresses")
+                .choice()
+                .when(constant(insertAddressRouteEnabled))
                 .log(LoggingLevel.INFO, "Start inserting addresses to ES")
                 .setHeader(Exchange.FILE_PARENT, simple(blobStoreSubdirectoryForKartverket + "/addresses"))
                 .setHeader(WORKING_DIRECTORY, simple(localWorkingDirectory + "/addresses"))
@@ -162,6 +166,10 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .setHeader(FILE_EXTENSION, constant("csv"))
                 .to("direct:haltIfContentIsMissing")
                 .log(LoggingLevel.INFO, "Finished inserting addresses to ES")
+                .endChoice()
+                .otherwise()
+                .log(LoggingLevel.WARN, "Addresses from Karteverket update route has been DISABLED. Will not update Addresses")
+                .end()
                 .routeId("pelias-insert-addresses");
 
         from("direct:insertPOIData")

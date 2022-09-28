@@ -38,6 +38,9 @@ public class ExtendedKubernetesService {
     @Value("${elasticsearch.scratch.deployment.name:es-scratch}")
     private String elasticsearchScratchDeploymentName;
 
+    @Value("${elasticsearch.scratch.upload.job.enabled:true}")
+    private boolean elasticsearchUploadJobEnabled;
+
     public ExtendedKubernetesService() {
         this.kubernetesClient = new DefaultKubernetesClient();
     }
@@ -65,17 +68,23 @@ public class ExtendedKubernetesService {
     }
 
     public void startESDataUploadJob() {
-        //TODO: Current Kubernetes version 1.20 does not support manually created jobs, there manually deleting previously completed jobs.
-        log.info("Deleting previously completed jobs.");
-        deleteCompletedJobs();
+        if (elasticsearchUploadJobEnabled) {
+            //TODO: Current Kubernetes version 1.20 does not support manually created jobs, there manually deleting previously completed jobs.
+            log.info("Deleting previously completed jobs.");
+            deleteCompletedJobs();
 
-        CronJobSpec specTemplate = getCronJobSpecTemplate(kubernetesClient);
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(Date.from(Instant.now()));
-        String jobName = esDataUploadCronJobName + '-' + timestamp;
+            CronJobSpec specTemplate = getCronJobSpecTemplate(kubernetesClient);
+            String timestamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(Date.from(Instant.now()));
+            String jobName = esDataUploadCronJobName + '-' + timestamp;
 
-        log.info("Creating es build job with name {} ", jobName);
-        Job job = buildJobFromCronJobSpecTemplate(specTemplate, jobName);
-        kubernetesClient.batch().v1().jobs().inNamespace(kubernetesNamespace).create(job);
+            log.info("Creating es build job with name {} ", jobName);
+            Job job = buildJobFromCronJobSpecTemplate(specTemplate, jobName);
+            kubernetesClient.batch().v1().jobs().inNamespace(kubernetesNamespace).create(job);
+        } else
+        {
+            log.info("elasticsearchUploadJobEnabled is set to false, not running upload job");
+        }
+
     }
 
     protected CronJobSpec getCronJobSpecTemplate(KubernetesClient client) {

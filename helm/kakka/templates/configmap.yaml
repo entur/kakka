@@ -30,7 +30,6 @@ data:
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
-    tiamat.geocoder.export.autoStartup=true
     tiamat.geocoder.export.mid.day.autoStartup=true
     tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
     tiamat.geocoder.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
@@ -57,7 +56,9 @@ data:
     geocoder.max.retries=600
     geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
     #geocoder.autoStartup=true
-
+    elasticsearch.scratch.deployment.name={{ .Values.configMap.elasticsearchDeploymentName }}
+    elasticsearch.scratch.upload.job.enabled={{ .Values.configMap.elasticsearchUploadJobEnabled }}
+    elasticsearch.scratch.url={{ .Values.configMap.elasticsearchUrl }}
     # Pelias
     pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
     pelias.gos.include=true

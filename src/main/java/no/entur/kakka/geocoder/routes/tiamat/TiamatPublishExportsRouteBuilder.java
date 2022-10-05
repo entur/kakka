@@ -86,12 +86,12 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .otherwise()
                 .setBody(constant(new TiamatExportTasks(exportTasks).toString()))
                 .log(LoggingLevel.INFO, "Starting Tiamat exports: ${body}")
-                .to(ExchangePattern.InOnly,"entur-google-pubsub:TiamatExportQueue")
+                .to(ExchangePattern.InOnly,"google-pubsub:{{kakka.pubsub.project.id}}:TiamatExportQueue")
                 .end()
                 .routeId("tiamat-publish-export-start-full");
 
 
-        singletonFrom("entur-google-pubsub:TiamatExportQueue")
+        singletonFrom("google-pubsub:{{kakka.pubsub.project.id}}:TiamatExportQueue")
                 .process(e -> e.setProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.fromString(e.getIn().getBody(String.class))))
                 .process(e -> e.getIn().setHeader(Constants.LOOP_COUNTER, e.getIn().getHeader(Constants.LOOP_COUNTER, 0, Integer.class) + 1))
                 .setBody(constant(null))
@@ -105,7 +105,7 @@ public class TiamatPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .choice()
                 .when(simple("${exchangeProperty." + Constants.TIAMAT_EXPORT_TASKS + ".complete} == false"))
                 .process(e -> e.getIn().setBody(e.getProperty(Constants.TIAMAT_EXPORT_TASKS, TiamatExportTasks.class).toString()))
-                .to("entur-google-pubsub:TiamatExportQueue")
+                .to("google-pubsub:{{kakka.pubsub.project.id}}:TiamatExportQueue")
                 .end()
 
                 .routeId("tiamat-publish-export");

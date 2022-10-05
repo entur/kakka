@@ -55,16 +55,16 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 
         from("direct:geoCoderStart")
                 .process(e -> e.getIn().setBody(new GeoCoderTaskMessage(e.getIn().getBody(GeoCoderTask.class)).toString()))
-                .to("entur-google-pubsub:GeoCoderQueue")
+                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
                 .routeId("geocoder-start");
 
         from("direct:geoCoderStartBatch")
                 .process(e -> e.getIn().setBody(createMessageFromTaskTypes(e.getIn().getBody(Collection.class)).toString()))
-                .to("entur-google-pubsub:GeoCoderQueue")
+                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
                 .routeId("geocoder-start-batch");
 
 
-        singletonFrom("entur-google-pubsub:GeoCoderQueue")
+        singletonFrom("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
                 .autoStartup("{{geocoder.autoStartup:true}}")
                 .aggregate(constant(true)).aggregationStrategy(new GroupedMessageAggregationStrategy()).completionSize(100).completionTimeout(1000)
                 .process(exchange -> addOnCompletionForAggregatedExchange(exchange))
@@ -93,7 +93,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, getClass().getName(), "GeoCoder route completed")
                 .otherwise()
                 .convertBodyTo(String.class)
-                .to("entur-google-pubsub:GeoCoderQueue")
+                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
                 .end()
 
                 .routeId("geocoder-main-route");

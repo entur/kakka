@@ -70,7 +70,7 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:uploadBlob")
                 .log(LoggingLevel.INFO, "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(constant(null))
-                .to(ExchangePattern.InOnly, "entur-google-pubsub:ProcessTariffZoneFileQueue")
+                .to(ExchangePattern.InOnly, "google-pubsub:{{kakka.pubsub.project.id}}:ProcessTariffZoneFileQueue")
                 .log(LoggingLevel.INFO, "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
                 .doCatch(Exception.class)
                 .log(LoggingLevel.WARN, "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")

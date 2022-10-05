@@ -49,7 +49,7 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
     protected MockEndpoint tiamatPollMock;
     @EndpointInject("mock:TiamatExportQueue")
     protected MockEndpoint rescheduleMock;
-    @Produce("entur-google-pubsub:TiamatExportQueue")
+    @Produce("google-pubsub:{{kakka.pubsub.project.id}}:TiamatExportQueue")
     protected ProducerTemplate input;
     @Value("${tiamat.export.max.retries:480}")
     private int maxRetries;
@@ -71,7 +71,7 @@ public class TiamatPublishExportsRouteIntegrationTest extends KakkaRouteBuilderI
                     a -> a.weaveByToUri("direct:tiamatExport").replace().to("mock:tiamatExport"));
 
             AdviceWith.adviceWith(context, "tiamat-publish-export",
-                    a -> a.weaveByToUri("entur-google-pubsub:TiamatExportQueue").replace().to("mock:tiamatExportQueue"));
+                    a -> a.weaveByToUri("google-pubsub:{{kakka.pubsub.project.id}}:TiamatExportQueue").replace().to("mock:tiamatExportQueue"));
 
 
             AdviceWith.adviceWith(context, "tiamat-publish-export-start-new",

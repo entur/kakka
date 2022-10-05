@@ -29,7 +29,7 @@ public class StatusRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         from("direct:updateStatus")
                 .log(LoggingLevel.INFO, getClass().getName(), "Sending off job status event: ${body}")
-                .to("entur-google-pubsub:" + JOB_EVENT_QUEUE)
+                .to("google-pubsub:{{kakka.pubsub.project.id}}:" + JOB_EVENT_QUEUE)
                 .routeId("update-status").startupOrder(1);
     }
 

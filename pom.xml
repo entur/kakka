@@ -77,9 +77,9 @@
 
         <!-- Entur -->
         <dependency>
-            <groupId>org.entur.helpers</groupId>
-            <artifactId>camel3-entur-google-pubsub</artifactId>
-            <version>${entur.helpers.version}</version>
+            <groupId>org.entur.ror.helpers</groupId>
+            <artifactId>entur-google-pubsub</artifactId>
+            <version>1.83</version>
         </dependency>
         <dependency>
             <groupId>org.entur.helpers</groupId>
@@ -197,6 +197,10 @@
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-file-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-google-pubsub-starter</artifactId>
         </dependency>
 
         <!-- Other -->

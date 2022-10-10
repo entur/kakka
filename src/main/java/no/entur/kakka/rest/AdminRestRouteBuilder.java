@@ -112,10 +112,14 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
         rest("")
                 .apiDocs(false)
                 .description("Wildcard definitions necessary to get Jetty to match authorization filters to endpoints with path params")
-                .get().route().routeId("admin-route-authorize-get").throwException(new NotFoundException()).endRest()
-                .post().route().routeId("admin-route-authorize-post").throwException(new NotFoundException()).endRest()
-                .put().route().routeId("admin-route-authorize-put").throwException(new NotFoundException()).endRest()
-                .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
+                .get()
+                .to("direct:adminRouteAuthorizeGet")
+                .post()
+                .to("direct:adminRouteAuthorizePost")
+                .put()
+                .to("direct:adminRouteAuthorizePut")
+                .delete()
+                .to("direct:adminRouteAuthorizeDelete");
 
 
         String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
@@ -132,21 +136,12 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .description("Update geocoder tasks")
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-geocoder-update")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .validate(header("task").isNotNull())
-                .removeHeaders(camelHttpPattern)
-                .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .to(ExchangePattern.InOnly,"direct:geoCoderStartBatch")
-                .setBody(constant(null))
-                .endRest()
+                .to("direct:adminGeoCoderStart")
 
                 .get(swaggerJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
-                .endRest();
+                .to(commonApiDocEndpoint);
 
 
         rest("/osmpoifilter")
@@ -159,8 +154,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
                 .param().name("body").type(RestParamType.body).description("List of filters").endParam()
                 .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
-                .route().routeId("poi-filter-v2-delete-route")
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .to("direct:authorizeAdminRequest")
                 .to("bean:osmpoifilterService?method=updateFilters");
 
         rest("/organisation_admin")
@@ -169,20 +163,12 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .consumes(PLAIN)
                 .produces(PLAIN)
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .route()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ORGANISATION_EDIT))
-                .removeHeaders(camelHttpPattern)
-                .to("direct:updateAdminUnitsInOrgReg")
-                .setBody(simple("done"))
-                .routeId("admin-org-reg-import-admin-zones")
-                .endRest()
-
+                .to("direct:adminOrgRegImportAdminZones")
                 .get(swaggerJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
-                .endRest();
+                .to(commonApiDocEndpoint);
+
 
         rest("/map_admin")
                 .post("/download")
@@ -190,35 +176,8 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .consumes(PLAIN)
                 .produces(PLAIN)
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .route()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .log(LoggingLevel.INFO, "OSM update map data")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
-                .to("direct:considerToFetchOsmMapOverNorway")
-                .routeId("admin-fetch-osm")
-                .endRest();
+                .to("direct:AdminFetchOsm");
 
-        rest("/export")
-                .post("/stop_places")
-                .description("Trigger export from Stop Place Registry (NSR) for all existing configurations")
-                .consumes(PLAIN)
-                .produces(PLAIN)
-                .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .route()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .removeHeaders(camelHttpPattern)
-                .removeHeaders("Authorization")
-                .to("direct:startFullTiamatPublishExport")
-                .setBody(simple("done"))
-                .routeId("admin-tiamat-publish-export-full")
-                .endRest()
-
-                .get(swaggerJsonPath)
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .route()
-                .to(commonApiDocEndpoint)
-                .endRest();
 
         rest("/export")
                 .post("/stop_places/v2")
@@ -226,15 +185,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .consumes(PLAIN)
                 .produces(PLAIN)
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .route()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .removeHeaders(camelHttpPattern)
-                .removeHeaders("Authorization")
-                .to("direct:startFullKinguPublishExport")
-                .setBody(simple("done"))
-                .routeId("admin-tiamat-publish-export-full-v2")
-                .endRest();
-
+                .to("direct:adminTiamatPublishExportFull");
 
         rest("/tariff_zone_admin/{providerId}")
                 .post("/files")
@@ -245,7 +196,70 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .bindingMode(RestBindingMode.off)
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Invalid providerId").endResponseMessage()
-                .route()
+                .to("direct:adminTariffZoneUploadFile");
+
+        from("direct:validateProvider")
+                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
+                .routeId("admin-validate-provider");
+
+        from("direct:adminRouteAuthorizeGet")
+                .throwException(new NotFoundException())
+                .routeId("admin-route-authorize-get");
+
+        from("direct:adminRouteAuthorizePost")
+                .throwException(new NotFoundException())
+                .routeId("admin-route-authorize-post");
+
+        from("direct:adminRouteAuthorizePut")
+                .throwException(new NotFoundException())
+                .routeId("admin-route-authorize-put");
+
+        from("direct:adminRouteAuthorizeDelete")
+                .throwException(new NotFoundException())
+                .routeId("admin-route-authorize-delete");
+
+        from("direct:authorizeAdminRequest")
+                .doTry()
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .routeId("admin-authorize-admin-request");
+
+        from("direct:authorizeEditRequest")
+                .doTry()
+                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ORGANISATION_EDIT))
+                .routeId("admin-authorize-edit-request");
+
+        from("direct:adminGeoCoderStart")
+                .to("direct:authorizeAdminRequest")
+                .validate(header("task").isNotNull())
+                .removeHeaders(camelHttpPattern)
+                .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
+                .to(ExchangePattern.InOnly, "direct:geoCoderStartBatch")
+                .setBody(constant(null))
+                .routeId("admin-geocoder-start-route");
+
+        from("direct:adminOrgRegImportAdminZones")
+                .to("direct:authorizeEditRequest")
+                .removeHeaders(camelHttpPattern)
+                .to("direct:updateAdminUnitsInOrgReg")
+                .setBody(simple("done"))
+                .routeId("admin-org-reg-import-admin-zones");
+
+        from("direct:AdminFetchOsm")
+                .to("direct:authorizeAdminRequest")
+                .log(LoggingLevel.INFO, "OSM update map data")
+                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
+                .to("direct:considerToFetchOsmMapOverNorway")
+                .routeId("admin-fetch-osm");
+
+        from("direct:adminTiamatPublishExportFull")
+                .to("direct:authorizeAdminRequest")
+                .removeHeaders(camelHttpPattern)
+                .removeHeaders("Authorization")
+                .to("direct:startFullKinguPublishExport")
+                .setBody(simple("done"))
+                .routeId("admin-tiamat-publish-export-full-v2");
+
+        from("direct:adminTariffZoneUploadFile")
                 .streamCaching()
                 .setHeader(PROVIDER_ID, header("providerId"))
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
@@ -253,12 +267,8 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Upload files and start import pipeline")
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
                 .to("direct:uploadFilesAndStartImport")
-                .routeId("admin-tariff-zone-upload-file")
-                .endRest();
+                .routeId("admin-tariff-zone-upload-file");
 
-        from("direct:validateProvider")
-                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
-                .routeId("admin-validate-provider");
 
     }
 

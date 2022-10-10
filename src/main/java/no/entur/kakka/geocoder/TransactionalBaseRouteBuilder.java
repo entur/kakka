@@ -16,7 +16,7 @@
 
 package no.entur.kakka.geocoder;
 
-import org.apache.camel.spring.spi.TransactionErrorHandlerBuilder;
+import org.apache.camel.spring.spi.LegacyTransactionErrorHandlerBuilder;
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -57,8 +57,8 @@ public abstract class TransactionalBaseRouteBuilder extends BaseRouteBuilder {
      *
      * @return the created error handler
      */
-    public TransactionErrorHandlerBuilder transactionErrorHandler() {
-        return new TransactionErrorHandlerBuilder();
+    public LegacyTransactionErrorHandlerBuilder transactionErrorHandler() {
+        return new LegacyTransactionErrorHandlerBuilder();
     }
 
 

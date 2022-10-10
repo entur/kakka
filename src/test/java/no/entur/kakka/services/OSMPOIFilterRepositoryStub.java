@@ -6,10 +6,12 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -159,7 +161,17 @@ public class OSMPOIFilterRepositoryStub implements OSMPOIFilterRepository {
     }
 
     @Override
+    public <S extends OSMPOIFilter, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+        return null;
+    }
+
+    @Override
     public OSMPOIFilter getById(Long id) {
+        return null;
+    }
+
+    @Override
+    public OSMPOIFilter getReferenceById(Long aLong) {
         return null;
     }
 

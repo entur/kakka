@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>org.rutebanken.superpom</groupId>
+        <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.0.31</version>
+        <version>1.47</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,14 +23,14 @@
     </scm>
     <properties>
 
-        <camel.version>3.11.3</camel.version>
+        <camel.version>3.18.2</camel.version>
 
         <wololo.version>0.14.3</wololo.version>
         <jskdata.version>1.0.15</jskdata.version>
 
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.0.61</entur.helpers.version>
+        <entur.helpers.version>1.85</entur.helpers.version>
         <guava.version>30.0-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
@@ -82,7 +82,7 @@
             <version>1.83</version>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>gcp-storage</artifactId>
             <version>${entur.helpers.version}</version>
             <exclusions>
@@ -101,7 +101,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>organisation</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
@@ -111,7 +111,7 @@
             <version>${netex-java-model.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>oauth2</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>

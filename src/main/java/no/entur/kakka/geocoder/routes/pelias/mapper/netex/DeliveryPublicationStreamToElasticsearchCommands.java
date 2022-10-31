@@ -143,15 +143,12 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
         if (!CollectionUtils.isEmpty(groupsOfStopPlaces)) {
             GroupOfStopPlacesToPeliasMapper mapper = new GroupOfStopPlacesToPeliasMapper();
-            return groupsOfStopPlaces.stream().map(gos -> mapper.toPeliasDocuments(gos, getPopularityForGroupOfStopPlaces(gos, popularityPerStopPlaceId))).flatMap(documents -> documents.stream()).sorted(new PeliasDocumentPopularityComparator()).filter(d -> d != null).map(p -> ElasticsearchCommand.peliasIndexCommand(p)).collect(Collectors.toList());
+            return groupsOfStopPlaces.stream().filter(gosp -> gosp.getMembers() != null).map(gos -> mapper.toPeliasDocuments(gos, getPopularityForGroupOfStopPlaces(gos, popularityPerStopPlaceId))).flatMap(documents -> documents.stream()).sorted(new PeliasDocumentPopularityComparator()).filter(d -> d != null).map(p -> ElasticsearchCommand.peliasIndexCommand(p)).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
 
     private Long getPopularityForGroupOfStopPlaces(GroupOfStopPlaces groupOfStopPlaces, Map<String, Long> popularityPerStopPlaceId) {
-        if (groupOfStopPlaces.getMembers() == null) {
-            return null;
-        }
         try {
             double popularity = gosBoostFactor * groupOfStopPlaces.getMembers().getStopPlaceRef().stream().map(sp -> popularityPerStopPlaceId.get(sp.getRef())).filter(Objects::nonNull).reduce(1l, Math::multiplyExact);
             return (long) popularity;

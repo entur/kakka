@@ -4,7 +4,7 @@ metadata:
   name: kakka-service-account
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "kakka.labels" . | indent 4 }}
+    {{- include "common.labels" . | indent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -20,7 +20,7 @@ metadata:
   name: kakka-service-account
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "kakka.labels" . | indent 4 }}
+    {{- include "common.labels" . | indent 4 }}
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["services", "pods", "configmaps", "endpoints"]

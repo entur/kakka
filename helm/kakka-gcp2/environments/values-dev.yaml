@@ -1,6 +1,7 @@
-common:
-  env: dev
-  replicas: 2
+env: dev
+sql:
+  instance: ent-kakka-dev:europe-west1:kakka-db=tcp:5432
+
 configMap:
   gcsBlobstore: kakka-dev
   gcsTargetBlobstore: marduk-dev
@@ -26,7 +27,7 @@ configMap:
   gecoderExportScheduleMidDay: 0+0+14+*+*+?
   poiUpdateEnabled: true
   tiamatExport: Full,versionValidity=ALL&serviceFrameExportMode=ALL&fareZoneExportMode=ALL&tariffZoneExportMode=ALL&topographicPlaceExportMode=ALL;CurrentAndFuture,versionValidity=CURRENT_FUTURE&serviceFrameExportMode=ALL&fareZoneExportMode=ALL&tariffZoneExportMode=ALL;Current,versionValidity=CURRENT&serviceFrameExportMode=ALL&fareZoneExportMode=ALL&tariffZoneExportMode=ALL;CurrentwithServiceFrame,versionValidity=CURRENT_FUTURE&serviceFrameExportMode=ALL&fareZoneExportMode=ALL&tariffZoneExportMode=ALL;RailStations,versionValidity=CURRENT&stopPlaceType=RAIL_STATION;03_Oslo,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:03;11_Rogaland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:11;15_More og Romsdal,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:15;18_Nordland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:18;30_Viken,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:30;34_Innlandet,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:34;38_Vestfold_Telemark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:38;42_Agder,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:42;46_Vestland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:46;54_Troms_Finnmark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:54;50_Trondelag,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:50
-  tiamatExportConfig: tiamat-exports-dev.yml
+  tiamatExportConfig: environments/tiamat-exports-dev.yml
   pelias:
     gtfs: true
     placeBoost: 40
@@ -38,14 +39,9 @@ configMap:
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
     geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
-
+  elasticsearchDeploymentName: es-scratch
+  elasticsearchUploadJobEnabled: true
+  elasticsearchUrl: http://es-scratch:9200
 ingress:
-  domainName: .dev.entur.io
-
-sql:
-  instance: ent-tiamat-dev:europe-west1:kakka-db=tcp:5432
-
-esData:
-  gcpProject: entur-dev-1287
-  gcsBucket: gs://kakka-dev/es-data/
-  slackUrl: ror-dev-slack-url
+  domainName: -gcp2.dev.entur.io
+monitoringEnabled: true

@@ -1,0 +1,49 @@
+env: prod
+sql:
+  instance: ent-kakka-prd:europe-west1:kakka-db=tcp:5432
+
+configMap:
+  gcsBlobstore: kakka-production
+  gcsTargetBlobstore: marduk-production
+  blobstoreProjectId: entur-ror-prod
+  blobstoreTargetProjectId: entur-ror-prod
+  pubsubProjectId: entur-ror-prod
+  gcsSourceBlobstore: kingu-production
+  tiamatUrl: http://tiamat.prd.entur.internal:80
+  tiamatExporterUrl: http://tiamat-exporter.prd.entur.internal:80
+  babaUrl: http://baba.prd.entur.internal/services/organisations/
+  auth0:
+    ror:
+      url: https://auth2.entur.org/
+      audience: https://ror.api.entur.io
+  oauth2:
+    client:
+      id: XBcxAAtgvAM9QtAs20ZFE77owIp9HUua
+      url: https://auth2.entur.org/oauth/token
+      audience: https://ror.api.entur.io
+  tiamatExportSchedule: 0+0+23+*+*+?
+  tiamatExportScheduleMidDay: 0+0+12+*+*+?
+  gecoderExportSchedule: 0+0+22+*+*+?
+  gecoderExportScheduleMidDay: 0+0+14+*+*+?
+  poiUpdateEnabled: true
+  tiamatExport: Full,versionValidity=ALL&tariffZoneExportMode=ALL&topographicPlaceExportMode=ALL;CurrentAndFuture,versionValidity=CURRENT_FUTURE;Current,versionValidity=CURRENT;CurrentwithServiceFrame,versionValidity=CURRENT_FUTURE&serviceFrameExportMode=ALL&fareZoneExportMode=ALL&tariffZoneExportMode=ALL;RailStations,versionValidity=CURRENT&stopPlaceType=RAIL_STATION;03_Oslo,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:03;11_Rogaland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:11;15_More og Romsdal,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:15;18_Nordland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:18;30_Viken,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:30;34_Innlandet,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:34;38_Vestfold_Telemark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:38;42_Agder,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:42;46_Vestland,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:46;54_Troms_Finnmark,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:54;50_Trondelag,versionValidity=CURRENT&countyReference=KVE:TopographicPlace:50
+  tiamatExportConfig: environments/tiamat-exports-production.yml
+  pelias:
+    gtfs: false
+    placeBoost: 40
+    boostConfig: "{\"defaultValue\":30, \"stopTypeFactors\":{\"busStation\":{\"*\":2},\"metroStation\":{\"*\":2},\"railStation\":{\"*\":2}}}"
+    boostFactor: 10
+    addressBoost: 20
+    streetBoost: 20
+    stopPlaceBoost: 40
+    osmPoiFilterDefaultPriority: 10
+    poiInclude: false
+    geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
+  elasticsearchDeploymentName: es-scratch
+  elasticsearchUploadJobEnabled: true
+  elasticsearchUrl: http://es-scratch:9200
+
+ingress:
+  domainName: -gcp2.entur.io
+monitoringEnabled: false
+

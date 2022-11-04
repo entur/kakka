@@ -54,7 +54,13 @@ public class GcsStorageConfig {
 
     @Bean
     public Storage targetStorage() {
-        return BlobStoreHelper.getStorage(credentialPath, targetProjectId);
+        if (credentialPath == null || credentialPath.isEmpty()) {
+            // Use Default gcp credentials
+            //todo: update gcp-storage dependency to 1.83 and use BlobStoreHelper.getStorage(projectId)
+            return getStorage(projectId);
+        } else {
+            return BlobStoreHelper.getStorage(credentialPath, targetProjectId);
+        }
     }
 
     private Storage getStorage(String projectId) {

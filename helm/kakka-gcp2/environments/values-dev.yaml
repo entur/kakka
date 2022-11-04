@@ -45,3 +45,10 @@ configMap:
 ingress:
   domainName: -gcp2.dev.entur.io
 monitoringEnabled: true
+
+esUploadCronJob:
+  gcp:
+    projectId: entur-dev-gcp2
+    bucketName: kakka-dev
+  environment:
+    slackUrl: ror-dev-slack-url

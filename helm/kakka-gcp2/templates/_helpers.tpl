@@ -36,3 +36,13 @@ slack: talk-ror
 type: geocoder
 namespace: {{ .Release.Namespace }}
 {{- end }}
+
+{{/* Generate basic labels */}}
+{{- define "es-upload.labels" }}
+app: es-upload-job
+release: es-upload-job
+team: ror
+slack: talk-ror
+type: cronjob
+namespace: {{ .Release.Namespace }}
+{{- end }}

@@ -35,3 +35,5 @@ service:
     externalPort: 8080
     internalPort: 8080
 
+slackUrlSecret : ${serviceVariable.slackUrlSecret}
+

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: es-scratch
+  namespace: kakka
+  labels:
+    app: es-scratch
+    team: ror
+    slack: talk-ror
+    type: geocoder
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: es-scratch
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: es-scratch
+        team: ror
+        slack: talk-ror
+        type: geocoder
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - europe-west1-b
+      containers:
+      - env:
+        - name: TZ
+          value: Europe/Oslo
+        image: eu.gcr.io/entur-system-1287/elasticsearch:2.3.4
+        imagePullPolicy: Always
+        name: es-scratch
+        ports:
+        - containerPort: 9200
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: _cluster/health?wait_for_status=green&timeout=120s
+            port: 9200
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 2
+            memory: 2000Mi
+          requests:
+            cpu: 500m
+            memory: 1500Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: es-scratch-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      terminationGracePeriodSeconds: 31
+      volumes:
+      - gcePersistentDisk:
+          fsType: ext4
+          pdName: ror-es-scratch-disk
+        name: es-scratch-data

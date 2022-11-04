@@ -7,10 +7,10 @@ rollingUpdate:
 
 resources:
   cpuLimit: "3"
-  memLimit: 9000Mi
+  memLimit: 12000Mi
   cpuRequest: "2"
   memRequest: 8500Mi
-  xmx: 10g
+  xmx: 12g
 
 secretMount:
   name: kakka-key

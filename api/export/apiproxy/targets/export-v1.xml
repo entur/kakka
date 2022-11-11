@@ -24,6 +24,6 @@
     </PreFlow>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://timetable-admin-v1-export.INGRESS_ENVIRONMENT/services/export</URL>
+        <URL>https://timetable-admin-v1-export-gcp2.INGRESS_ENVIRONMENT/services/export</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>

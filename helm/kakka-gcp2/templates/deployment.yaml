@@ -46,14 +46,6 @@ spec:
               memory: 40Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
         - env:
             - name: JAVA_OPTIONS
               value: -server -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
@@ -116,14 +108,6 @@ spec:
               memory: {{ .Values.resources.memRequest }}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
           volumeMounts:
             - mountPath: /etc/application-config
               name: application-config
@@ -134,10 +118,7 @@ spec:
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
+      securityContext: {}
       serviceAccountName: application
       terminationGracePeriodSeconds: 31
       volumes:

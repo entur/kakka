@@ -39,16 +39,10 @@ configMap:
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
     geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
-  elasticsearchDeploymentName: es-scratch
-  elasticsearchUploadJobEnabled: true
-  elasticsearchUrl: http://es-scratch:9200
+  elasticsearchDeploymentName: es-scratch-v2
+  elasticsearchUploadJobEnabled: false
+  elasticsearchUrl: http://es-scratch-v2:9200
 ingress:
   domainName: -gcp2.dev.entur.io
 monitoringEnabled: true
 
-esUploadCronJob:
-  gcp:
-    projectId: entur-dev-gcp2
-    bucketName: kakka-dev
-  environment:
-    slackUrl: ror-dev-slack-url

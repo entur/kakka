@@ -60,6 +60,7 @@ data:
     elasticsearch.scratch.deployment.name={{ .Values.configMap.elasticsearchDeploymentName }}
     elasticsearch.scratch.upload.job.enabled={{ .Values.configMap.elasticsearchUploadJobEnabled }}
     elasticsearch.scratch.url={{ .Values.configMap.elasticsearchUrl }}
+    kakka.remote.kubernetes.cronjob=es-data-upload-job
     # Pelias
     pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
     pelias.gos.include=true

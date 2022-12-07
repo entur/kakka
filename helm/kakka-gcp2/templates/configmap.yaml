@@ -125,6 +125,7 @@ data:
     osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # TariffZone Import valid providers/authority
     tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
+    fetch.osm.cron.schedule=0+0+19+?+*+MON-FRI
 
 kind: ConfigMap
 metadata:

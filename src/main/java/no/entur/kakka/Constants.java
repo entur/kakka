@@ -25,6 +25,8 @@ public class Constants {
     public static final String TARGET_FILE_HANDLE = "RutebankenTargetFileHandle";
     public static final String EXPORT_JOB_NAME = "exportJobName";
     public static final String ES_BUILD_JOB_STATUS = "esBuildJobStatus";
+
+    public static final String ES_DATA_FILE_NAME = "ES_DATA_FILE_NAME";
     public static final String GEOCODER_SMOKE_TEST_JOB_STATUS = "geoCoderSmokeTestJobStatus";
 
     public static final String JOB_URL = "RutebankenJobURL";

@@ -35,6 +35,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
 
         from("direct:runGeoCoderSmokeTest")
                 .log(LoggingLevel.DEBUG, "Creating a job es-build-job to upload es data in gcs")
+                .choice()
                 .bean(extendedKubernetesService, "startGeoCoderSmokeTestJob")
                 .to("direct:processPeliasDeployCompleted")
                 .routeId("pelias-es-build");

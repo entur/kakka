@@ -1,6 +1,7 @@
 package no.entur.kakka.geocoder.routes.util;
 
 
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
@@ -19,7 +20,10 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static no.entur.kakka.Constants.ES_DATA_FILE_NAME;
 
 @Service
 public class ExtendedKubernetesService {
@@ -75,7 +79,7 @@ public class ExtendedKubernetesService {
 
     public void startESDataUploadJob() {
         if (elasticsearchUploadJobEnabled) {
-            creatCronJob(esDataUploadCronJobName);
+            creatCronJob(esDataUploadCronJobName,null);
         } else
         {
             log.info("elasticsearchUploadJobEnabled is set to false, not running upload job");
@@ -93,16 +97,21 @@ public class ExtendedKubernetesService {
         }
     }
 
-    public void startGeoCoderSmokeTestJob() {
+    public void startGeoCoderSmokeTestJob(@Header(ES_DATA_FILE_NAME) String esDataFileName) {
         if (geoCodeSmokeTestJobEnabled) {
-           creatCronJob(geoCoderSmokeTestCronJobName);
+            if(esDataFileName == null || esDataFileName.isEmpty()) {
+                throw new KakkaException("missing es data file");
+            }
+           creatCronJob(geoCoderSmokeTestCronJobName,esDataFileName);
         } else {
             log.info("geoCodeSmokeTestJobEnabled is set to false, not running geocoder smoke tests");
         }
 
     }
 
-    private void creatCronJob(String cronJobName) {
+
+    private void creatCronJob(String cronJobName, String esDataFileName) {
+
         CronJob cronJob = kubernetesClient.batch().v1().cronjobs().inNamespace(kubernetesNamespace).withName(cronJobName).get();
         if (cronJob == null) {
             throw new RuntimeException("Job with label=" + cronJobName + " not found in namespace " + kubernetesNamespace);
@@ -111,16 +120,21 @@ public class ExtendedKubernetesService {
         String jobName = cronJobName + '-' + timestamp;
 
         log.info("Creating es build job with name {} ", jobName);
-        Job job = buildJobFromCronJobSpecTemplate(cronJob, jobName,cronJobName);
+        Job job= null;
+        if(esDataFileName != null && !esDataFileName.isEmpty() ) {
+            job = buildGeoCoderJob(cronJob, jobName,getEvnVars(esDataFileName));
+        } else {
+            job = buildJobFromCronJobSpecTemplate(cronJob, jobName);
+        }
         kubernetesClient.batch().v1().jobs().inNamespace(kubernetesNamespace).create(job);
 
 
     }
 
-    private Job buildJobFromCronJobSpecTemplate(CronJob cronJob, String jobName, String cronJobName) {
+    private Job buildJobFromCronJobSpecTemplate(CronJob cronJob, String jobName) {
         JobSpec jobSpec = cronJob.getSpec().getJobTemplate().getSpec();
         Map<String,String> labels= new HashMap<>();
-        labels.put("app",cronJobName);
+        labels.put("app",cronJob.getMetadata().getName());
 
         return new JobBuilder()
                 .withSpec(jobSpec).
@@ -137,6 +151,36 @@ public class ExtendedKubernetesService {
                 .endTemplate()
                 .endSpec()
                 .build();
+    }
+
+
+    private Job buildGeoCoderJob(CronJob cronJob, String jobName, List<EnvVar> envVars) {
+        JobSpec jobSpec = cronJob.getSpec().getJobTemplate().getSpec();
+        Map<String,String> labels= new HashMap<>();
+        labels.put("app",cronJob.getMetadata().getName());
+
+        return new JobBuilder()
+                .withSpec(jobSpec).
+                    withNewMetadata()
+                        .withName(jobName)
+                        .withLabels(labels)
+                    .endMetadata()
+                    .editOrNewSpec()
+                        .editTemplate()
+                            .editSpec()
+                                .editMatchingContainer(containerBuilder -> containerBuilder.getName().equals("elasticsearch"))
+                                    .addAllToEnv(envVars)
+                                .endContainer()
+                            .endSpec()
+                        .endTemplate()
+                .endSpec()
+                .build();
+    }
+
+
+    private List<EnvVar> getEvnVars(String esDataFileName){
+        return List.of(
+                new EnvVar(ES_DATA_FILE_NAME, esDataFileName, null));
     }
 
 }

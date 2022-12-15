@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static no.entur.kakka.Constants.ES_DATA_FILE_NAME;
+import static no.entur.kakka.Constants.ES_DATA_PATH;
 
 @Service
 public class ExtendedKubernetesService {
@@ -97,7 +97,7 @@ public class ExtendedKubernetesService {
         }
     }
 
-    public void startGeoCoderSmokeTestJob(@Header(ES_DATA_FILE_NAME) String esDataFileName) {
+    public void startGeoCoderSmokeTestJob(@Header(ES_DATA_PATH) String esDataFileName) {
         if (geoCodeSmokeTestJobEnabled) {
             if(esDataFileName == null || esDataFileName.isEmpty()) {
                 throw new KakkaException("missing es data file");
@@ -171,6 +171,9 @@ public class ExtendedKubernetesService {
                                 .editMatchingContainer(containerBuilder -> containerBuilder.getName().equals("elasticsearch"))
                                     .addAllToEnv(envVars)
                                 .endContainer()
+                                .editMatchingContainer(containerBuilder -> containerBuilder.getName().equals("geocoder-acceptance-tests"))
+                                    .addAllToEnv(envVars)
+                                .endContainer()
                             .endSpec()
                         .endTemplate()
                 .endSpec()
@@ -180,7 +183,7 @@ public class ExtendedKubernetesService {
 
     private List<EnvVar> getEvnVars(String esDataFileName){
         return List.of(
-                new EnvVar(ES_DATA_FILE_NAME, esDataFileName, null));
+                new EnvVar(ES_DATA_PATH, esDataFileName, null));
     }
 
 }

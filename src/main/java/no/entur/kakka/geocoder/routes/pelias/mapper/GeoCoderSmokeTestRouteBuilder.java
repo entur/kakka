@@ -5,9 +5,14 @@ import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
 import no.entur.kakka.routes.status.JobEvent;
+import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.LoggingLevel;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
     @Value("${geocoder.smoke.test.camel.route.subscription}")
@@ -27,6 +32,9 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
     @Autowired
     private ExtendedKubernetesService extendedKubernetesService;
 
+    @Autowired
+    private BlobStoreService blobStoreService;
+
     public enum Status {SUCCESSFUL, FAILED}
 
     @Override
@@ -37,6 +45,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, "Incoming message from geocoder smoke test queue")
                 .choice()
                 .when(header(Constants.GEOCODER_SMOKE_TEST_JOB_STATUS).isEqualTo(Status.SUCCESSFUL))
+                .when(header(Constants.ES_DATA_PATH).isNotNull())
                 .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .to("direct:redeployPelias")
                 .otherwise()
@@ -49,10 +58,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                 .filter(constant(redeployPeliasEnabled))
                 .doTry()
                     .log(LoggingLevel.DEBUG, "Updating es current file")
-                    .setHeader(Constants.FILE_HANDLE, simple(getGeoCoderSmokeTestQueueCurrentFilePath))
-                    .setHeader(Constants.TARGET_FILE_HANDLE, simple(peliasCurrentFilePath))
-                    .setHeader(Constants.BLOBSTORE_MAKE_BLOB_PUBLIC,constant(false))
-                    .bean("blobStoreService", "copyBlob")
+                    .process(e -> blobStoreService.uploadBlob(peliasCurrentFilePath,false,generateCurrentFile(e.getIn().getHeader(Constants.ES_DATA_PATH,String.class))))
                     .log(LoggingLevel.DEBUG, "Redeploying pelias ")
                     .setHeader(Constants.DEPLOYMENT_NAME, simple(deploymentName))
                     .bean(extendedKubernetesService, "rolloutDeployment")
@@ -62,5 +68,9 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                     .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
                 .routeId("redeploy-pelias-es-build");
+    }
+
+    private InputStream generateCurrentFile(String path) {
+        return IOUtils.toInputStream(path, StandardCharsets.UTF_8);
     }
 }

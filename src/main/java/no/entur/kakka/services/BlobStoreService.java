@@ -19,6 +19,7 @@ package no.entur.kakka.services;
 import com.google.cloud.storage.Storage;
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
+import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.repository.BlobStoreRepository;
 import org.apache.camel.Exchange;
 import org.apache.camel.Header;
@@ -70,7 +71,7 @@ public class BlobStoreService {
     }
 
     public void uploadBlob(@Header(value = Constants.FILE_HANDLE) String name,
-                           @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream, Exchange exchange) {
+                           @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, InputStream inputStream) {
         repository.uploadBlob(name, inputStream, makePublic);
     }
 
@@ -79,8 +80,11 @@ public class BlobStoreService {
     }
 
     public void copyBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
-
-        repository.copyBlob(sourceName, targetName, makePublic);
+        try {
+            repository.copyBlob(sourceName, targetName, makePublic);
+        } catch (Exception exception) {
+            throw new KakkaException("Failed to copy blob from: " + sourceName + " to: " + targetName,exception );
+        }
     }
 
     public void copyKinguBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {

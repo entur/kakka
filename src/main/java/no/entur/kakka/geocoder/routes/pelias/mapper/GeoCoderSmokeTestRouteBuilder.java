@@ -54,7 +54,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.WARN,"Some of geocoder smoke test failed, not redeploying  ")
                 .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
-                .routeId("from-geocoder-smoke-test-queue");
+                .routeId("geocoder-smoke-test-queue-route");
 
         from("direct:redeployPelias")
                 .filter(constant(redeployPeliasEnabled))

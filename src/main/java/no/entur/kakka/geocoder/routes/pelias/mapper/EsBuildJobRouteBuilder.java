@@ -7,7 +7,9 @@ import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
 
     @Value("${es.build.job.camel.route.subscription}")
@@ -23,7 +25,6 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
         super.configure();
 
         singletonFrom(esBuildJobQueue)
-                .autoStartup("{{geocoder.es.build.job.route.autoStartup:true}}")
                 .log(LoggingLevel.INFO, "Incoming message from es build job  queue")
                 .choice()
                 .when(header(Constants.ES_BUILD_JOB_STATUS).isEqualTo(Status.SUCCESS))

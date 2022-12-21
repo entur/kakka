@@ -13,7 +13,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
     @Value("${es.build.job.camel.route.subscription}")
     private String esBuildJobQueue;
 
-    public enum Status {SUCCESSFUL, FAILED}
+    public enum Status {SUCCESS, FAILED}
 
     @Autowired
     private ExtendedKubernetesService extendedKubernetesService;
@@ -23,9 +23,10 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
         super.configure();
 
         singletonFrom(esBuildJobQueue)
+                .autoStartup("{{geocoder.es.build.job.route.autoStartup:true}}")
                 .log(LoggingLevel.INFO, "Incoming message from es build job  queue")
                 .choice()
-                .when(header(Constants.ES_BUILD_JOB_STATUS).isEqualTo(Status.SUCCESSFUL))
+                .when(header(Constants.ES_BUILD_JOB_STATUS).isEqualTo(Status.SUCCESS))
                 .to("direct:runGeoCoderSmokeTest")
                 .otherwise()
                 .log(LoggingLevel.WARN,"ES build job was not successful. ")

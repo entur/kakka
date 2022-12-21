@@ -33,7 +33,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.WARN,"ES build job was not successful. ")
                 .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("ES_BUILD_JOB").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
-                .routeId("from-es-build-job-queue");
+                .routeId("es-build-job-queue-route");
 
         from("direct:runGeoCoderSmokeTest")
                 .log(LoggingLevel.DEBUG, "Creating a job es-build-job to upload es data in gcs")

@@ -42,6 +42,7 @@ configMap:
   elasticsearchDeploymentName: es-scratch
   elasticsearchUploadJobEnabled: true
   elasticsearchUrl: http://es-scratch:9200
+  geoCoderCronJob: geocoder-acceptance-tests-predeploy
 ingress:
   domainName: -gcp2.dev.entur.io
 monitoringEnabled: true

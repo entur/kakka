@@ -3,6 +3,7 @@ package no.entur.kakka.geocoder.routes.pelias.mapper;
 import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
+import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
                 .to("direct:runGeoCoderSmokeTest")
                 .otherwise()
                 .log(LoggingLevel.WARN,"ES build job was not successful. ")
-                //.process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("ES_BUILD_JOB").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("ES_BUILD_JOB").newCorrelationId().state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
                 .routeId("es-build-job-queue-route");
 

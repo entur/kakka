@@ -146,7 +146,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
         from("direct:processPeliasDeployCompleted")
                 .log(LoggingLevel.INFO, "Finished updating pelias")
-                .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .bean(updateStatusService, "setIdle")
                 .routeId("pelias-deploy-completed");
 

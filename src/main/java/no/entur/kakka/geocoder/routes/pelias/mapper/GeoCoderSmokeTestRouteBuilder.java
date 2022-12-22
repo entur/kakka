@@ -4,6 +4,7 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.util.ExtendedKubernetesService;
+import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.io.IOUtils;
@@ -48,11 +49,11 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                 .when(header(Constants.GEOCODER_SMOKE_TEST_JOB_STATUS).isEqualTo(Status.SUCCESS))
                 .when(header(Constants.ES_DATA_PATH).isNotNull())
                 .log(LoggingLevel.INFO,"Geocoder smoke test successful, redeploying pelias  ")
-                //.process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").state(JobEvent.State.OK).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .to("direct:redeployPelias")
                 .otherwise()
                 .log(LoggingLevel.WARN,"Some of geocoder smoke test failed, not redeploying  ")
-                //.process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("GEOCODER_SMOKE_TEST").newCorrelationId().state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
                 .routeId("geocoder-smoke-test-queue-route");
 
@@ -64,10 +65,10 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                     .log(LoggingLevel.INFO, "Redeploying pelias ")
                     .setHeader(Constants.DEPLOYMENT_NAME, simple(deploymentName))
                     .bean(extendedKubernetesService, "rolloutDeployment")
-                    //.process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").state(JobEvent.State.OK).build()).to("direct:updateStatus")
+                    .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .doCatch(KakkaException.class)
                     .log(LoggingLevel.WARN, "failed to redeploy pelias")
-                    //.process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
+                    .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").newCorrelationId().state(JobEvent.State.FAILED).build()).to("direct:updateStatus")
                 .end()
                 .routeId("redeploy-pelias-es-build");
     }

@@ -58,7 +58,7 @@ data:
     geocoder.max.retries=600
     geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
     #geocoder.autoStartup=true
-    elasticsearch.scratch.deployment.name=kakka.remote.kubernetes.geocoder.cronjob
+    elasticsearch.scratch.deployment.name= {{ .Values.configMap.elasticsearchDeploymentName }}
     elasticsearch.scratch.upload.job.enabled={{ .Values.configMap.elasticsearchUploadJobEnabled }}
     elasticsearch.scratch.url={{ .Values.configMap.elasticsearchUrl }}
     kakka.remote.kubernetes.cronjob=es-data-upload-job

@@ -50,6 +50,7 @@
         <commons-text.version>1.8</commons-text.version>
         <sosi-reader-impl.version>1.25</sosi-reader-impl.version>
         <osmosis-osm-binary.version>0.47.3</osmosis-osm-binary.version>
+        <ror.helper.slack.version>1.0.81</ror.helper.slack.version>
     </properties>
 
     <repositories>
@@ -114,6 +115,11 @@
             <groupId>org.entur.helpers</groupId>
             <artifactId>oauth2</artifactId>
             <version>${entur.helpers.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.entur.ror.helpers</groupId>
+            <artifactId>slack</artifactId>
+            <version>${ror.helper.slack.version}</version>
         </dependency>
 
         <!-- Spring -->

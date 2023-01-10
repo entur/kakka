@@ -33,14 +33,6 @@ tiamat:
         stopPlaceSearch:
           versionValidity: CURRENT
       -
-        name: CurrentwithServiceFrame
-        serviceFrameExportMode: ALL
-        tariffZoneExportMode: ALL
-        fareZoneExportMode: ALL
-        groupOfStopPlacesExportMode: ALL
-        stopPlaceSearch:
-          versionValidity: CURRENT_FUTURE
-      -
         name: RailStations
         stopPlaceSearch:
           versionValidity: CURRENT

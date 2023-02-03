@@ -8,6 +8,7 @@ import no.entur.kakka.routes.status.JobEvent;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.LoggingLevel;
 import org.apache.commons.io.IOUtils;
+import org.rutebanken.helper.slack.SlackPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
     private String deploymentName;
     @Value("${geocoder.redeploy.pelias.enabled:true}")
     private boolean redeployPeliasEnabled;
+
+    @Autowired
+    private SlackPostService slackPostService;
 
     @Autowired
     private ExtendedKubernetesService extendedKubernetesService;
@@ -63,6 +67,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                     .log(LoggingLevel.INFO, "Updating es current file")
                     .process(e -> blobStoreService.uploadBlob(peliasCurrentFilePath,false,generateCurrentFile(e.getIn().getHeader(Constants.ES_DATA_PATH,String.class))))
                     .log(LoggingLevel.INFO, "Redeploying pelias ")
+                    .process(exchange -> slackPostService.publish("Geocoder data updated redeploy Pelias"))
                     .setHeader(Constants.DEPLOYMENT_NAME, simple(deploymentName))
                     .bean(extendedKubernetesService, "rolloutDeployment")
                     .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")

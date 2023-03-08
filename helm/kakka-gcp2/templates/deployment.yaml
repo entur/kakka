@@ -69,6 +69,12 @@ spec:
                 secretKeyRef:
                   key: ror-kakka-auth0-secret
                   name: ror-kakka-secrets
+            - name: SLACK_URL
+              valueFrom:
+                secretKeyRef:
+                   key: slack-url
+                   name: {{ .Values.configMap.slackSecret }}
+
           image: {{ .Values.image.identifier }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           livenessProbe:

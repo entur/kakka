@@ -67,7 +67,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                     .log(LoggingLevel.INFO, "Updating es current file : ${header.ES_DATA_PATH}")
                     .process(e -> blobStoreService.uploadBlob(peliasCurrentFilePath,false,generateCurrentFile(e.getIn().getHeader(Constants.ES_DATA_PATH,String.class))))
                     .log(LoggingLevel.INFO, "Redeploying pelias ")
-                    .process(e -> slackPostService.publish(":tada: es-data `" + e.getIn().getHeader(Constants.ES_DATA_PATH,String.class) + "` updated ,redeploy `pelias`"))
+                    .process(e -> slackPostService.publish(":tada: es-data `" + e.getIn().getHeader(Constants.ES_DATA_PATH,String.class) + "` updated ,redeploying `pelias`"))
                     .setHeader(Constants.DEPLOYMENT_NAME, simple(deploymentName))
                     .bean(extendedKubernetesService, "rolloutDeployment")
                     .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")

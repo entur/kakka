@@ -107,7 +107,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .process(e -> new File(localWorkingDirectory).mkdirs())
                 .to("direct:createPeliasIndex")
                 .bean("adminUnitRepositoryBuilder", "build")
-                .setProperty(GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO, simple("body"))
+                .setProperty(GeoCoderConstants.GEOCODER_ADMIN_UNIT_REPO, simple("${body}"))
                 .doTry()
                 .multicast(new UseOriginalAggregationStrategy())
                 .parallelProcessing()

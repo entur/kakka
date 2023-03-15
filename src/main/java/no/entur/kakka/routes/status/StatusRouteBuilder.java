@@ -18,18 +18,20 @@ package no.entur.kakka.routes.status;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StatusRouteBuilder extends RouteBuilder {
 
-    public static final String JOB_EVENT_QUEUE = "JobEventQueue";
+    @Value("${nabu.job.event.topic}")
+    private String jobEventQueue;
 
     @Override
     public void configure() throws Exception {
         from("direct:updateStatus")
                 .log(LoggingLevel.INFO, getClass().getName(), "Sending off job status event: ${body}")
-                .to("google-pubsub:{{kakka.pubsub.project.id}}:" + JOB_EVENT_QUEUE)
+                .to(jobEventQueue)
                 .routeId("update-status").startupOrder(1);
     }
 

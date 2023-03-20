@@ -71,9 +71,20 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private final boolean mapPOIFromNetex;
 
-    public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration, @Value("${pelias.poi.boost:1}") long poiBoost,
-                                                            @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter, @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
-                                                            @Value("${pelias.gos.include:true}") boolean gosInclude, @Autowired OSMPOIFilterService osmpoiFilterService, @Value("${pelias.poi.include:true}") boolean mapPOIFromNetex) {
+    private final boolean addAlternativeNameWithoutStationNameSuffix;
+
+    private final String stationNameSuffix;
+
+    public DeliveryPublicationStreamToElasticsearchCommands(@Autowired StopPlaceBoostConfiguration stopPlaceBoostConfiguration,
+                                                            @Value("${pelias.poi.boost:1}") long poiBoost,
+                                                            @Value("#{'${pelias.poi.filter:}'.split(',')}") List<String> poiFilter,
+                                                            @Value("${pelias.gos.boost.factor.:1.0}") double gosBoostFactor,
+                                                            @Value("${pelias.gos.include:true}") boolean gosInclude,
+                                                            @Autowired OSMPOIFilterService osmpoiFilterService,
+                                                            @Value("${pelias.poi.include:true}") boolean mapPOIFromNetex,
+                                                            @Value("${pelias.stopplace.addAlternativeNameWithoutStationNameSuffix:false}") boolean addAlternativeNameWithoutStationNameSuffix,
+                                                            @Value("${pelias.stopplace.stationNameSuffix:\" stasjon\"}") String stationNameSuffix
+                                                            ) {
         this.stopPlaceBoostConfiguration = stopPlaceBoostConfiguration;
         this.poiBoost = poiBoost;
         this.gosBoostFactor = gosBoostFactor;
@@ -87,6 +98,8 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
             this.poiFilter = new ArrayList<>();
             logger.info("No pelias poiFilter found");
         }
+        this.addAlternativeNameWithoutStationNameSuffix = addAlternativeNameWithoutStationNameSuffix;
+        this.stationNameSuffix = stationNameSuffix;
     }
 
     public Collection<ElasticsearchCommand> transform(InputStream publicationDeliveryStream) {
@@ -178,7 +191,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private List<ElasticsearchCommand> addStopPlaceCommands(List<StopPlace> places) {
         if (!CollectionUtils.isEmpty(places)) {
-            StopPlaceToPeliasMapper mapper = new StopPlaceToPeliasMapper(stopPlaceBoostConfiguration);
+            StopPlaceToPeliasMapper mapper = new StopPlaceToPeliasMapper(stopPlaceBoostConfiguration, addAlternativeNameWithoutStationNameSuffix, stationNameSuffix);
 
             Set<PlaceHierarchy<StopPlace>> stopPlaceHierarchies = toPlaceHierarchies(places);
 

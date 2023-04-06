@@ -26,7 +26,7 @@ import no.entur.kakka.config.GcsStorageConfig;
 import no.entur.kakka.config.IdempotentRepositoryConfig;
 import no.entur.kakka.config.TransactionManagerConfig;
 import org.apache.camel.builder.RouteBuilder;
-import org.entur.pubsub.camel.config.GooglePubSubCamelComponentConfig;
+import org.entur.pubsub.base.config.GooglePubSubConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +43,7 @@ import java.util.Set;
  */
 @SpringBootApplication
 @EnableScheduling
-@Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class, GooglePubSubCamelComponentConfig.class})
+@Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class, GooglePubSubConfig.class})
 public class App extends RouteBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);

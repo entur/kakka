@@ -14,7 +14,6 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.spi.Synchronization;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.entur.pubsub.camel.EnturGooglePubSubConstants;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,6 +21,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.apache.camel.component.google.pubsub.GooglePubsubConstants.ACK_ID;
 
 /**
  * Defines common route behavior.
@@ -75,7 +76,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
 
         List<Message> messages = (List<Message>) exchange.getIn().getBody(List.class);
         List<BasicAcknowledgeablePubsubMessage> ackList = messages.stream()
-                .map(m -> m.getHeader(EnturGooglePubSubConstants.ACK_ID, BasicAcknowledgeablePubsubMessage.class))
+                .map(m -> m.getHeader(ACK_ID, BasicAcknowledgeablePubsubMessage.class))
                 .collect(Collectors.toList());
 
         exchange.adapt(ExtendedExchange.class).addOnCompletion(new AckSynchronization(ackList));

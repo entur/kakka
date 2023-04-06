@@ -16,16 +16,16 @@
 
 package no.entur.kakka.routes.status;
 
-import com.google.pubsub.v1.PubsubMessage;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
+import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
 public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
@@ -34,19 +34,21 @@ public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTest
     @Produce("direct:updateStatus")
     protected ProducerTemplate updateStatus;
 
+    @EndpointInject("mock:JobEventQueue")
+    protected MockEndpoint jobEventQueue;
+
     @Test
     public void testJobEventQueue() throws Exception {
+
+        AdviceWith.adviceWith(context,"update-status", a -> a.weaveByToUri("google-pubsub:(.*):JobEventQueue").replace().to("mock:JobEventQueue") );
 
         context.start();
         updateStatus.sendBody(status().toString());
 
-        List<PubsubMessage> messages = pubSubTemplate.pullAndAck(StatusRouteBuilder.JOB_EVENT_QUEUE, 1, false);
-        Assertions.assertEquals(messages.size(), 1);
-        PubsubMessage pubsubMessage = messages.get(0);
-        Assertions.assertTrue(pubsubMessage.getData().size() > 0);
-        String body = pubsubMessage.getData().toStringUtf8();
+        jobEventQueue.expectedMessageCount(1);
+        final String body = jobEventQueue.getExchanges().get(0).getIn().getBody(String.class);
+        Assertions.assertFalse(body.isEmpty());
         Assertions.assertTrue(body.contains("EXPORT"));
-
     }
 
     private JobEvent status() {

@@ -73,7 +73,6 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:fetchNeighbouringCountries")
                 .to("direct:mapNeighbouringCountriesToNetex")
                 .to("direct:updateNeighbouringCountriesInTiamat")
-                .to("direct:processTiamatNeighbouringCountriesUpdateCompleted")
                 .log(LoggingLevel.INFO, "Finished updating neighbouring countries in Tiamat")
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
@@ -107,10 +106,6 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-neighbouring-countries-update-start");
 
-
-        from("direct:processTiamatNeighbouringCountriesUpdateCompleted")
-                .setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, constant(GeoCoderConstants.TIAMAT_EXPORT_START))
-                .routeId("tiamat-neighbouring-countries-update-completed");
     }
 
     private File[] getGeojsonCountryFiles() {

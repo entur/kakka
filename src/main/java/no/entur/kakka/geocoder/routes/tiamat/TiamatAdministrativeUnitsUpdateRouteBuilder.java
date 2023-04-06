@@ -84,7 +84,6 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .to("direct:cleanUpLocalDirectory")
                 .to("direct:mapAdministrativeUnitsToNetex")
                 .to("direct:updateAdministrativeUnitsInTiamat")
-                .to("direct:processTiamatAdministrativeUnitsUpdateCompleted")
                 .log(LoggingLevel.INFO, "Finished updating administrative units in Tiamat")
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
@@ -95,7 +94,6 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
         from("direct:mapAdministrativeUnitsToNetex")
                 .log(LoggingLevel.DEBUG, getClass().getName(), "Mapping latest administrative units to Netex ...")
                 .process(e -> {
-
                     blobStore.listBlobsInFolder(blobStoreSubdirectoryForKartverket + "/administrativeUnits", e).getFiles().stream()
                             .filter(blob -> blob.getName().endsWith(".zip"))
                             .forEach(blob -> ZipFileUtils.unzipFile(blobStore.getBlob(blob.getName(), e), localWorkingDirectory));
@@ -112,12 +110,6 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-admin-units-update-start");
-
-
-        from("direct:processTiamatAdministrativeUnitsUpdateCompleted")
-                .setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, constant(GeoCoderConstants.TIAMAT_EXPORT_START))
-                .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")
-                .routeId("tiamat-admin-units-update-completed");
     }
 
 

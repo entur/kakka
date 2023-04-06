@@ -66,7 +66,7 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while updating  TariffZone file.")
                 .handled(true);
 
-        from("entur-google-pubsub:ProcessTariffZoneFileQueue").streamCaching()
+        from("google-pubsub:{{kakka.pubsub.project.id}}:ProcessTariffZoneFileQueue").streamCaching()
                 .log(LoggingLevel.INFO, "Starting update of tariff zones in Tiamat: ${header." + Constants.FILE_HANDLE + "}")
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))
                 .doTry()

@@ -16,11 +16,8 @@
 
 package no.entur.kakka.geocoder.routes.tiamat;
 
-import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,22 +58,5 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
                 .setBody(constant(GeoCoderConstants.PELIAS_UPDATE_START))
                 .to(ExchangePattern.InOnly,"direct:geoCoderStart")
                 .routeId("tiamat-geocoder-export-mid-day-quartz");
-
-
-        from(GeoCoderConstants.TIAMAT_EXPORT_START.getEndpoint())
-                .process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.TIAMAT_EXPORT).build()).to("direct:updateStatus")
-                .setHeader(Constants.JOB_STATUS_ROUTING_DESTINATION, constant("direct:processTiamatGeoCoderExportResults"))
-                .setHeader(Constants.QUERY_STRING, constant(tiamatExportQuery))
-                .log(LoggingLevel.INFO, "Start Tiamat geocoder export")
-                .to("direct:tiamatExport")
-                .end()
-                .routeId("tiamat-geocoder-export");
-
-
-        from("direct:processTiamatGeoCoderExportResults")
-                .setHeader(Constants.FILE_HANDLE, simple(blobStoreSubdirectoryForTiamatGeoCoderExport + "/" + TIAMAT_EXPORT_LATEST_FILE_NAME))
-                .to("direct:tiamatExportMoveFileToBlobStore")
-                .routeId("tiamat-geocoder-export-results");
-
     }
 }

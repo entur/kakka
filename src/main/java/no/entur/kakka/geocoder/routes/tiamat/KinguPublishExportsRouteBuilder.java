@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import static no.entur.kakka.Constants.BLOBSTORE_MAKE_BLOB_PUBLIC;
+
 @Component
 public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
@@ -66,5 +68,11 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .to("direct:kinguExportUploadFileExternal")
                 .end()
                 .routeId("from-tiamat-export-queue-processed");
+
+        from("direct:kinguExportUploadFileExternal")
+                .log(LoggingLevel.INFO, "kingu export upload external")
+                .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(true))
+                .to("direct:copyKinguBlob")
+                .routeId("kingu-export-upload-file-external");
     }
 }

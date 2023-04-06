@@ -27,7 +27,6 @@ data:
     tiamat.geocoder.export.autoStartup=true
     tiamat.poi.update.enabled=false
     tiamat.url={{ .Values.configMap.tiamatUrl }}
-    tiamat-exporter.url= {{ .Values.configMap.tiamatExporterUrl }}
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
@@ -40,7 +39,6 @@ data:
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     tiamat.tariffzones.update.directory=/tmp/tiamat/tariffZones/
-    tiamat.publish.export={{.Values.configMap.tiamatExport}}
     tiamat.poi.update.directory=/tmp/tiamat/poi/update
     tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml
     tiamat.export.autoStartup = false

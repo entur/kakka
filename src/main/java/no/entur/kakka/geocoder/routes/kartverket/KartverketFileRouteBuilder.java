@@ -75,7 +75,7 @@ public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
                 .setHeader(Constants.FILE_HANDLE, simple("${header." + Constants.FOLDER_NAME + "}/${body.name}"))
                 .process(e -> e.getIn().setHeader("file_NameAndDigest", new FileNameAndDigest(e.getIn().getHeader(Constants.FILE_HANDLE, String.class),
                         DigestUtils.md5Hex(e.getIn().getBody(InputStream.class)))))
-                .idempotentConsumer(header("file_NameAndDigest")).messageIdRepository(idempotentDownloadRepository)
+                .idempotentConsumer(header("file_NameAndDigest")).idempotentRepository(idempotentDownloadRepository)
                 .log(LoggingLevel.INFO, "Uploading ${header." + Constants.FILE_HANDLE + "}")
                 .to("direct:uploadBlob")
                 .setHeader(Constants.CONTENT_CHANGED, constant(true))

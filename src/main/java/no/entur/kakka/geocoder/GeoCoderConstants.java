@@ -48,12 +48,6 @@ public class GeoCoderConstants {
     public static final GeoCoderTask TIAMAT_PLACES_OF_INTEREST_UPDATE_START
             = new GeoCoderTask(GeoCoderTask.Phase.TIAMAT_UPDATE, "direct:tiamatPlacesOfInterestUpdate");
 
-    public static final GeoCoderTask TIAMAT_EXPORT_START
-            = new GeoCoderTask(GeoCoderTask.Phase.TIAMAT_EXPORT, "direct:tiamatGeoCoderExport");
-
-    public static final GeoCoderTask TIAMAT_EXPORT_POLL
-            = new GeoCoderTask(GeoCoderTask.Phase.TIAMAT_EXPORT, 1, "direct:tiamatPollJobStatus");
-
     public static final GeoCoderTask PELIAS_UPDATE_START =
             new GeoCoderTask(GeoCoderTask.Phase.PELIAS_UPDATE, "direct:peliasUpdate");
 

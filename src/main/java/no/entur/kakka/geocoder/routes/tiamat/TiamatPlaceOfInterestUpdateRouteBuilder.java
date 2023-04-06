@@ -37,8 +37,6 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.List;
 
-import static no.entur.kakka.geocoder.GeoCoderConstants.GEOCODER_NEXT_TASK;
-import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_EXPORT_START;
 import static no.entur.kakka.geocoder.GeoCoderConstants.TIAMAT_PLACES_OF_INTEREST_UPDATE_START;
 
 // TODO specific per source?
@@ -104,7 +102,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .to("direct:fetchPlaceOfInterest")
                 .to("direct:mapPlaceOfInterestToNetex")
                 .to("direct:updatePlaceOfInterestInTiamat")
-                .to("direct:processTiamatPlaceOfInterestUpdateCompleted")
                 .log(LoggingLevel.INFO, "Completed job updating POI information in Tiamat")
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
@@ -136,12 +133,6 @@ public class TiamatPlaceOfInterestUpdateRouteBuilder extends BaseRouteBuilder {
                 .process("authorizationHeaderProcessor")
                 .to(tiamatUrl + tiamatPublicationDeliveryPath)
                 .routeId("tiamat-poi-update-start");
-
-        from("direct:processTiamatPlaceOfInterestUpdateCompleted")
-                .setProperty(GEOCODER_NEXT_TASK, constant(TIAMAT_EXPORT_START))
-                .process(e -> JobEvent.systemJobBuilder(e).state(JobEvent.State.OK).build()).to("direct:updateStatus")
-                .routeId("tiamat-poi-update-completed");
-
     }
 
     private TopographicPlaceReader createTopographicPlaceReader(Exchange e) {

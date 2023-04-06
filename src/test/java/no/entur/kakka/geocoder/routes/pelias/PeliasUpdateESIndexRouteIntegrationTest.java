@@ -73,8 +73,8 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 
 
         AdviceWith.adviceWith(context, "pelias-invoke-bulk-command",
-                a -> a.interceptSendToEndpoint(elasticsearchScratchUrl + "/_bulk")
-                        .skipSendToOriginalEndpoint().to("mock:es-scratch"));
+                a -> a.weaveByToUri(elasticsearchScratchUrl + "/_bulk")
+                .replace().to("mock:es-scratch"));
 
 
         inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",

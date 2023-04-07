@@ -94,6 +94,7 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
 
 
         from("direct:insertElasticsearchIndexDataCompleted")
+                .log(LoggingLevel.INFO,"ES data insert completed, scale down es-scratch")
                 .setHeader(JOB_STATUS_ROUTING_DESTINATION, constant("direct:buildElasticsearchImage"))
                 .setProperty(GEOCODER_NEXT_TASK, constant(GeoCoderConstants.PELIAS_ES_SCRATCH_STOP))
                 .routeId("pelias-es-index-complete");

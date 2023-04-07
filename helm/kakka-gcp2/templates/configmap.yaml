@@ -93,6 +93,7 @@ data:
     kakka.oauth2.client.audience={{ .Values.configMap.oauth2.client.audience }}
 
     # PubSub
+    kakka.pubsub.project.id = {{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30

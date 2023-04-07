@@ -8,6 +8,7 @@ configMap:
   blobstoreProjectId: entur-ror-prod
   blobstoreTargetProjectId: entur-ror-prod
   pubsubProjectId: entur-ror-prod
+  nabuPubsubProjectId: entur-ror-prod
   gcsSourceBlobstore: kingu-production
   tiamatUrl: http://tiamat.prd.entur.internal:80
   tiamatExporterUrl: http://tiamat-exporter.prd.entur.internal:80

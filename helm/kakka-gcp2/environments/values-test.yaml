@@ -8,6 +8,7 @@ configMap:
   blobstoreProjectId: entur-ror-test
   blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: entur-ror-test
+  nabuPubsubProjectId: entur-ror-test
   gcsSourceBlobstore: kingu-test
   tiamatUrl: http://tiamat.tst.entur.internal:80
   tiamatExporterUrl: http://tiamat-exporter.tst.entur.internal:80

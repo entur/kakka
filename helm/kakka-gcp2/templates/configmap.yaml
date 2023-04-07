@@ -98,12 +98,12 @@ data:
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
     entur.pubsub.subscriber.autocreate=false
-    kingu.incoming.camel.route.topic.netex.export=entur-google-pubsub:KinguExportIncomingQueue
-    kingu.outgoing.camel.route.topic.netex.export=entur-google-pubsub:KinguExportOutgoingQueue
+    kingu.incoming.camel.route.topic.netex.export=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:KinguExportIncomingQueue
+    kingu.outgoing.camel.route.topic.netex.export=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:KinguExportOutgoingQueue
 
-    geocoder.smoke.test.camel.route.subscription=entur-google-pubsub:GeoCoderSmokeTestQueue
-    es.build.job.camel.route.subscription=entur-google-pubsub:EsBuildJobQueue
-
+    geocoder.smoke.test.camel.route.subscription=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:GeoCoderSmokeTestQueue
+    es.build.job.camel.route.subscription=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:EsBuildJobQueue
+    nabu.job.event.topic=google-pubsub:{{ .Values.configMap.nabuPubsubProjectId }}:JobEventQueue
 
     # Actuator
     management.server.port=9001

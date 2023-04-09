@@ -25,7 +25,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
         super.configure();
 
         singletonFrom(esBuildJobQueue)
-                .log(LoggingLevel.INFO, "Incoming message from es build job  queue")
+                .log(LoggingLevel.INFO, "Incoming message from es build job queue: ${headers}")
                 .choice()
                 .when(header(Constants.ES_BUILD_JOB_STATUS).isEqualTo(Status.SUCCESS))
                 .to("direct:runGeoCoderSmokeTest")

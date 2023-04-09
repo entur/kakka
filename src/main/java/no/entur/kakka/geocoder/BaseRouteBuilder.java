@@ -9,6 +9,7 @@ import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.google.pubsub.GooglePubsubConstants;
 import org.apache.camel.component.master.MasterConsumer;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.spi.Synchronization;
@@ -19,7 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.apache.camel.component.google.pubsub.GooglePubsubConstants.ACK_ID;
@@ -52,6 +56,33 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
                 .backOffMultiplier(backOffMultiplier)
                 .logExhausted(true)
                 .logRetryStackTrace(true));
+
+        // Copy all PubSub headers except the internal Camel PubSub headers from the PubSub message into the Camel message headers.
+        interceptFrom(".*google-pubsub:.*")
+                .process(exchange ->
+                {
+                    Map<String, String> pubSubAttributes = exchange.getIn().getHeader(GooglePubsubConstants.ATTRIBUTES, Map.class);
+                    if (pubSubAttributes == null) {
+                        throw new IllegalStateException("Missing PubSub attribute maps in Exchange");
+                    }
+                    pubSubAttributes.entrySet()
+                            .stream()
+                            .filter(entry -> !entry.getKey().startsWith("CamelGooglePubsub"))
+                            .forEach(entry -> exchange.getIn().setHeader(entry.getKey(), entry.getValue()));
+                });
+
+        // Copy all PubSub headers except the internal Camel PubSub headers from the Camel message into the PubSub message.
+        interceptSendToEndpoint("google-pubsub:*").process(
+                exchange -> {
+                    Map<String, String> pubSubAttributes = new HashMap<>();
+                    exchange.getIn().getHeaders().entrySet().stream()
+                            .filter(entry -> !entry.getKey().startsWith("CamelGooglePubsub"))
+                            .filter(entry -> Objects.toString(entry.getValue()).length() <= 1024)
+                            .forEach(entry -> pubSubAttributes.put(entry.getKey(), Objects.toString(entry.getValue(), "")));
+                    exchange.getIn().setHeader(GooglePubsubConstants.ATTRIBUTES, pubSubAttributes);
+
+                });
+
 
     }
 

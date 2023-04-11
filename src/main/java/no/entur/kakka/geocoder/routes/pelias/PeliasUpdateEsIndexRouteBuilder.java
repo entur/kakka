@@ -305,9 +305,16 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-convert-commands-from-tiamat");
 
         from("direct:convertToPeliasCommandsFromOSM")
-                .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands")
-                .bean("pbfToElasticsearchCommands", "transform")
-                .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands completed")
+                .choice()
+                .when(header(FILE_HANDLE).endsWith(".pbf"))
+                 .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands: ${header."+FILE_HANDLE+"}")
+                 .bean("pbfToElasticsearchCommands", "transform")
+                 .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands completed")
+                .otherwise()
+                 .log(LoggingLevel.WARN,"Invalid file format")
+                 .setHeader(CONTENT_CHANGED, constant(true))
+                 .setBody(simple(""))
+                .end()
                 .routeId("pelias-convert-commands-from-pbf");
 
 

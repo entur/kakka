@@ -46,7 +46,7 @@ jobs:
     steps:
     - checkout
     - restore_cache:
-        key:
+        keys:
           - dep-cache-{{ checksum "pom.xml" }}
           # fallback to the most recent cache if there is no exact match for this pom.xml
           - dep-cache-

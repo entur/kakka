@@ -23,7 +23,7 @@
     </scm>
     <properties>
 
-        <camel.version>3.18.2</camel.version>
+        <camel.version>3.18.5</camel.version>
 
         <wololo.version>0.14.3</wololo.version>
         <jskdata.version>1.0.15</jskdata.version>

@@ -44,12 +44,12 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
                 new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
-                        POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true, false, "");
+                        POI_POPULARITY, Arrays.asList("leisure=stadium", "building=church"), 1.0, true, osmpoiFilterService, true, true, " stasjon");
 
         Collection<ElasticsearchCommand> commands = mapper
                 .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assertions.assertEquals(16, commands.size());
+        Assertions.assertEquals(20, commands.size());
         commands.forEach(c -> assertCommand(c));
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));
@@ -70,6 +70,8 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
 
         // POI not matching filter should not be mapped
         assertNotMapped(commands, "NSR:TopographicPlace:725");
+
+        assertRailStationNameWithoutSuffixAsAlias(allById(commands, "NSR:StopPlace:127-1"), "Ski stasjon", "Ski");
     }
 
     @Test
@@ -93,7 +95,11 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
     }
 
     private PeliasDocument byId(Collection<ElasticsearchCommand> commands, String sourceId) {
-        return commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().equals(sourceId)).collect(Collectors.toList()).get(0);
+        return allById(commands, sourceId).get(0);
+    }
+
+    private List<PeliasDocument> allById(Collection<ElasticsearchCommand> commands, String sourceId) {
+        return commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().equals(sourceId)).collect(Collectors.toList());
     }
 
     private void assertNotMapped(Collection<ElasticsearchCommand> commands, String sourceId) {
@@ -172,6 +178,11 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertNotNull(command.getIndex());
         Assertions.assertEquals("pelias", command.getIndex().getIndex());
         Assertions.assertNotNull(command.getIndex().getType());
+    }
+
+    private void assertRailStationNameWithoutSuffixAsAlias(List<PeliasDocument> known, String defaultName, String nameWithoutSuffix) {
+        Assertions.assertTrue(known.stream().anyMatch(doc -> doc.getDefaultName().equals(nameWithoutSuffix)));
+        Assertions.assertTrue(known.stream().anyMatch(doc -> doc.getNameMap().get("display").equals(defaultName)));
     }
 }
 

@@ -40,6 +40,7 @@ configMap:
     osmPoiFilterDefaultPriority: 10
     poiInclude: false
     geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
+    addAlternativeNameWithoutStationNameSuffix: false
   elasticsearchDeploymentName: es-scratch
   elasticsearchUploadJobEnabled: true
   elasticsearchUrl: http://es-scratch:9200

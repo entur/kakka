@@ -73,6 +73,8 @@ data:
     pelias.download.directory=/tmp/tiamat/pelias
     # Include POIs from tiamat netex file
     pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
+    # Experimental feature:
+    pelias.stopplace.addAlternativeNameWithoutStationNameSuffix={{.Values.configMap.pelias.addAlternativeNameWithoutStationNameSuffix}}
 
     # Blob store
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}

@@ -85,7 +85,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Collection<ElasticsearchCommand> commands = mapper
                 .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
-        Assertions.assertEquals(15, commands.size());
+        Assertions.assertEquals(17, commands.size());
         commands.forEach(this::assertCommand);
 
 

@@ -31,7 +31,7 @@
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>1.85</entur.helpers.version>
-        <guava.version>30.0-jre</guava.version>
+        <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.4</commons-fileupload.version>
@@ -39,9 +39,6 @@
         <geotools.version>20.3</geotools.version>
         <!-- HSQLDB version compatible with GeoTools 20.3 -->
         <hsqldb.version>2.4.1</hsqldb.version>
-
-        <!--TODO temporary manual upgrade of Logback-->
-        <logback.version>1.2.8</logback.version>
 
         <geojson-jackson.version>1.8.1</geojson-jackson.version>
         <gtfs-lib.version>3.3.0</gtfs-lib.version>

@@ -28,8 +28,8 @@ import no.entur.kakka.routes.file.ZipFileUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.PredicateBuilder;
-import org.apache.camel.http.common.HttpMethods;
 import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpMethods;
 import org.apache.camel.processor.aggregate.UseOriginalAggregationStrategy;
 import org.apache.camel.support.processor.PredicateValidationException;
 import org.apache.commons.io.FileUtils;
@@ -41,6 +41,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -288,6 +289,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
         from("direct:convertToPeliasCommandsFromLargeAddresses")
                 .log("Start processing large addresses file ....")
+                .process(exchange -> exchange.setProperty(Exchange.CHARSET_NAME,constant(StandardCharsets.ISO_8859_1)))
                 .split()
                 .tokenize("\n", addressesBatchSize)
                 .streaming()

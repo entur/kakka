@@ -1,7 +1,6 @@
 package no.entur.kakka.geocoder;
 
 
-import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
@@ -10,9 +9,10 @@ import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.google.pubsub.GooglePubsubConstants;
+import org.apache.camel.component.google.pubsub.consumer.AcknowledgeAsync;
 import org.apache.camel.component.master.MasterConsumer;
 import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.spi.Synchronization;
+import org.apache.camel.support.DefaultExchange;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.quartz.CronExpression;
@@ -24,15 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static org.apache.camel.component.google.pubsub.GooglePubsubConstants.ACK_ID;
 
 /**
  * Defines common route behavior.
  */
 public abstract class BaseRouteBuilder extends RouteBuilder {
 
+    private static final String SYNCHRONIZATION_HOLDER = "SYNCHRONIZATION_HOLDER";
     @Value("${kakka.camel.redelivery.max:3}")
     private int maxRedelivery;
 
@@ -99,19 +97,34 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
     }
 
     /**
-     * Add ACK/NACK completion callback for an aggregated exchange.
-     * The callback should be added after the aggregation is complete to prevent individual messages from being acked
-     * by the aggregator.
+     * Remove the PubSub synchronization.
+     * This prevents an aggregator from acknowledging the aggregated PubSub messages before the end of the route.
+     * In case of failure during the routing this would make it impossible to retry the messages.
+     * The synchronization is stored temporarily in a header and is applied again after the aggregation is complete
+     *
+     * @param e
+     * @see #addSynchronizationForAggregatedExchange(Exchange)
      */
-    protected void addOnCompletionForAggregatedExchange(Exchange exchange) {
+    public void removeSynchronizationForAggregatedExchange(Exchange e) {
+        DefaultExchange temporaryExchange = new DefaultExchange(e.getContext());
+        e.getUnitOfWork().handoverSynchronization(temporaryExchange, AcknowledgeAsync.class::isInstance);
+        e.getIn().setHeader(SYNCHRONIZATION_HOLDER, temporaryExchange);
+    }
 
-        List<Message> messages = (List<Message>) exchange.getIn().getBody(List.class);
-        List<BasicAcknowledgeablePubsubMessage> ackList = messages.stream()
-                .map(m -> m.getHeader(ACK_ID, BasicAcknowledgeablePubsubMessage.class))
-                .collect(Collectors.toList());
-
-        exchange.adapt(ExtendedExchange.class).addOnCompletion(new AckSynchronization(ackList));
-
+    /**
+     * Add back the PubSub synchronization.
+     *
+     * @see #removeSynchronizationForAggregatedExchange(Exchange)
+     */
+    protected void addSynchronizationForAggregatedExchange(Exchange aggregatedExchange) {
+        List<Message> messages = aggregatedExchange.getIn().getBody(List.class);
+        for (Message m : messages) {
+            Exchange temporaryExchange = m.getHeader(SYNCHRONIZATION_HOLDER, Exchange.class);
+            if (temporaryExchange == null) {
+                throw new IllegalStateException("Synchronization holder not found");
+            }
+            temporaryExchange.adapt(ExtendedExchange.class).handoverCompletions(aggregatedExchange);
+        }
     }
 
     /**
@@ -179,25 +192,5 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
         }
         return false;
     }
-
-    private static class AckSynchronization implements Synchronization {
-
-        private final List<BasicAcknowledgeablePubsubMessage> ackList;
-
-        public AckSynchronization(List<BasicAcknowledgeablePubsubMessage> ackList) {
-            this.ackList = ackList;
-        }
-
-        @Override
-        public void onComplete(Exchange exchange) {
-            ackList.forEach(BasicAcknowledgeablePubsubMessage::ack);
-        }
-
-        @Override
-        public void onFailure(Exchange exchange) {
-            ackList.forEach(BasicAcknowledgeablePubsubMessage::nack);
-        }
-    }
-
 
 }

@@ -66,8 +66,9 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 
         singletonFrom("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
                 .autoStartup("{{geocoder.autoStartup:true}}")
+                .process(this::removeSynchronizationForAggregatedExchange)
                 .aggregate(constant(true)).aggregationStrategy(new GroupedMessageAggregationStrategy()).completionSize(100).completionTimeout(1000)
-                .process(exchange -> addOnCompletionForAggregatedExchange(exchange))
+                .process(this::addSynchronizationForAggregatedExchange)
                 .log(LoggingLevel.INFO, "Aggregated ${exchangeProperty.CamelAggregatedSize} GeoCoder requests (aggregation completion triggered by ${exchangeProperty.CamelAggregatedCompletedBy}).")
                 .to("direct:geoCoderMergeTaskMessages")
                 .setProperty(TASK_MESSAGE, simple("${body}"))

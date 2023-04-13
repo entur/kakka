@@ -43,14 +43,10 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
     public static final String SOURCE_CHILD_STOP_PLACE = "geonames";
     private static final String KEY_IS_PARENT_STOP_PLACE = "IS_PARENT_STOP_PLACE";
     private final StopPlaceBoostConfiguration boostConfiguration;
-    private final boolean addAlternativeNameWithoutStationNameSuffix;
-    private String stationNameSuffix;
 
-    public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration, boolean addAlternativeNameWithoutStationNameSuffix, String stationNameSuffix) {
+    public StopPlaceToPeliasMapper(StopPlaceBoostConfiguration boostConfiguration) {
         super();
         this.boostConfiguration = boostConfiguration;
-        this.addAlternativeNameWithoutStationNameSuffix = addAlternativeNameWithoutStationNameSuffix;
-        this.stationNameSuffix = stationNameSuffix;
     }
 
     @Override
@@ -82,16 +78,6 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         StopPlace place = placeHierarchy.getPlace();
         if (place.getName() != null) {
             names.add(placeHierarchy.getPlace().getName());
-
-            if (addAlternativeNameWithoutStationNameSuffix && StopTypeEnumeration.RAIL_STATION.equals(place.getStopPlaceType())) {
-                if (place.getName().getValue().endsWith(stationNameSuffix)) {
-                    names.add(
-                            new MultilingualString()
-                                    .withValue(place.getName().getValue().substring(0, place.getName().getValue().indexOf(stationNameSuffix)))
-                                    .withLang(place.getName().getLang())
-                    );
-                }
-            }
         }
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {

@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
             <artifactId>entur-google-pubsub</artifactId>
-            <version>1.83</version>
+            <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>

@@ -106,8 +106,13 @@ public class PeliasUpdateRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-es-index-failed");
 
         from("direct:shutdownElasticsearchScratchInstance")
+                .choice()
+                .when(constant(startNewEsScratch))
                 .setHeader(NO_OF_REPLICAS, constant(0))
                 .to("direct:rescaleElasticsearchScratchInstance")
+                .otherwise()
+                .log(LoggingLevel.WARN, "DON'T stop es-scratch instance. Only for local testing!")
+                .end()
                 .routeId("pelias-es-scratch-shutdown");
 
 

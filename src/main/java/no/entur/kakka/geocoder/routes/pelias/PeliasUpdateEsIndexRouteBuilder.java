@@ -41,7 +41,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -289,7 +288,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
         from("direct:convertToPeliasCommandsFromLargeAddresses")
                 .log("Start processing large addresses file ....")
-                .process(exchange -> exchange.setProperty(Exchange.CHARSET_NAME,constant(StandardCharsets.ISO_8859_1)))
                 .split()
                 .tokenize("\n", addressesBatchSize)
                 .streaming()
@@ -298,7 +296,8 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")
                 .log("End with large address file ....")
-                .end();
+                .end()
+                .routeId("pelias-convert-commands-from-addresses");
 
         from("direct:convertToPeliasCommandsFromTiamat")
                 .log(LoggingLevel.INFO, "Transform deliveryPublicationStream To Elasticsearch Commands")

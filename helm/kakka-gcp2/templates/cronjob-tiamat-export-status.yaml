@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    {{- include "tiamat-export.labels" . | indent 4 }}
+  name: cronjob-tiamat-export-status
+  namespace: {{ .Release.Namespace }}
+spec:
+  concurrencyPolicy: {{ .Values.cronjobTiamatExportStatus.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.failedJobsHistoryLimit }}
+  jobTemplate:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        {{- include "tiamat-export.labels" . | indent 12 }}
+    spec:
+      template:
+        spec:
+          serviceAccountName: application
+          containers:
+            - command:
+                - ./tiamat_export_status.sh
+              env:
+                - name: TZ
+                  value: Europe/Oslo
+                - name: BUCKET_PATH
+                  value: {{ .Values.cronjobTiamatExportStatus.environmentVar.bucketPath }}
+                - name: EXPORT_FILES
+                  value: 03_Oslo_latest,11_Rogaland_latest,15_More og Romsdal_latest,18_Nordland_latest,30_Viken_latest,34_Innlandet_latest,38_Vestfold_Telemark_latest,42_Agder_latest,46_Vestland_latest,50_Trondelag_latest,54_Troms_Finnmark_latest,CurrentAndFuture_latest,Current_latest,Full_latest,RailStations_latest
+                - name: WARNING_DAYS
+                  value: "1"
+                - name: SLACK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: slack-url
+                      name: {{ .Values.configMap.slackSecret }}
+              image: {{ .Values.cronjobTiamatExportStatus.image.repo }}
+              imagePullPolicy: IfNotPresent
+              name: tiamat-export-status-job
+              resources:
+                limits:
+                  cpu: {{ .Values.cronjobTiamatExportStatus.resources.cpuLimit }}
+                  memory: {{ .Values.cronjobTiamatExportStatus.resources.memLimit }}
+                requests:
+                  cpu: {{ .Values.cronjobTiamatExportStatus.resources.cpuRequest }}
+                  memory: {{ .Values.cronjobTiamatExportStatus.resources.memRequest }}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '30 7 * ? *'
+  successfulJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.successfulJobsHistoryLimit }}
+  suspend: false

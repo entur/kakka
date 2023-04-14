@@ -38,9 +38,9 @@ namespace: {{ .Release.Namespace }}
 {{- end }}
 
 {{/* Generate basic labels */}}
-{{- define "es-upload.labels" }}
-app: es-upload-job
-release: es-upload-job
+{{- define "tiamat-export.labels" }}
+app: cronjob-tiamat-export-status
+release: cronjob-tiamat-export-status
 team: ror
 slack: talk-ror
 type: cronjob

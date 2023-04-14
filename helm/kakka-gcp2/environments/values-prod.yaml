@@ -49,3 +49,7 @@ ingress:
   domainName: -gcp2.entur.io
 monitoringEnabled: false
 
+cronjobTiamatExportStatus:
+  environmentVar:
+    bucketPath: gs://marduk-production/tiamat/
+

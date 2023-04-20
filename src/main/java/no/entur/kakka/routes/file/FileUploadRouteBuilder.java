@@ -41,8 +41,8 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
 
     private static final String FILE_CONTENT_HEADER = "FileContent";
 
-    @Value("${pubsub.kakka.tariff.zone.file.queue}")
-    private String processTariffZoneFileQueue;
+    @Value("${pubsub.kakka.outbound.topic.tariff.zone.file.queue}")
+    private String processTariffZoneFileQueueTopic;
 
     @Override
     public void configure() throws Exception {
@@ -74,7 +74,7 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .to("direct:uploadBlob")
                 .log(LoggingLevel.INFO, "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
                 .setBody(simple(""))
-                .to(ExchangePattern.InOnly, processTariffZoneFileQueue)
+                .to(ExchangePattern.InOnly, processTariffZoneFileQueueTopic)
                 .log(LoggingLevel.INFO, "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
                 .doCatch(Exception.class)
                 .log(LoggingLevel.WARN, "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")
@@ -104,7 +104,7 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
             SimpleUploadContext uploadContext = new SimpleUploadContext(StandardCharsets.UTF_8, contentType, content);
             List<FileItem> fileItems = upload.parseRequest(uploadContext);
 
-            Optional<String> fileName = fileItems.stream().map(f -> f.getName()).findFirst();
+            Optional<String> fileName = fileItems.stream().map(FileItem::getName).findFirst();
             LOGGER.debug("The multipart request contains {} file(s)", fileItems.size());
             for (FileItem fileItem : fileItems) {
                 LOGGER.debug("Received file {} (size: {})", fileItem.getName(), fileItem.getSize());

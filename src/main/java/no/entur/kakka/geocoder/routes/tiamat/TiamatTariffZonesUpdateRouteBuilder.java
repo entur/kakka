@@ -51,8 +51,8 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
     private String tiamatPublicationDeliveryPath;
     @Value("${tiamat.tariffzones.update.directory:files/tiamat/tariffZones/}")
     private String localWorkingDirectory;
-    @Value("${pubsub.kakka.tariff.zone.file.queue}")
-    private String processTariffZoneFileQueue;
+    @Value("${pubsub.kakka.inbound.subscription.tariff.zone.file.queue}")
+    private String processTariffZoneFileQueueSubscription;
 
 
     @Autowired
@@ -68,7 +68,7 @@ public class TiamatTariffZonesUpdateRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.ERROR, "Failed while updating  TariffZone file.")
                 .handled(true);
 
-        from(processTariffZoneFileQueue).streamCaching()
+        from(processTariffZoneFileQueueSubscription).streamCaching()
                 .log(LoggingLevel.INFO, "Starting update of tariff zones in Tiamat: ${header." + Constants.FILE_HANDLE + "}")
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))
                 .doTry()

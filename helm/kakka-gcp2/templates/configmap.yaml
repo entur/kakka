@@ -99,15 +99,18 @@ data:
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
     entur.pubsub.subscriber.autocreate=false
-    pubsub.kakka.inbound.subscription.kingu.netex.export=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.kingu.netex.export
+
+    pubsub.kakka.outbound.topic.nabu.job.event.topic=google-pubsub:{{ .Values.configMap.nabuPubsubProjectId }}:JobEventQueue
     pubsub.kakka.outbound.topic.kingu.netex.export=google-pubsub:{{ .Values.configMap.kinguPubsubProjectId }}:ror.kingu.outbound.topic.netex.export
-    pubsub.kakka.outbound.topic.geocoder=google-pubsub:${kakka.pubsub.project.id}:GeoCoderQueue
-    pubsub.kakka.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ProcessTariffZoneFileQueue
-    geocoder.smoke.test.camel.route.subscription=google-pubsub:${kakka.pubsub.project.id}:GeoCoderSmokeTestQueue
-    es.build.job.camel.route.subscription=google-pubsub:${kakka.pubsub.project.id}:EsBuildJobQueue
+    pubsub.kakka.inbound.subscription.kingu.netex.export=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.kingu.netex.export
+    pubsub.kakka.outbound.topic.geocoder=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.outbound.topic.geocoder
+    pubsub.kakka.inbound.subscription.geocoder=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.geocoder
+    pubsub.kakka.inbound.subscription.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.tariff.zone.file.queue
+    pubsub.kakka.outbound.topic.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.outbound.topic.tariff.zone.file.queue
+    pubsub.kakka.inbound.subscription.geocoder.smoke.test=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.geocoder.smoke.test
+    pubsub.kakka.inbound.subscription.es.build.job=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.es.build.job
 
 
-    nabu.job.event.topic=google-pubsub:{{ .Values.configMap.nabuPubsubProjectId }}:JobEventQueue
 
     # Actuator
     management.server.port=9001

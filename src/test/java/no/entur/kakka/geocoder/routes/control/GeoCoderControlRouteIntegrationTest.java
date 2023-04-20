@@ -39,7 +39,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 
     @EndpointInject("mock:destination")
     protected MockEndpoint destination;
-    @Produce("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
+    @Produce("{{pubsub.kakka.outbound.topic.geocoder}}")
     protected ProducerTemplate geoCoderQueueTemplate;
     @EndpointInject("mock:statusQueue")
     protected MockEndpoint statusQueueMock;

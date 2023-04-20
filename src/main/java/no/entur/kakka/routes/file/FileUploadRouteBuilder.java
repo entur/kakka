@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -39,6 +40,9 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadRouteBuilder.class);
 
     private static final String FILE_CONTENT_HEADER = "FileContent";
+
+    @Value("${pubsub.kakka.tariff.zone.file.queue}")
+    private String processTariffZoneFileQueue;
 
     @Override
     public void configure() throws Exception {
@@ -69,8 +73,8 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .setHeader(Exchange.FILE_NAME, header(FILE_NAME))
                 .to("direct:uploadBlob")
                 .log(LoggingLevel.INFO, "Finished uploading tariff-zone file to blob store: ${header." + FILE_HANDLE + "}")
-                .setBody(constant(null))
-                .to(ExchangePattern.InOnly, "google-pubsub:{{kakka.pubsub.project.id}}:ProcessTariffZoneFileQueue")
+                .setBody(simple(""))
+                .to(ExchangePattern.InOnly, processTariffZoneFileQueue)
                 .log(LoggingLevel.INFO, "Triggered import pipeline for tariff-zone file: ${header." + FILE_HANDLE + "}")
                 .doCatch(Exception.class)
                 .log(LoggingLevel.WARN, "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")

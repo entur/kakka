@@ -7,8 +7,9 @@ configMap:
   gcsTargetBlobstore: marduk-dev
   blobstoreProjectId: entur-ror-dev
   blobstoreTargetProjectId: entur-ror-dev
-  pubsubProjectId: entur-ror-dev
-  nabuPubsubProjectId: entur-ror-dev
+  pubsubProjectId: ent-kakka-dev
+  kinguPubsubProjectId: ent-kingu-dev
+  nabuPubsubProjectId: ent-nabu-dev
   gcsSourceBlobstore: kingu-dev
   tiamatUrl: http://tiamat.dev.entur.internal:80
   tiamatExporterUrl: http://tiamat-exporter.dev.entur.internal:80

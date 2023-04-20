@@ -99,8 +99,8 @@ data:
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
     entur.pubsub.subscriber.autocreate=false
-    kingu.incoming.camel.route.topic.netex.export=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:KinguExportIncomingQueue
-    kingu.outgoing.camel.route.topic.netex.export=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:KinguExportOutgoingQueue
+    pubsub.kakka.inbound.subscription.kingu.netex.export=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:ror.kakka.inbound.subscription.kingu.netex.export
+    pubsub.kakka.outbound.topic.kingu.netex.export=google-pubsub:{{ .Values.configMap.kinguPubsubProjectId }}:ror.kingu.outbound.topic.netex.export
 
     geocoder.smoke.test.camel.route.subscription=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:GeoCoderSmokeTestQueue
     es.build.job.camel.route.subscription=google-pubsub:{{ .Values.configMap.pubsubProjectId }}:EsBuildJobQueue

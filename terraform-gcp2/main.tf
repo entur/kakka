@@ -7,7 +7,7 @@ provider "google" {
   version = "~> 4.26"
 }
 provider "kubernetes" {
-  version = "~> 2.13.1"
+  version = "~> 2.20.0"
 }
 
 resource "google_sql_database_instance" "db_instance" {

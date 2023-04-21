@@ -47,14 +47,17 @@ public class AutoCreatePubSubSubscriptionEventNotifier extends EventNotifierSupp
 
     @Autowired
     private PubSubAdmin pubSubAdmin;
-    @Value("ror.kakka.outbound.topic.geocoder")
-    private String geoCoderQueueTopic;
 
-    @Value("ror.kakka.inbound.subscription.geocoder")
-    private String geoCoderQueueSubscription;
+    private final String geoCoderQueueTopic;
 
-    public AutoCreatePubSubSubscriptionEventNotifier(EnturGooglePubSubAdmin enturGooglePubSubAdmin) {
+    private final String geoCoderQueueSubscription;
+
+    public AutoCreatePubSubSubscriptionEventNotifier(EnturGooglePubSubAdmin enturGooglePubSubAdmin,
+                                                     @Value("${pubsub.kakka.outbound.topic.geocoder}") String geoCoderQueueTopic,
+                                                     @Value("${pubsub.kakka.inbound.subscription.geocoder}") String geoCoderQueueSubscription) {
         this.enturGooglePubSubAdmin = enturGooglePubSubAdmin;
+        this.geoCoderQueueTopic = getTopicSubscriptionName(geoCoderQueueTopic);
+        this.geoCoderQueueSubscription = getTopicSubscriptionName(geoCoderQueueSubscription);
     }
 
     @Override
@@ -86,6 +89,18 @@ public class AutoCreatePubSubSubscriptionEventNotifier extends EventNotifierSupp
             createSubscriptionTopic(geoCoderQueueTopic,geoCoderQueueSubscription);
         } else {
             enturGooglePubSubAdmin.createSubscriptionIfMissing(destination);
+        }
+    }
+
+    private String getTopicSubscriptionName(String endpoint) {
+
+        final String[] endpointParts = endpoint.split(":");
+
+        if (endpointParts.length == 3) {
+            return endpointParts[2];
+        } else {
+            throw new IllegalArgumentException(
+                    "Google PubSub Endpoint format \"google-pubsub:projectId:destinationName[:subscriptionName]\"");
         }
     }
 

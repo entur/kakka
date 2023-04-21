@@ -9,6 +9,55 @@ variable "labels" {
   }
 }
 
+variable "kingu_netex_export_topic" {
+  description = "kingu netex export topic name"
+  default = "ror.kingu.outbound.topic.netex.export"
+}
+variable "kingu_pubsub_project" {
+  description = "kingu netex export project name"
+}
+variable "nabu_job_event_topic" {
+  default = "JobEventQueue"
+}
+variable "nabu_pubsub_project" {
+  description = "nabu pubsub project name"
+}
+variable "pubsub_project" {
+  description = "app pubsub project name"
+}
+
+variable "kingu_netex_export_subscription" {
+  default = "ror.kakka.inbound.subscription.kingu.netex.export"
+}
+
+variable "kakka_tariff_zone_topic" {
+  default = "ror.kakka.outbound.topic.tariff.zone.file.queue"
+}
+variable "kakka_tariff_zone_subscription" {
+  default = "ror.kakka.inbound.subscription.tariff.zone.file.queue"
+}
+
+variable "kakka_geocoder_smoke_test_topic" {
+  default = "ror.kakka.outbound.topic.geocoder.smoke.test"
+}
+variable "kakka_geocoder_smoke_test_subscription" {
+  default = "ror.kakka.inbound.subscription.geocoder.smoke.test"
+}
+
+variable "kakka_es_build_job_topic" {
+  default = "ror.kakka.outbound.topic.es.build.job"
+}
+variable "kakka_es_build_job_subscription" {
+  default = "ror.kakka.inbound.subscription.es.build.job"
+}
+
+variable "kakka_geocoder_subscription" {
+  default = "ror.kakka.inbound.subscription.geocoder"
+}
+variable "kakka_geocoder_topic" {
+  default = "ror.kakka.outbound.topic.geocoder"
+}
+
 variable "cloudsql_project" {
   description = "GCP project of sql database"
 }

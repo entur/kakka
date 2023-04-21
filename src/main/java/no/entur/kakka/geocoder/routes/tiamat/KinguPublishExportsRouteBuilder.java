@@ -51,7 +51,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         from("direct:startNetexExport")
                 .log(LoggingLevel.INFO, "Starting netex export")
-                .process(e -> e.getIn().setHeader(Constants.NETEX_EXPORT_CLIENT_HEADER, Constants.NETEX_EXPORT_CLIENT_KAKKA))
+                .process(e -> e.getIn().setHeader(Constants.NETEX_EXPORT_STATUS_HEADER, Constants.NETEX_EXPORT_STATUS_VALUE))
                 .bean(tiamatExportConfig,"getExportJobs")
                 .split().body()
                 .to(outboundTopicKinguNetexExport)

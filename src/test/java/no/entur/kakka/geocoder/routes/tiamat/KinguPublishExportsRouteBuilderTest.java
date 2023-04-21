@@ -39,7 +39,7 @@ class KinguPublishExportsRouteBuilderTest extends KakkaRouteBuilderIntegrationTe
         Assertions.assertEquals(2,netexExportQueue.getExchanges().size());
         Assertions.assertFalse(body.isEmpty());
         Assertions.assertTrue(body.contains("Oslo"));
-        Assertions.assertEquals(Constants.NETEX_EXPORT_CLIENT_KAKKA,in.getHeader(Constants.NETEX_EXPORT_CLIENT_HEADER));
+        Assertions.assertEquals(Constants.NETEX_EXPORT_STATUS_VALUE,in.getHeader(Constants.NETEX_EXPORT_STATUS_HEADER));
 
     }
 

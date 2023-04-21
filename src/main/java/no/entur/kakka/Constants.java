@@ -63,7 +63,7 @@ public class Constants {
 
     public static final String XML = "xml";
 
-    public static final String NETEX_EXPORT_CLIENT_HEADER = "EnturNetexExportClient";
-    public static final String NETEX_EXPORT_CLIENT_KAKKA = "Kakka";
+    public static final String NETEX_EXPORT_STATUS_HEADER = "EnturNetexExportStatus";
+    public static final String NETEX_EXPORT_STATUS_VALUE = "Initiated";
 }
 

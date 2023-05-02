@@ -4,3 +4,7 @@ tiamat:
       countyReferences: KVE:TopographicPlace:03
       stopPlaceSearch:
         versionValidity: CURRENT
+    - name: Viken
+      countyReferences: KVE:TopographicPlace:33
+      stopPlaceSearch:
+        versionValidity: ALL

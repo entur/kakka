@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
 
-    @Value("${es.build.job.camel.route.subscription}")
-    private String esBuildJobQueue;
+    @Value("${pubsub.kakka.inbound.subscription.es.build.job}")
+    private String esBuildJobQueueSubscription;
 
     public enum Status {SUCCESS, FAILED}
 
@@ -24,7 +24,7 @@ public class EsBuildJobRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom(esBuildJobQueue)
+        singletonFrom(esBuildJobQueueSubscription)
                 .log(LoggingLevel.INFO, "Incoming message from es build job queue: ${headers}")
                 .choice()
                 .when(header(Constants.ES_BUILD_JOB_STATUS).isEqualTo(Status.SUCCESS))

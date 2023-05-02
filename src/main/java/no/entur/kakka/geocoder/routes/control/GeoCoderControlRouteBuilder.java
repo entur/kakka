@@ -45,6 +45,12 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
     @Value("${geocoder.retry.delay:15000}")
     private int retryDelay;
 
+    @Value("${pubsub.kakka.outbound.topic.geocoder}")
+    private String geoCoderQueueTopic;
+
+    @Value("${pubsub.kakka.inbound.subscription.geocoder}")
+    private String geoCoderQueueSubscription;
+
     private GeoCoderTaskMessage createMessageFromTaskTypes(Collection<GeoCoderTaskType> taskTypes) {
         return new GeoCoderTaskMessage(taskTypes.stream().map(t -> t.getGeoCoderTask()).collect(Collectors.toList()));
     }
@@ -55,16 +61,16 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
 
         from("direct:geoCoderStart")
                 .process(e -> e.getIn().setBody(new GeoCoderTaskMessage(e.getIn().getBody(GeoCoderTask.class)).toString()))
-                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
+                .to(geoCoderQueueTopic)
                 .routeId("geocoder-start");
 
         from("direct:geoCoderStartBatch")
                 .process(e -> e.getIn().setBody(createMessageFromTaskTypes(e.getIn().getBody(Collection.class)).toString()))
-                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
+                .to(geoCoderQueueTopic)
                 .routeId("geocoder-start-batch");
 
 
-        singletonFrom("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
+        singletonFrom(geoCoderQueueSubscription)
                 .autoStartup("{{geocoder.autoStartup:true}}")
                 .process(this::removeSynchronizationForAggregatedExchange)
                 .aggregate(constant(true)).aggregationStrategy(new GroupedMessageAggregationStrategy()).completionSize(100).completionTimeout(1000)
@@ -94,7 +100,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
                 .log(LoggingLevel.INFO, getClass().getName(), "GeoCoder route completed")
                 .otherwise()
                 .convertBodyTo(String.class)
-                .to("google-pubsub:{{kakka.pubsub.project.id}}:GeoCoderQueue")
+                .to(geoCoderQueueTopic)
                 .end()
 
                 .routeId("geocoder-main-route");

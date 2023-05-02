@@ -1,15 +1,3 @@
-# Contains main description of bulk of terraform?
-terraform {
-  required_version = ">= 0.13.2"
-}
-
-provider "google" {
-  version = "~> 4.26"
-}
-provider "kubernetes" {
-  version = "~> 2.13.1"
-}
-
 resource "google_sql_database_instance" "db_instance" {
   name = "kakka-db"
   database_version = "POSTGRES_13"
@@ -51,16 +39,4 @@ resource "google_sql_user" "db-user" {
   project = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
   password = var.ror-kakka-db-password
-}
-
-resource "kubernetes_secret" "ror-kakka-secrets" {
-  metadata {
-    name = "${var.labels.team}-${var.labels.app}-secrets"
-    namespace = var.kube_namespace
-    labels = var.labels
-  }
-  data = {
-    "ror-kakka-db-password" = var.ror-kakka-db-password
-    "ror-kakka-auth0-secret" = var.ror-kakka-auth0-secret
-  }
 }

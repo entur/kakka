@@ -24,14 +24,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class StatusRouteBuilder extends RouteBuilder {
 
-    @Value("${nabu.job.event.topic}")
-    private String jobEventQueue;
+    @Value("${pubsub.kakka.outbound.topic.nabu.job.event.topic}")
+    private String jobEventQueueTopic;
 
     @Override
     public void configure() throws Exception {
         from("direct:updateStatus")
                 .log(LoggingLevel.INFO, getClass().getName(), "Sending off job status event: ${body}")
-                .to(jobEventQueue)
+                .to(jobEventQueueTopic)
                 .routeId("update-status").startupOrder(1);
     }
 

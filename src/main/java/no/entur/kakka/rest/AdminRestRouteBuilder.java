@@ -255,7 +255,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:authorizeAdminRequest")
                 .removeHeaders(camelHttpPattern)
                 .removeHeaders("Authorization")
-                .to("direct:startFullKinguPublishExport")
+                .to("direct:startNetexExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full-v2");
 

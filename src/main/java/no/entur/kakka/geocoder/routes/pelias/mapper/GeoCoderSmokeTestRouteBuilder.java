@@ -18,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
-    @Value("${geocoder.smoke.test.camel.route.subscription}")
-    private String geoCoderSmokeTestQueue;
+    @Value("${pubsub.kakka.inbound.subscription.geocoder.smoke.test}")
+    private String geoCoderSmokeTestQueueSubscription;
 
     @Value("${geocoder.pelias.current.file.path:es-data/current}")
     private String peliasCurrentFilePath;
@@ -47,7 +47,7 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom(geoCoderSmokeTestQueue)
+        singletonFrom(geoCoderSmokeTestQueueSubscription)
                 .log(LoggingLevel.INFO, "Incoming message from geocoder smoke test queue")
                 .choice()
                 .when(header(Constants.GEOCODER_SMOKE_TEST_JOB_STATUS).isEqualTo(Status.SUCCESS))

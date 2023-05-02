@@ -62,5 +62,8 @@ public class Constants {
     public static final String SOURCE_CONTAINER_NAME = "sourceContainerName";
 
     public static final String XML = "xml";
+
+    public static final String NETEX_EXPORT_STATUS_HEADER = "EnturNetexExportStatus";
+    public static final String NETEX_EXPORT_STATUS_VALUE = "Initiated";
 }
 

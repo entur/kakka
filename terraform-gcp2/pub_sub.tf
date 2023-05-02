@@ -17,7 +17,8 @@ resource "google_pubsub_subscription" "kingu_netex_export_subscription" {
     minimum_backoff = "10s"
     maximum_backoff = "600s"
   }
-  message_retention_duration = "10h"
+  # 10h retention
+  message_retention_duration = "36000s"
 
 }
 

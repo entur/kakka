@@ -1,14 +1,9 @@
 ## External topics
 # nabu topic{{ .Values.configMap.nabuPubsubProjectId }}:JobEventQueue
 
-data "google_pubsub_topic" "kingu_netex_export_topic" {
-  name = var.kingu_netex_export_topic
-  project =var.kingu_pubsub_project
-}
-
 resource "google_pubsub_subscription" "kingu_netex_export_subscription" {
   name =var.kingu_netex_export_subscription
-  topic =data.google_pubsub_topic.kingu_netex_export_topic.name
+  topic =var.kingu_netex_export_topic
   filter = "attributes.EnturNetexExportStatus = \"Completed\""
   project = var.pubsub_project
   labels = var.labels

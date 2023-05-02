@@ -1,4 +1,3 @@
 cloudsql_project = "ent-kakka-tst"
-kingu_pubsub_project="ent-kingu-tst"
-nabu_pubsub_project="ent-nabu-tst"
 pubsub_project="ent-kakka-tst"
+kingu_netex_export_topic="projects/ent-kingu-tst/topics/ror.kingu.outbound.topic.netex.export"

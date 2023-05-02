@@ -11,17 +11,8 @@ variable "labels" {
 
 variable "kingu_netex_export_topic" {
   description = "kingu netex export topic name"
-  default = "ror.kingu.outbound.topic.netex.export"
 }
-variable "kingu_pubsub_project" {
-  description = "kingu netex export project name"
-}
-variable "nabu_job_event_topic" {
-  default = "JobEventQueue"
-}
-variable "nabu_pubsub_project" {
-  description = "nabu pubsub project name"
-}
+
 variable "pubsub_project" {
   description = "app pubsub project name"
 }

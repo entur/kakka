@@ -9,9 +9,6 @@ variable "labels" {
   }
 }
 
-variable "kingu_netex_export_topic" {
-  description = "kingu netex export topic name"
-}
 
 variable "pubsub_project" {
   description = "app pubsub project name"
@@ -82,5 +79,29 @@ variable "kube_namespace" {
 }
 variable "ror-kakka-auth0-secret" {
   description = "Auth0 secret"
+}
+variable "nabu_job_event_pubsub_project" {
+  description = "project name of job event pubsub topic"
+}
+variable "service_account" {
+  description = "default service account of application"
+}
+variable "nabu_job_event_pusub_role" {
+  description = "pubsub role for job events topic "
+  default = "roles/pubsub.publisher"
+}
+variable "nabu_job_event_pubsub_topic" {
+  description = "topic name of job event pubsub topic"
+  default = "JobEventQueue"
+}
+variable "kingu_pub_sub_project" {
+  description = "project name of netex export topic"
+}
+variable "kingu_netex_export_pusub_role" {
+  description = "pubsub role for netex export topic "
+  default = "roles/pubsub.publisher"
+}
+variable "kingu_netex_export_topic_name" {
+  default = "ror.kingu.outbound.topic.netex.export"
 }
 

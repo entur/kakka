@@ -1,3 +1,5 @@
 cloudsql_project = "ent-kakka-tst"
 pubsub_project="ent-kakka-tst"
-kingu_netex_export_topic="projects/ent-kingu-tst/topics/ror.kingu.outbound.topic.netex.export"
+kingu_pub_sub_project ="ent-kingu-tst"
+nabu_job_event_pubsub_project="ent-nabu-tst"
+service_account="serviceAccount:application@ent-kakka-tst.iam.gserviceaccount.com"

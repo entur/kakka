@@ -1,9 +1,25 @@
 ## External topics
 # nabu topic{{ .Values.configMap.nabuPubsubProjectId }}:JobEventQueue
+# Add publisher role jobEventQueue
+
+resource "google_pubsub_topic_iam_member" "nabu_job_event_topic_iam_member" {
+  project = var.nabu_job_event_pubsub_project
+  member = var.service_account
+  role   = var.nabu_job_event_pusub_role
+  topic  = var.nabu_job_event_pubsub_topic
+}
+
+
+resource "google_pubsub_topic_iam_member" "kingu_netex_export_topic_iam_member" {
+  project = var.kingu_pub_sub_project
+  member = var.service_account
+  role   = var.kingu_netex_export_pusub_role
+  topic  = var.kingu_netex_export_topic_name
+}
 
 resource "google_pubsub_subscription" "kingu_netex_export_subscription" {
   name =var.kingu_netex_export_subscription
-  topic =var.kingu_netex_export_topic
+  topic ="projects/${var.kingu_pub_sub_project}/topics/${var.kingu_netex_export_topic_name}"
   filter = "attributes.EnturNetexExportStatus = \"Completed\""
   project = var.pubsub_project
   labels = var.labels

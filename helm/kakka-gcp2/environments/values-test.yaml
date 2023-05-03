@@ -9,8 +9,8 @@ configMap:
   blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: ent-kakka-tst
   kinguPubsubProjectId: ent-kingu-tst
-  nabuPubsubProjectId: entur-ror-test
-  gcsSourceBlobstore: kingu-test
+  nabuPubsubProjectId: ent-nabu-tst
+  gcsSourceBlobstore: ror-kingu-test
   tiamatUrl: http://tiamat.tst.entur.internal:80
   tiamatExporterUrl: http://tiamat-exporter.tst.entur.internal:80
   babaUrl: http://baba.tst.entur.internal/services/organisations/

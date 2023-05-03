@@ -10,7 +10,7 @@ configMap:
   pubsubProjectId: ent-kakka-prd
   kinguPubsubProjectId: ent-kingu-prd
   nabuPubsubProjectId: ent-nabu-prd
-  gcsSourceBlobstore: kingu-production
+  gcsSourceBlobstore: ror-kingu-production
   tiamatUrl: http://tiamat.prd.entur.internal:80
   tiamatExporterUrl: http://tiamat-exporter.prd.entur.internal:80
   babaUrl: http://baba.prd.entur.internal/services/organisations/

@@ -17,7 +17,6 @@ package no.entur.kakka.config;
 
 import com.google.common.base.MoreObjects;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
 /**
  * Search params relevant for searching for stop places.
  */
-public class StopPlaceSearch implements Serializable {
+public class StopPlaceSearch {
 
     /**
      * zero-based page index

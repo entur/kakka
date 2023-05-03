@@ -54,6 +54,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
                 .process(e -> e.getIn().setHeader(Constants.NETEX_EXPORT_STATUS_HEADER, Constants.NETEX_EXPORT_STATUS_VALUE))
                 .bean(tiamatExportConfig,"getExportJobs")
                 .split().body()
+                .convertBodyTo(String.class)
                 .to(outboundTopicKinguNetexExport)
                 .routeId("netex-export-start-full");
 

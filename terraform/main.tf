@@ -3,7 +3,7 @@ terraform {
   required_version = ">= 0.13.2"
 }
 provider "google" {
-  version = "~> 3.74.0"
+  version = "~> 4.64.0"
 }
 provider "kubernetes" {
   version = "~> 1.13.4"

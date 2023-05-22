@@ -1,8 +1,0 @@
-gcp_project = "entur-ror-prod"
-cloudsql_project = "entur-ror-prod"
-pubsub_project = "entur-ror-prod"
-kube_namespace = "production"
-service_account_bucket_role = "roles/storage.objectAdmin"
-kakka_storage_bucket = "kakka-production"
-kingu_storage_bucket = "kingu-production"
-kakka_target_storage_bucket = "marduk-production"

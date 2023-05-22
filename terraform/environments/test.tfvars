@@ -1,8 +1,0 @@
-gcp_project = "entur-ror-test"
-cloudsql_project = "entur-ror-test"
-pubsub_project = "entur-ror-test"
-kube_namespace = "staging"
-service_account_bucket_role = "roles/storage.objectAdmin"
-kakka_storage_bucket = "kakka-test"
-kingu_storage_bucket = "kingu-test"
-kakka_target_storage_bucket = "marduk-test"

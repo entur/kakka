@@ -38,6 +38,11 @@ tiamat:
           versionValidity: CURRENT
           stopTypeEnumerations: RAIL_STATION
       -
+        name: Airports
+        stopPlaceSearch:
+          versionValidity: CURRENT
+          stopTypeEnumerations: AIRPORT
+      -
         name: 03_Oslo
         countyReferences: KVE:TopographicPlace:03
         stopPlaceSearch:

@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,8 +31,10 @@ public class GtfsStopPlaceStreamToElasticsearchCommands {
     }
 
     public Collection<ElasticsearchCommand> transform(InputStream gtfsStream, @Header(value = Constants.WORKING_DIRECTORY) String workingDirPath, @Header(value = Constants.FILE_HANDLE) String fileName) {
+        logger.info("Transforming gtfs file: {}",fileName);
+
         if (!fileName.toLowerCase().endsWith(".zip")) {
-            logger.info("Ignored non-zip file when transforming gtfs stop places to Elasticsearch commands: " + fileName);
+            logger.info("Ignored non-zip file when transforming gtfs stop places to Elasticsearch commands: {}",  fileName);
             return new ArrayList<>();
         }
         File gtfsFile;
@@ -50,7 +53,7 @@ public class GtfsStopPlaceStreamToElasticsearchCommands {
 
         try (GTFSFeed feed = GTFSFeed.fromFile(gtfsFile.getAbsolutePath())) {
             return feed.stops.values().stream()
-                    .map(w -> ElasticsearchCommand.peliasIndexCommand(mapper.toPeliasDocument(w))).filter(d -> d != null).collect(Collectors.toList());
+                    .map(w -> ElasticsearchCommand.peliasIndexCommand(mapper.toPeliasDocument(w))).filter(Objects::nonNull).collect(Collectors.toList());
         }
     }
 }

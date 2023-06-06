@@ -151,8 +151,3 @@ variable "log_bucket" {
   default     = "false"
 }
 
-variable "folder_names" {
-  type = list(string)
-  default = ["es-data", "geocoder", "geojson", "kartverket", "osm", "tiamat/geocoder", "tariffzone"]
-}
-

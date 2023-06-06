@@ -3,9 +3,9 @@ sql:
   instance: ent-kakka-tst:europe-west1:kakka-db=tcp:5432
 
 configMap:
-  gcsBlobstore: ent-kakka-tst
+  gcsBlobstore: ror-kakka-test
   gcsTargetBlobstore: marduk-test
-  blobstoreProjectId: ror-kakka-test
+  blobstoreProjectId: ent-kakka-tst
   blobstoreTargetProjectId: entur-ror-test
   pubsubProjectId: ent-kakka-tst
   kinguPubsubProjectId: ent-kingu-tst

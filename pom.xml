@@ -30,7 +30,7 @@
 
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.85</entur.helpers.version>
+        <entur.helpers.version>1.100</entur.helpers.version>
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>

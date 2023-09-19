@@ -30,7 +30,7 @@ data:
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
-    tiamat.geocoder.export.mid.day.autoStartup=true
+    tiamat.geocoder.export.mid.day.autoStartup=false
     tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
     tiamat.geocoder.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
     tiamat.export.max.retries=720

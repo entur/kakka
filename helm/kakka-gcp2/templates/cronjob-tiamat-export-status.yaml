@@ -47,10 +47,21 @@ spec:
                   memory: {{ .Values.cronjobTiamatExportStatus.resources.memRequest }}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+
           dnsPolicy: ClusterFirst
           restartPolicy: Never
           schedulerName: default-scheduler
-          securityContext: {}
+          securityContext:
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
           terminationGracePeriodSeconds: 30
   schedule: '30 7 * ? *'
   successfulJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.successfulJobsHistoryLimit }}

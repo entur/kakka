@@ -260,6 +260,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .routeId("admin-tiamat-publish-export-full-v2");
 
         from("direct:adminTariffZoneUploadFile")
+                .setBody(simple("${exchange.getIn().getRequest().getParts()}"))
                 .streamCaching()
                 .setHeader(PROVIDER_ID, header("providerId"))
                 .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
@@ -268,8 +269,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
                 .to("direct:uploadFilesAndStartImport")
                 .routeId("admin-tariff-zone-upload-file");
-
-
     }
 
     private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {

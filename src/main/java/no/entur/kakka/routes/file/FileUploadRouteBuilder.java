@@ -1,6 +1,5 @@
 package no.entur.kakka.routes.file;
 
-import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Part;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -30,23 +30,18 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
         super.configure();
 
         // Upload multiple files
-
         from("direct:uploadFilesAndStartImport")
                 .split().body()
                 .setHeader(FILE_NAME, simple("${body.submittedFileName}"))
                 .log(LoggingLevel.INFO, "Upload files and  start Import file name: ${header." + FILE_NAME + "}")
                 .choice()
-                .when(header(Constants.FILE_NAME).endsWith(XML))
-                .process(this::setHeaders)
-                .otherwise()
-                .log(LoggingLevel.INFO, "Invalid file upload")
-                .end()
-                .process(e -> e.getIn().setHeader(
-                        FILE_CONTENT_HEADER,
-                        CloseShieldInputStream.wrap(e.getIn().getBody(Part.class).getInputStream()))
-                )
-                .to("direct:uploadFileAndStartImport")
-                .routeId("files-upload");
+                    .when(header(FILE_NAME).endsWith(XML))
+                        .process(this::setHeaders)
+                        .to("direct:uploadFileAndStartImport")
+                    .otherwise()
+                        .log(LoggingLevel.INFO, "Invalid file upload")
+                    .end()
+                .routeId("upload-files-and-start-import");
 
         // Upload single file
         from("direct:uploadFileAndStartImport").streamCaching()
@@ -61,17 +56,17 @@ public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
                 .doCatch(Exception.class)
                 .log(LoggingLevel.WARN, "Upload of tariff-zone data to blob store failed for file: ${header." + FILE_HANDLE + "}")
                 .end()
-                .routeId("file-upload-and-start-import");
-
+                .routeId("upload-file-and-start-import");
     }
 
-    private void setHeaders(Exchange e) {
+    private void setHeaders(Exchange e) throws IOException {
         final String providerId = e.getIn().getHeader("providerId", String.class);
         final String newFileName = "TariffZones_" + providerId + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + ".xml";
         final String newFileHandle = "tariffzones/netex/" + providerId + "/" + newFileName;
         Map<String, Object> headers = new HashMap<>();
         headers.put(FILE_NAME, newFileName);
         headers.put(FILE_HANDLE, newFileHandle);
+        headers.put(FILE_CONTENT_HEADER, CloseShieldInputStream.wrap(e.getIn().getBody(Part.class).getInputStream()));
         e.getIn().setHeaders(headers);
     }
 }

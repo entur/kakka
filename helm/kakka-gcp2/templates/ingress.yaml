@@ -64,3 +64,25 @@ spec:
               port:
                 number: {{ .Values.service.httpAdmin.externalPort }}
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    {{- include "common.labels" . | indent 4 }}
+    traffic-type: api
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  name: timetable-admin-v1-tariffzones-import
+  namespace: {{ .Release.Namespace }}
+spec:
+  rules:
+    - host: timetable-admin-v1-tariffzones-import{{ .Values.ingress.domainName }}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ template "kakka.name" . }}
+                port:
+                  number: {{ .Values.service.httpAdmin.externalPort }}
+---

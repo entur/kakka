@@ -20,14 +20,15 @@ package no.entur.kakka.exceptions;
  * Parent class of kakka exceptions
  */
 public class KakkaException extends RuntimeException {
-// TODO split
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     public KakkaException() {
         super();
+    }
+
+    public KakkaException(Throwable cause) {
+        super(cause);
     }
 
     public KakkaException(String message) {

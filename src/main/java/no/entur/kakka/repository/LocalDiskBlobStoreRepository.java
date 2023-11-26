@@ -30,10 +30,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,7 +51,7 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public BlobStoreFiles listBlobs(String prefix) {
-        return listBlobs(Arrays.asList(prefix));
+        return listBlobs(Collections.singletonList(prefix));
     }
 
     @Override
@@ -68,7 +65,7 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
                             .map(x -> new BlobStoreFiles.File(Paths.get(baseFolder).relativize(x).toString(), new Date(), new Date(), x.toFile().length())).collect(Collectors.toList());
                     blobStoreFiles.add(result);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new KakkaException(e);
                 }
             }
 
@@ -80,7 +77,9 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
     @Override
     public BlobStoreFiles listBlobsFlat(String prefix) {
         List<BlobStoreFiles.File> files = listBlobs(prefix).getFiles();
-        List<BlobStoreFiles.File> result = files.stream().map(k -> new BlobStoreFiles.File(k.getName().replaceFirst(prefix + "/", ""), new Date(), new Date(), 1234L)).collect(Collectors.toList());
+        List<BlobStoreFiles.File> result = files.stream()
+                .map(k -> new BlobStoreFiles.File(k.getName().replaceFirst(prefix + "/", ""), new Date(), new Date(), 1234L))
+                .collect(Collectors.toList());
         BlobStoreFiles blobStoreFiles = new BlobStoreFiles();
         blobStoreFiles.add(result);
         return blobStoreFiles;
@@ -88,25 +87,25 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public InputStream getBlob(String objectName) {
-        logger.debug("get blob called in local-disk blob store on " + objectName);
+        logger.debug("get blob called in local-disk blob store on {}", objectName);
         Path path = Paths.get(baseFolder).resolve(objectName);
         if (!path.toFile().exists()) {
-            logger.debug("getBlob(): File not found in local-disk blob store: " + path);
+            logger.debug("getBlob(): File not found in local-disk blob store: {}", path);
             return null;
         }
-        logger.debug("getBlob(): File found in local-disk blob store: " + path);
+        logger.debug("getBlob(): File found in local-disk blob store: {}", path);
         try {
             // converted as ByteArrayInputStream so that Camel stream cache can reopen it
             // since ByteArrayInputStream.close() does nothing
             return new ByteArrayInputStream(Files.readAllBytes(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KakkaException(e);
         }
     }
 
     @Override
     public void uploadBlob(String objectName, InputStream inputStream, boolean makePublic) {
-        logger.debug("Upload blob called in local-disk blob store on " + objectName);
+        logger.debug("Upload blob called in local-disk blob store on {}", objectName);
         try {
             Path localPath = Paths.get(objectName);
 
@@ -118,9 +117,8 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
             Files.copy(inputStream, fullPath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KakkaException(e);
         }
-
     }
 
     @Override
@@ -147,7 +145,6 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
         } catch (IOException e) {
             throw new KakkaException(e.getMessage());
         }
-
     }
 
     @Override
@@ -185,17 +182,17 @@ public class LocalDiskBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public boolean delete(String objectName) {
-        logger.debug("Delete blob called in local-disk blob store on: " + objectName);
+        logger.debug("Delete blob called in local-disk blob store on: {}", objectName);
         Path path = Paths.get(baseFolder).resolve(objectName);
         if (!path.toFile().exists()) {
-            logger.debug("delete(): File not found in local-disk blob store: " + path);
+            logger.debug("delete(): File not found in local-disk blob store: {}", path);
             return false;
         }
         try {
             Files.delete(path);
             return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KakkaException(e);
         }
     }
 

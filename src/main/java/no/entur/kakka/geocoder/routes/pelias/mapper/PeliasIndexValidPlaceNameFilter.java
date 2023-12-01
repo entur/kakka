@@ -104,7 +104,7 @@ public class PeliasIndexValidPlaceNameFilter {
                     gc.setStartingPosition(placeDirectPosition);
                     gc.setDestinationPosition(gospDirectPosition);
                 } catch (TransformException e) {
-                    e.printStackTrace();
+                    logger.warn(e.getMessage());
                 }
 
 

@@ -51,8 +51,6 @@ public abstract class TopographicPlaceAdapterToPeliasDocument {
         PeliasDocument document = new PeliasDocument(getLayer(), feature.getId());
 
         if (feature.getName() == null) {
-            //System.out.println("null name");
-            //document.setDefaultNameAndPhrase(feature.getAlternativeNames().entrySet().iterator().next().getValue());
             document.setNameMap(feature.getAlternativeNames());
         }
         document.setDefaultNameAndPhrase(feature.getName());

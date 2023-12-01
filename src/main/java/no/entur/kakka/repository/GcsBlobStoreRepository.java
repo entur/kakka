@@ -121,12 +121,12 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public void uploadBlob(String name, InputStream inputStream, boolean makePublic) {
-        BlobStoreHelper.uploadBlobWithRetry(storage, containerName, name, inputStream, makePublic);
+        BlobStoreHelper.createOrReplace(storage, containerName, name, inputStream, makePublic);
     }
 
     @Override
     public void uploadBlob(String name, InputStream inputStream, boolean makePublic, String contentType) {
-        BlobStoreHelper.uploadBlobWithRetry(storage, containerName, name, inputStream, makePublic, contentType);
+        BlobStoreHelper.createOrReplace(storage, containerName, name, inputStream, makePublic, contentType);
     }
 
     @Override

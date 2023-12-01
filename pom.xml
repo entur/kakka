@@ -22,7 +22,7 @@
         <developerConnection>scm:git:ssh://git@github.com:entur/kakka.git</developerConnection>
     </scm>
     <properties>
-
+        <java.version>17</java.version>
         <camel.version>3.18.8</camel.version>
 
         <wololo.version>0.14.3</wololo.version>

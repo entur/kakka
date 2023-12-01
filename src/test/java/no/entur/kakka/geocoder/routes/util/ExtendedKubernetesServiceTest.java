@@ -7,8 +7,8 @@ import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +32,7 @@ class ExtendedKubernetesServiceTest {
     @Rule
     public KubernetesServer server = new KubernetesServer();
 
-    public KubernetesClient client = new DefaultKubernetesClient();
+    public KubernetesClient client = new KubernetesClientBuilder().build();
 
 
     @Test

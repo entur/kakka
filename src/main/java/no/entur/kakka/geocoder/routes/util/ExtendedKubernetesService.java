@@ -6,8 +6,8 @@ import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.Header;
@@ -52,7 +52,7 @@ public class ExtendedKubernetesService {
     private boolean geoCodeSmokeTestJobEnabled;
 
     public ExtendedKubernetesService() {
-        this.kubernetesClient = new DefaultKubernetesClient();
+        this.kubernetesClient = new KubernetesClientBuilder().build();
     }
 
     private void scaleDeployment(int noOfReplicas) {

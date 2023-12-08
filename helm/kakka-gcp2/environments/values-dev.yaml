@@ -20,8 +20,8 @@ configMap:
       audience: https://ror.api.dev.entur.io
   oauth2:
     client:
-      id: DWzqknzoqsSdT8AsMMjt9F3anaakb0nn
-      url: https://ror-entur-dev.eu.auth0.com/oauth/token
+      id: rXbflD8gpO22ZLZowotAFKBhuS6YYS50
+      url: https://internal.dev.entur.org/oauth/token
       audience: https://ror.api.dev.entur.io
   tiamatExportSchedule: 0+0+02+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?

@@ -39,7 +39,7 @@ public class SosiLocality extends SosiElementWrapper {
 
     @Override
     protected String getNamePropertyName() {
-        return "KOMMUNENAVN";
+        return "ADMENHETNAVN";
     }
 
     @Override

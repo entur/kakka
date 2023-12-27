@@ -43,6 +43,6 @@ public class SosiCounty extends SosiElementWrapper {
 
     @Override
     protected String getNamePropertyName() {
-        return "FYLKESNAVN";
+        return "ADMENHETNAVN";
     }
 }

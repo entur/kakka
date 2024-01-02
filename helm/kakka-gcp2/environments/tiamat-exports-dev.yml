@@ -63,7 +63,7 @@ tiamat:
         stopPlaceSearch:
           versionValidity: CURRENT
       -
-        name: 31_Østfold
+        name: 31_Ostfold
         countyReferences: KVE:TopographicPlace:31
         stopPlaceSearch:
           versionValidity: CURRENT

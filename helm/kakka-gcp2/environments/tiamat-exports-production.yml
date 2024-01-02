@@ -1,99 +1,119 @@
 tiamat:
-    export-jobs:
-      -
-        name: tiamat_export_geocoder
-        serviceFrameExportMode: ALL
-        topographicPlaceExportMode: ALL
-        groupOfStopPlacesExportMode: ALL
-        stopPlaceSearch:
-          versionValidity: CURRENT_FUTURE
-      -
-        name: Full
-        serviceFrameExportMode: ALL
-        tariffZoneExportMode: ALL
-        fareZoneExportMode: ALL
-        topographicPlaceExportMode: ALL
-        groupOfStopPlacesExportMode: ALL
-        stopPlaceSearch:
-          versionValidity: ALL
-      -
-        name: CurrentAndFuture
-        serviceFrameExportMode: ALL
-        tariffZoneExportMode: ALL
-        fareZoneExportMode: ALL
-        groupOfStopPlacesExportMode: ALL
-        stopPlaceSearch:
-          versionValidity: CURRENT_FUTURE
-      -
-        name: Current
-        serviceFrameExportMode: ALL
-        tariffZoneExportMode: ALL
-        fareZoneExportMode: ALL
-        groupOfStopPlacesExportMode: ALL
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: RailStations
-        stopPlaceSearch:
-          versionValidity: CURRENT
-          stopTypeEnumerations: RAIL_STATION
-      -
-        name: Airports
-        stopPlaceSearch:
-          versionValidity: CURRENT
-          stopTypeEnumerations: AIRPORT
-      -
-        name: 03_Oslo
-        countyReferences: KVE:TopographicPlace:03
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 11_Rogaland
-        countyReferences: KVE:TopographicPlace:11
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 15_More og Romsdal
-        countyReferences: KVE:TopographicPlace:15
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 18_Nordland
-        countyReferences: KVE:TopographicPlace:18
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 30_Viken
-        countyReferences: KVE:TopographicPlace:30
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 34_Innlandet
-        countyReferences: KVE:TopographicPlace:34
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 38_Vestfold_Telemark
-        countyReferences: KVE:TopographicPlace:38
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 42_Agder
-        countyReferences: KVE:TopographicPlace:42
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 46_Vestland
-        countyReferences: KVE:TopographicPlace:46
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 50_Trondelag
-        countyReferences: KVE:TopographicPlace:50
-        stopPlaceSearch:
-          versionValidity: CURRENT
-      -
-        name: 54_Troms_Finnmark
-        countyReferences: KVE:TopographicPlace:54
-        stopPlaceSearch:
-          versionValidity: CURRENT
+  export-jobs:
+    -
+      name: tiamat_export_geocoder
+      serviceFrameExportMode: ALL
+      topographicPlaceExportMode: ALL
+      groupOfStopPlacesExportMode: ALL
+      stopPlaceSearch:
+        versionValidity: CURRENT_FUTURE
+    -
+      name: Full
+      serviceFrameExportMode: ALL
+      tariffZoneExportMode: ALL
+      fareZoneExportMode: ALL
+      topographicPlaceExportMode: ALL
+      groupOfStopPlacesExportMode: ALL
+      stopPlaceSearch:
+        versionValidity: ALL
+    -
+      name: CurrentAndFuture
+      serviceFrameExportMode: ALL
+      tariffZoneExportMode: ALL
+      fareZoneExportMode: ALL
+      groupOfStopPlacesExportMode: ALL
+      stopPlaceSearch:
+        versionValidity: CURRENT_FUTURE
+    -
+      name: Current
+      serviceFrameExportMode: ALL
+      tariffZoneExportMode: ALL
+      fareZoneExportMode: ALL
+      groupOfStopPlacesExportMode: ALL
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: RailStations
+      stopPlaceSearch:
+        versionValidity: CURRENT
+        stopTypeEnumerations: RAIL_STATION
+    -
+      name: Airports
+      stopPlaceSearch:
+        versionValidity: CURRENT
+        stopTypeEnumerations: AIRPORT
+    -
+      name: 03_Oslo
+      countyReferences: KVE:TopographicPlace:03
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 11_Rogaland
+      countyReferences: KVE:TopographicPlace:11
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 15_More og Romsdal
+      countyReferences: KVE:TopographicPlace:15
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 18_Nordland
+      countyReferences: KVE:TopographicPlace:18
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 31_Østfold
+      countyReferences: KVE:TopographicPlace:31
+      stopPlaceSearch:
+        versionValidity: CURRENT
+
+    - name: 32_Akershus
+      countyReferences: KVE:TopographicPlace:32
+      stopPlaceSearch:
+        versionValidity: CURRENT
+
+    - name: 33_Buskerud
+      countyReferences: KVE:TopographicPlace:33
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 34_Innlandet
+      countyReferences: KVE:TopographicPlace:34
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 39_Vestfold
+      countyReferences: KVE:TopographicPlace:39
+      stopPlaceSearch:
+        versionValidity: CURRENT
+
+    - name: 40_Telemark
+      countyReferences: KVE:TopographicPlace:40
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 42_Agder
+      countyReferences: KVE:TopographicPlace:42
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 46_Vestland
+      countyReferences: KVE:TopographicPlace:46
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 50_Trondelag
+      countyReferences: KVE:TopographicPlace:50
+      stopPlaceSearch:
+        versionValidity: CURRENT
+    -
+      name: 55_Troms
+      countyReferences: KVE:TopographicPlace:55
+      stopPlaceSearch:
+        versionValidity: CURRENT
+
+    - name: 56_Finnmark
+      countyReferences: KVE:TopographicPlace:56
+      stopPlaceSearch:
+        versionValidity: CURRENT

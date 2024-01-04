@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.53</version>
+        <version>1.68</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -22,15 +22,15 @@
         <developerConnection>scm:git:ssh://git@github.com:entur/kakka.git</developerConnection>
     </scm>
     <properties>
-
-        <camel.version>3.18.5</camel.version>
+        <java.version>17</java.version>
+        <camel.version>3.20.0</camel.version>
 
         <wololo.version>0.14.3</wololo.version>
         <jskdata.version>1.0.15</jskdata.version>
 
         <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>1.0.12-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>1.85</entur.helpers.version>
+        <entur.helpers.version>1.97</entur.helpers.version>
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
@@ -47,6 +47,9 @@
         <commons-text.version>1.8</commons-text.version>
         <sosi-reader-impl.version>1.25</sosi-reader-impl.version>
         <osmosis-osm-binary.version>0.47.3</osmosis-osm-binary.version>
+        <kubernetes-server-mock.version>6.3.1</kubernetes-server-mock.version>
+        <argLine/>
+        <spring-webmvc.version>5.3.28</spring-webmvc.version>
     </properties>
 
     <repositories>
@@ -122,6 +125,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- temporary Downgrade dependency -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-webmvc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -340,7 +349,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-server-mock</artifactId>
-            <version>5.12.0</version>
+            <version>${kubernetes-server-mock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -366,10 +375,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <inherited>true</inherited>
                 <configuration>
-                    <argLine>-Xmx1G</argLine>
-                    <runOrder>alphabetical</runOrder>
+                    <argLine>@{argLine} -Xms500m -Xmx500m -Xss256k</argLine>
+                    <systemPropertyVariables combine.children="override">
+                        <spring.output.ansi.enabled>ALWAYS</spring.output.ansi.enabled>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

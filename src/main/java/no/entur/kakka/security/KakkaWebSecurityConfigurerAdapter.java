@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -22,7 +22,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Profile("!test")
 @EnableWebSecurity
 @Component
-public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+public class KakkaWebSecurityConfigurerAdapter{
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -35,8 +35,8 @@ public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
         return source;
     }
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(withDefaults())
                 .csrf().disable()
                 .authorizeRequests()
@@ -56,6 +56,8 @@ public class KakkaWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
                 .and()
                 .and()
                 .oauth2Client();
+
+        return http.build();
 
     }
 

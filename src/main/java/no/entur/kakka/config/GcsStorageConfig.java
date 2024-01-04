@@ -16,9 +16,7 @@
 
 package no.entur.kakka.config;
 
-import com.google.cloud.http.HttpTransportOptions;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import org.rutebanken.helper.gcp.BlobStoreHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +26,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("gcs-blobstore")
 public class GcsStorageConfig {
-
-    private static final int CONNECT_AND_READ_TIMEOUT = 60000;
 
     @Value("${blobstore.gcs.credential.path:#{null}}")
     private String credentialPath;
@@ -44,9 +40,7 @@ public class GcsStorageConfig {
     @Bean
     public Storage storage() {
         if (credentialPath == null || credentialPath.isEmpty()) {
-            // Use Default gcp credentials
-            //todo: update gcp-storage dependency to 1.83 and use BlobStoreHelper.getStorage(projectId)
-            return getStorage(projectId);
+            return BlobStoreHelper.getStorage(projectId);
         } else {
             return BlobStoreHelper.getStorage(credentialPath, projectId);
         }
@@ -55,26 +49,9 @@ public class GcsStorageConfig {
     @Bean
     public Storage targetStorage() {
         if (credentialPath == null || credentialPath.isEmpty()) {
-            // Use Default gcp credentials
-            //todo: update gcp-storage dependency to 1.83 and use BlobStoreHelper.getStorage(projectId)
-            return getStorage(projectId);
+            return BlobStoreHelper.getStorage(projectId);
         } else {
             return BlobStoreHelper.getStorage(credentialPath, targetProjectId);
-        }
-    }
-
-    private Storage getStorage(String projectId) {
-        try {
-            HttpTransportOptions transportOptions = StorageOptions.getDefaultHttpTransportOptions();
-            transportOptions = transportOptions.toBuilder().setConnectTimeout(CONNECT_AND_READ_TIMEOUT).setReadTimeout(CONNECT_AND_READ_TIMEOUT)
-                    .build();
-
-            return StorageOptions.newBuilder()
-                    .setProjectId(projectId)
-                    .setTransportOptions(transportOptions)
-                    .build().getService();
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
         }
     }
 }

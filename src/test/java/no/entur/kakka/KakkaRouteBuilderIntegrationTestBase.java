@@ -21,6 +21,7 @@ import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.apache.camel.test.spring.junit5.UseAdviceWith;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,5 +47,9 @@ public abstract class KakkaRouteBuilderIntegrationTestBase {
 
     }
 
+    @AfterEach
+    public void tearDown() throws Exception {
+        context.stop();
+    }
 
 }

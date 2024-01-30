@@ -61,6 +61,8 @@ spec:
           envFrom:
             - secretRef:
                 name: ror-kakka-secrets
+            - secretRef:
+                name: ror-slack
           image: {{.Values.image.identifier }}
           imagePullPolicy: {{.Values.image.imagePullPolicy }}
           livenessProbe:

@@ -28,12 +28,12 @@ configMap:
   gecoderExportSchedule: 0+0+04+*+*+?
   gecoderExportScheduleMidDay: 0+0+14+*+*+?
   poiUpdateEnabled: true
-  tiamatExportConfig: environments/tiamat-exports-test.yml
+  tiamatExportConfig: env/tiamat-exports-kub-ent-dev.yml
   slackSecret: ror-staging-slack-url
   pelias:
     gtfs: false
     placeBoost: 40
-    boostConfig: "{\"defaultValue\":30, \"stopTypeFactors\":{\"busStation\":{\"*\":2},\"metroStation\":{\"*\":2},\"railStation\":{\"*\":2}}}"
+    boostConfig: '{"defaultValue":30, "stopTypeFactors":{"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}}}'
     boostFactor: 10
     addressBoost: 20
     streetBoost: 20

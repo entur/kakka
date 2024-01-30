@@ -4,7 +4,6 @@ rollingUpdate:
   maxSurge: 1
   maxUnavailable: 1
 
-
 resources:
   cpuLimit: "3"
   memLimit: 12000Mi
@@ -24,7 +23,7 @@ configMapMount:
   tiamatExportName: kakka-tiamat-export-config
 
 image:
-  identifier: ${artifact.metadata.image}
+  identifier: <+artifacts.primary.image>
   imagePullPolicy: Always
 
 service:
@@ -48,4 +47,8 @@ cronjobTiamatExportStatus:
   image:
     repo: eu.gcr.io/entur-system-1287/deployment-rollout-restart:0.1.10
 
-
+secrets:
+  ror-kakka-secrets:
+    - SPRING_DATASOURCE_PASSWORD
+    - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKKA_CLIENT_SECRET
+    - SLACK_URL

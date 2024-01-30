@@ -1,11 +1,11 @@
 variable "labels" {
   description = "Labels used in all resources"
-  type = map(string)
+  type        = map(string)
   default = {
     manager = "terraform"
-    team = "ror"
-    slack = "talk-ror"
-    app = "kakka"
+    team    = "ror"
+    slack   = "talk-ror"
+    app     = "kakka"
   }
 }
 
@@ -54,34 +54,29 @@ variable "cloudsql_project" {
 }
 variable "db_region" {
   description = "GCP  region"
-  default = "europe-west1"
+  default     = "europe-west1"
 }
 variable "db_zone" {
   description = "GCP zone"
-  default = "europe-west1-b"
+  default     = "europe-west1-b"
 }
 
 variable "db_tier" {
   description = "Database instance tier"
-  default = "db-custom-1-3840"
+  default     = "db-custom-1-3840"
 }
 
 variable "db_availability" {
   description = "Database availability"
-  default = "ZONAL"
+  default     = "ZONAL"
 }
 variable "ror-kakka-db-username" {
   description = "kakka database username"
-}
-variable ror-kakka-db-password {
-  description = "Kakka database password"
+  default     = "kakka"
 }
 
 variable "kube_namespace" {
   default = "kakka"
-}
-variable "ror-kakka-auth0-secret" {
-  description = "Auth0 secret"
 }
 variable "nabu_job_event_pubsub_project" {
   description = "project name of job event pubsub topic"
@@ -91,18 +86,18 @@ variable "service_account" {
 }
 variable "nabu_job_event_pusub_role" {
   description = "pubsub role for job events topic "
-  default = "roles/pubsub.publisher"
+  default     = "roles/pubsub.publisher"
 }
 variable "nabu_job_event_pubsub_topic" {
   description = "topic name of job event pubsub topic"
-  default = "JobEventQueue"
+  default     = "JobEventQueue"
 }
 variable "kingu_pub_sub_project" {
   description = "project name of netex export topic"
 }
 variable "kingu_netex_export_pusub_role" {
   description = "pubsub role for netex export topic "
-  default = "roles/pubsub.publisher"
+  default     = "roles/pubsub.publisher"
 }
 variable "kingu_netex_export_topic_name" {
   default = "ror.kingu.outbound.topic.netex.export"
@@ -114,12 +109,12 @@ variable "kingu_storage_bucket" {
 
 variable "service_account_bucket_role" {
   description = "Role of the Service Account - more about roles https://cloud.google.com/storage/docs/access-control/iam-roles"
-  default = "roles/storage.objectViewer"
+  default     = "roles/storage.objectViewer"
 }
 
 variable "location" {
   description = "GCP bucket location"
-  default = "europe-west1"
+  default     = "europe-west1"
 }
 
 variable "bucket_instance_suffix" {
@@ -128,7 +123,7 @@ variable "bucket_instance_suffix" {
 
 variable "bucket_instance_prefix" {
   description = "A prefix for the bucket instance, may be changed if environment is destroyed and then needed again (name collision workaround) - also bucket names must be globally unique"
-  default = "ror-kakka"
+  default     = "ror-kakka"
 }
 
 variable "force_destroy" {

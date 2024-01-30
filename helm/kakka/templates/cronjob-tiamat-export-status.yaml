@@ -30,11 +30,9 @@ spec:
                   value: 03_Oslo_latest,11_Rogaland_latest,15_More og Romsdal_latest,18_Nordland_latest,30_Viken_latest,34_Innlandet_latest,38_Vestfold_Telemark_latest,42_Agder_latest,46_Vestland_latest,50_Trondelag_latest,54_Troms_Finnmark_latest,CurrentAndFuture_latest,Current_latest,Full_latest,RailStations_latest
                 - name: WARNING_DAYS
                   value: "1"
-                - name: SLACK_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: slack-url
-                      name: {{ .Values.configMap.slackSecret }}
+              envFrom:
+                - secretRef:
+                    name: ror-slack
               image: {{ .Values.cronjobTiamatExportStatus.image.repo }}
               imagePullPolicy: IfNotPresent
               name: tiamat-export-status-job

@@ -39,3 +39,4 @@ gradlew.bat
 
 # local log files
 .log
+**/.terraform/*

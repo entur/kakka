@@ -8,7 +8,6 @@ data:
     spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
     spring.datasource.driver-class-name=org.postgresql.Driver
     spring.datasource.username=kakka
-    spring.datasource.password=${PGPASSWORD}
     spring.jmx.unique-names=true
     ## Flyway configuration
     spring.flyway.baseline-description=<< Flyway Baseline >>

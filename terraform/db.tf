@@ -1,15 +1,15 @@
 resource "google_sql_database_instance" "db_instance" {
-  name = "kakka-db"
+  name             = "kakka-db"
   database_version = "POSTGRES_13"
-  project = var.cloudsql_project
-  region = var.db_region
+  project          = var.cloudsql_project
+  region           = var.db_region
 
   settings {
     location_preference {
       zone = var.db_zone
     }
-    tier = var.db_tier
-    user_labels = var.labels
+    tier              = var.db_tier
+    user_labels       = var.labels
     availability_type = var.db_availability
     backup_configuration {
       enabled = true
@@ -29,14 +29,19 @@ resource "google_sql_database_instance" "db_instance" {
 }
 
 resource "google_sql_database" "db" {
-  name = "kakka"
-  project = var.cloudsql_project
+  name     = "kakka"
+  project  = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
 }
 
-resource "google_sql_user" "db-user" {
-  name = var.ror-kakka-db-username
+data "google_secret_manager_secret_version" "kakka_db_password" {
+  secret  = "SPRING_DATASOURCE_PASSWORD"
   project = var.cloudsql_project
+}
+
+resource "google_sql_user" "db-user" {
+  project  = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
-  password = var.ror-kakka-db-password
+  name     = var.ror-kakka-db-username
+  password = data.google_secret_manager_secret_version.kakka_db_password.secret_data
 }

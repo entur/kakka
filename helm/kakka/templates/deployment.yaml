@@ -1,29 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "kakka.name" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "common.labels" . | indent 4 }}
+  name: {{template "kakka.name" . }}
+  namespace: {{.Release.Namespace }}
+  labels: {{- include "common.labels" . | indent 4 }}
 spec:
   progressDeadlineSeconds: 600
-  replicas: {{ .Values.replicas }}
+  replicas: {{.Values.replicas }}
   selector:
     matchLabels:
-      app: {{ template "kakka.name" . }}
+      app: {{template "kakka.name" . }}
   strategy:
     rollingUpdate:
-      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
-      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge: {{.Values.rollingUpdate.maxSurge }}
+      maxUnavailable: {{.Values.rollingUpdate.maxUnavailable }}
     type: RollingUpdate
   template:
     metadata:
       annotations:
         prometheus.io/path: /actuator/prometheus
-        prometheus.io/port: '9001'
-        prometheus.io/scrape: 'true'
-      labels:
-        {{- include "common.labels" . | indent 8 }}
+        prometheus.io/port: "9001"
+        prometheus.io/scrape: "true"
+      labels: {{- include "common.labels" . | indent 8 }}
     spec:
       containers:
         - command:
@@ -48,7 +46,8 @@ spec:
           terminationMessagePolicy: File
         - env:
             - name: JDK_JAVA_OPTIONS
-              value: -server -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+              value:
+                -server -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
                 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
                 -Dspring.config.location=/etc/application-config/application.properties
                 -Dfile.encoding=UTF-8
@@ -59,24 +58,11 @@ spec:
                 {{- end}}
             - name: TZ
               value: Europe/Oslo
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: ror-kakka-db-password
-                  name: ror-kakka-secrets
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKKA_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  key: ror-kakka-auth0-secret
-                  name: ror-kakka-secrets
-            - name: SLACK_URL
-              valueFrom:
-                secretKeyRef:
-                   key: slack-url
-                   name: {{ .Values.configMap.slackSecret }}
-
-          image: {{ .Values.image.identifier }}
-          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          envFrom:
+            - secretRef:
+                name: ror-kakka-secrets
+          image: {{.Values.image.identifier }}
+          imagePullPolicy: {{.Values.image.imagePullPolicy }}
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -89,10 +75,10 @@ spec:
             timeoutSeconds: 30
           name: kakka
           ports:
-            - containerPort: {{ .Values.service.httpAdmin.internalPort }}
+            - containerPort: {{.Values.service.httpAdmin.internalPort }}
               name: http-admin
               protocol: TCP
-            - containerPort: {{ .Values.service.http.internalPort }}
+            - containerPort: {{.Values.service.http.internalPort }}
               name: http
               protocol: TCP
           readinessProbe:
@@ -107,11 +93,11 @@ spec:
             timeoutSeconds: 10
           resources:
             limits:
-              cpu: {{ .Values.resources.cpuLimit }}
-              memory: {{ .Values.resources.memLimit }}
+              cpu: {{.Values.resources.cpuLimit }}
+              memory: {{.Values.resources.memLimit }}
             requests:
-              cpu: {{ .Values.resources.cpuRequest }}
-              memory: {{ .Values.resources.memRequest }}
+              cpu: {{.Values.resources.cpuRequest }}
+              memory: {{.Values.resources.memRequest }}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
@@ -130,10 +116,9 @@ spec:
       volumes:
         - name: application-config
           configMap:
-            name: {{ .Values.configMapMount.name }}
+            name: {{.Values.configMapMount.name }}
             defaultMode: 420
         - name: tiamat-export-config
           configMap:
-            name: {{ .Values.configMapMount.tiamatExportName }}
+            name: {{.Values.configMapMount.tiamatExportName }}
             defaultMode: 420
-

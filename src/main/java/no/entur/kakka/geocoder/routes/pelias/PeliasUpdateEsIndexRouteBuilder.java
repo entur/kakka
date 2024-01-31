@@ -295,7 +295,6 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .log("Batch counter: converted ${header.CamelSplitIndex}++  addresses")
                 .bean("addressStreamToElasticSearchCommands", "transform")
                 .to("direct:invokePeliasBulkCommand")
-                .log("End with large address file ....")
                 .end()
                 .routeId("pelias-convert-commands-from-addresses");
 
@@ -331,7 +330,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .bean("elasticsearchCommandWriterService")
                 .log(LoggingLevel.INFO, "Adding batch of indexes to elasticsearch for ${header." + FILE_HANDLE + "}")
                 .toD(elasticsearchScratchUrl + "/_bulk")
-                .setHeader(CONTENT_CHANGED, constant(true))                // TODO parse response?
+                .setHeader(CONTENT_CHANGED, constant(true))
                 .log(LoggingLevel.INFO, "Finished adding batch of indexes to elasticsearch for ${header." + FILE_HANDLE + "}")
 
                 .routeId("pelias-invoke-bulk-command");

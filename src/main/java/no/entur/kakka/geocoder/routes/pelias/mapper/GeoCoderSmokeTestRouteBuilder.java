@@ -24,11 +24,6 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
     @Value("${geocoder.pelias.current.file.path:es-data/current}")
     private String peliasCurrentFilePath;
 
-    @Value("${geocoder.pelias.current.file.path:es-data/geoCoderCurrent}")
-    private String getGeoCoderSmokeTestQueueCurrentFilePath;
-
-    @Value("${geocoder.pelias.deploymebt.name:pelias}")
-    private String deploymentName;
     @Value("${geocoder.redeploy.pelias.enabled:true}")
     private boolean redeployPeliasEnabled;
 
@@ -68,7 +63,6 @@ public class GeoCoderSmokeTestRouteBuilder extends BaseRouteBuilder {
                     .process(e -> blobStoreService.uploadBlob(peliasCurrentFilePath,false,generateCurrentFile(e.getIn().getHeader(Constants.ES_DATA_PATH,String.class))))
                     .log(LoggingLevel.INFO, "Redeploying pelias ")
                     .process(e -> slackPostService.publish(":tada: es-data `" + e.getIn().getHeader(Constants.ES_DATA_PATH,String.class) + "` updated ,redeploying `pelias`"))
-                    .setHeader(Constants.DEPLOYMENT_NAME, simple(deploymentName))
                     .bean(extendedKubernetesService, "rolloutDeployment")
                     .process(e -> JobEvent.systemJobBuilder(e).jobDomain(JobEvent.JobDomain.GEOCODER).action("PELIAS_REDEPLOY").newCorrelationId().state(JobEvent.State.OK).build()).to("direct:updateStatus")
                 .doCatch(KakkaException.class)

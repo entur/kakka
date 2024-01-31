@@ -8,7 +8,6 @@ import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
@@ -35,6 +34,9 @@ public class ExtendedKubernetesService {
 
     @Value("${kakka.remote.kubernetes.namespace:default}")
     private String kubernetesNamespace;
+
+    @Value("${geocoder.pelias.deploymebt.name:pelias}")
+    private String deploymentName;
 
     @Value("${kakka.remote.kubernetes.cronjob:es-build-job}")
     private String esDataUploadCronJobName;
@@ -87,8 +89,9 @@ public class ExtendedKubernetesService {
 
     }
 
-    public void rolloutDeployment(@Header(Constants.DEPLOYMENT_NAME) String deploymentName){
+    public void rolloutDeployment(){
         try(kubernetesClient) {
+            log.info("Rolling out deployment: " + deploymentName);
             kubernetesClient.apps().deployments().inNamespace(kubernetesNamespace).withName(deploymentName)
                     .rolling()
                     .restart();

@@ -13,11 +13,10 @@ aliases:
     git config --global user.name "circleci"
     git tag $VERSION
     git push origin $VERSION
-- &jfrog-login
-  name: Rename jfrog environment variable for maven setting.xml
+- &jfrog-settings
+  name: Write artifactory settings to file
   command: |
-    echo "export JFROG_USER=$ARTIFACTORY_USER"  >> $BASH_ENV
-    echo "export JFROG_PASS=$ARTIFACTORY_PASSWORD"  >> $BASH_ENV
+    echo "$ARTIFACTORY_SETTINGS" | base64 --decode > .circleci/settings.xml
 - &create-image-version
   name: Create new image version and store to env var and as file in workspace
   command: |
@@ -51,7 +50,7 @@ jobs:
           # fallback to the most recent cache if there is no exact match for this pom.xml
           - dep-cache-
     - run: wget https://raw.githubusercontent.com/entur/circleci-toolbox-image-java11/master/tools/m2/settings.xml -O .circleci/settings.xml
-    - run: *jfrog-login
+    - run: *jfrog-settings
     - run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.0:go-offline -s .circleci/settings.xml
     - save_cache:
         paths:

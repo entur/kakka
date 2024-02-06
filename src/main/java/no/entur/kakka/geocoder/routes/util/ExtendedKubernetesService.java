@@ -6,8 +6,8 @@ import io.fabric8.kubernetes.api.model.batch.v1.CronJob;
 import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
@@ -27,8 +27,6 @@ import static no.entur.kakka.Constants.ES_DATA_PATH;
 @Service
 public class ExtendedKubernetesService {
     private static final Logger log = LoggerFactory.getLogger(ExtendedKubernetesService.class);
-
-    private static final String COMPLETE = "Complete";
 
     private final KubernetesClient kubernetesClient;
 
@@ -54,7 +52,7 @@ public class ExtendedKubernetesService {
     private boolean geoCodeSmokeTestJobEnabled;
 
     public ExtendedKubernetesService() {
-        this.kubernetesClient = new DefaultKubernetesClient();
+        this.kubernetesClient = new KubernetesClientBuilder().build();
     }
 
     private void scaleDeployment(int noOfReplicas) {
@@ -90,7 +88,7 @@ public class ExtendedKubernetesService {
     }
 
     public void rolloutDeployment(){
-        try(kubernetesClient) {
+        try {
             log.info("Rolling out deployment: " + deploymentName);
             kubernetesClient.apps().deployments().inNamespace(kubernetesNamespace).withName(deploymentName)
                     .rolling()

@@ -75,7 +75,7 @@ public class KinguPublishExportsRouteBuilder extends BaseRouteBuilder {
 
         from("direct:kinguExportUploadFileExternal")
                 .log(LoggingLevel.INFO, "kingu export upload external")
-                .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(true))
+                .setHeader(BLOBSTORE_MAKE_BLOB_PUBLIC, constant(false))
                 .to("direct:copyKinguBlob")
                 .routeId("kingu-export-upload-file-external");
     }

@@ -18,6 +18,8 @@ configMap:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/
       audience: https://ror.api.dev.entur.io
+    partner:
+        url: https://partner.dev.entur.org
   oauth2:
     client:
       id: rXbflD8gpO22ZLZowotAFKBhuS6YYS50

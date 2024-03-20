@@ -18,6 +18,8 @@ configMap:
     ror:
       url: https://ror-entur-staging.eu.auth0.com/
       audience: https://ror.api.staging.entur.io
+    partner:
+        url: https://partner.staging.entur.org
   oauth2:
     client:
       id: 8qtEWzdSAaH7auRqBwSdRzjOdjMVNVlw

@@ -20,6 +20,8 @@ import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.OAuth2TokenService;
 import org.entur.oauth2.RoRJwtDecoderBuilder;
 import org.entur.oauth2.TokenService;
+import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
+import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
@@ -69,6 +71,29 @@ public class OAuth2Config {
         return new RoRJwtDecoderBuilder().withIssuer(rorAuth0Issuer)
                 .withAudience(rorAuth0Audience)
                 .withAuth0ClaimNamespace(rorAuth0ClaimNamespace)
+                .build();
+    }
+
+    @Bean
+    @Profile("!test")
+    public MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver(
+            @Value("${kakka.oauth2.resourceserver.auth0.entur.partner.jwt.audience:}")
+            String enturPartnerAuth0Audience,
+            @Value("${kakka.oauth2.resourceserver.auth0.entur.partner.jwt.issuer-uri:}")
+            String enturPartnerAuth0Issuer,
+            @Value("${kakka.oauth2.resourceserver.auth0.ror.jwt.audience:}")
+            String rorAuth0Audience,
+            @Value("${kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri:}")
+            String rorAuth0Issuer,
+            @Value("${kakka.oauth2.resourceserver.auth0.ror.claim.namespace:}")
+            String rorAuth0ClaimNamespace) {
+
+        return new MultiIssuerAuthenticationManagerResolverBuilder()
+                .withEnturPartnerAuth0Issuer(enturPartnerAuth0Issuer)
+                .withEnturPartnerAuth0Audience(enturPartnerAuth0Audience)
+                .withRorAuth0Issuer(rorAuth0Issuer)
+                .withRorAuth0Audience(rorAuth0Audience)
+                .withRorAuth0ClaimNamespace(rorAuth0ClaimNamespace)
                 .build();
     }
 

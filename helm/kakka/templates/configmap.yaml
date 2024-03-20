@@ -80,6 +80,11 @@ data:
     blobstore.gcs.target-container.name={{ .Values.configMap.gcsTargetBlobstore }}
     blobstore.gcs.source.container.name={{ .Values.configMap.gcsSourceBlobstore }}
 
+    # OAuth2 Resource Server for Entur Partner tenant
+    kakka.oauth2.resourceserver.auth0.entur.partner.jwt.issuer-uri={{ .Values.configMap.auth0.partner.url }}
+    kakka.oauth2.resourceserver.auth0.entur.partner.jwt.audience={{ .Values.configMap.auth0.ror.audience }}
+
+
     # OAuth2 Resource Server
     spring.security.oauth2.resourceserver.jwt.issuer-uri={{ .Values.configMap.auth0.ror.url }}
     kakka.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.configMap.auth0.ror.audience }}

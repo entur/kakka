@@ -1,5 +1,6 @@
 package no.entur.kakka.security;
 
+import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

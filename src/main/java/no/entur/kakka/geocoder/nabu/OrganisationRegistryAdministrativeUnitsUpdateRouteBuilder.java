@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import org.wololo.geojson.Polygon;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;

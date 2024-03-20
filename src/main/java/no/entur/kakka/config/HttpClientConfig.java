@@ -20,7 +20,7 @@ import no.entur.kakka.Constants;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.component.http.HttpComponent;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

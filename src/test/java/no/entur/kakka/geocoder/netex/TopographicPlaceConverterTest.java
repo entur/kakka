@@ -33,9 +33,9 @@ import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.springframework.util.CollectionUtils;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.File;
@@ -43,7 +43,7 @@ import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static javax.xml.bind.JAXBContext.newInstance;
+import static jakarta.xml.bind.JAXBContext.newInstance;
 
 public class TopographicPlaceConverterTest {
 

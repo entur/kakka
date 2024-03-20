@@ -4,7 +4,6 @@ package no.entur.kakka.geocoder;
 import no.entur.kakka.exceptions.KakkaException;
 import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
@@ -123,7 +122,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
             if (temporaryExchange == null) {
                 throw new IllegalStateException("Synchronization holder not found");
             }
-            temporaryExchange.adapt(ExtendedExchange.class).handoverCompletions(aggregatedExchange);
+            temporaryExchange.getExchangeExtension().handoverCompletions(aggregatedExchange);
         }
     }
 

@@ -47,7 +47,7 @@
         <commons-text.version>1.8</commons-text.version>
         <commons-io.version>2.15.1</commons-io.version>
         <sosi-reader-impl.version>1.25</sosi-reader-impl.version>
-        <osmosis-osm-binary.version>0.47.3</osmosis-osm-binary.version>
+        <osmosis-osm-binary.version>0.48.3</osmosis-osm-binary.version>
         <kubernetes-server-mock.version>6.10.0</kubernetes-server-mock.version>
         <argLine/>
         <spring-webmvc.version>5.3.28</spring-webmvc.version>

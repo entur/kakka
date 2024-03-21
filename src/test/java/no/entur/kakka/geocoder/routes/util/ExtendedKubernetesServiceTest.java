@@ -38,7 +38,7 @@ class ExtendedKubernetesServiceTest {
     @Test
     @DisplayName("Should test env variable in a container")
     void testContainerEnvVariables() throws FileNotFoundException {
-        CronJob cronJob = client.batch().v1().cronjobs().load(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/routes/util/cronjob2.yml")).item();
+        CronJob cronJob = client.batch().v1().cronjobs().load(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/routes/util/cronjob2.yml")).get();
         final Job job = buildJobFromCronJobSpecTemplate(cronJob, "geocoder-job", getEnvVars(ES_DATA_FILE_NAME));
 
         Assertions.assertEquals("geocoder-acceptance-tests-predeploy",cronJob.getMetadata().getName());

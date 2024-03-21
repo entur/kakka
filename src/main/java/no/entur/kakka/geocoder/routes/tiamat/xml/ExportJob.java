@@ -19,7 +19,7 @@ package no.entur.kakka.geocoder.routes.tiamat.xml;
 
 import com.google.common.base.MoreObjects;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 @XmlRootElement

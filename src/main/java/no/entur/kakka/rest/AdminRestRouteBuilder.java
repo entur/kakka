@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
  * REST interface for backdoor triggering of messages
@@ -70,7 +70,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
 
         final String camelHttpPattern = "CamelHttp*";
-        final String swaggerJsonPath = "/swagger.json";
+        final String openApiJsonPath = "/openapi.json";
 
         super.configure();
 
@@ -104,9 +104,9 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .contextPath("/services")
                 .bindingMode(RestBindingMode.json)
                 .endpointProperty("matchOnUriPrefix", "true")
-                .apiContextPath("/swagger.json")
+                .apiContextPath("/openapi.json")
                 .dataFormatProperty("prettyPrint", "true")
-                .apiContextPath(swaggerJsonPath)
+                .apiContextPath(openApiJsonPath)
                 .apiProperty("api.title", "Kakka Admin API").apiProperty("api.version", "1.0");
 
         rest("")
@@ -122,7 +122,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:adminRouteAuthorizeDelete");
 
 
-        String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/swagger.json?bridgeEndpoint=true";
+        String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/openapi.json?bridgeEndpoint=true";
 
 
         rest("/geocoder_admin")
@@ -138,7 +138,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
                 .to("direct:adminGeoCoderStart")
 
-                .get(swaggerJsonPath)
+                .get(openApiJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .to(commonApiDocEndpoint);
@@ -164,7 +164,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .produces(PLAIN)
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .to("direct:adminOrgRegImportAdminZones")
-                .get(swaggerJsonPath)
+                .get(openApiJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .to(commonApiDocEndpoint);

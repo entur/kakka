@@ -22,10 +22,10 @@ import org.rutebanken.netex.model.TopographicPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.BlockingQueue;
 
-import static javax.xml.bind.JAXBContext.newInstance;
+import static jakarta.xml.bind.JAXBContext.newInstance;
 
 public class TopographicPlaceNetexWriter {
 

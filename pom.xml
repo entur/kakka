@@ -48,7 +48,7 @@
         <commons-io.version>2.15.1</commons-io.version>
         <sosi-reader-impl.version>1.25</sosi-reader-impl.version>
         <osmosis-osm-binary.version>0.47.3</osmosis-osm-binary.version>
-        <kubernetes-server-mock.version>6.3.0</kubernetes-server-mock.version>
+        <kubernetes-server-mock.version>6.9.2</kubernetes-server-mock.version>
         <argLine/>
         <spring-webmvc.version>5.3.28</spring-webmvc.version>
     </properties>
@@ -359,11 +359,6 @@
             <artifactId>kubernetes-server-mock</artifactId>
             <version>${kubernetes-server-mock.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.fabric8</groupId>
-            <artifactId>kubernetes-client</artifactId>
-            <version>${kubernetes-server-mock.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -34,7 +34,7 @@
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
-        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-fileupload.version>1.5</commons-fileupload.version>
 
         <geotools.version>20.3</geotools.version>
         <!-- HSQLDB version compatible with GeoTools 20.3 -->

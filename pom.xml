@@ -25,7 +25,7 @@
         <java.version>21</java.version>
         <camel.version>4.3.0</camel.version>
 
-        <wololo.version>0.14.3</wololo.version>
+        <wololo.version>0.18.1</wololo.version>
         <jskdata.version>1.0.15</jskdata.version>
 
         <auth0.version>1.26.0</auth0.version>

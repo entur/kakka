@@ -16,12 +16,10 @@
 
 package no.entur.kakka.config;
 
-import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.OAuth2TokenService;
 import org.entur.oauth2.TokenService;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
-import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,16 +39,6 @@ public class OAuth2Config {
                 .withAudience(audience)
                 .withClientRegistrationId("kakka")
                 .build();
-    }
-
-    /**
-     * Extract role assignments from a JWT token.
-     *
-     * @return role
-     */
-    @Bean
-    public RoleAssignmentExtractor roleAssignmentExtractor() {
-        return new JwtRoleAssignmentExtractor();
     }
 
     @Bean

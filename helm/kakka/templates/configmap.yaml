@@ -96,7 +96,10 @@ data:
     spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.configMap.oauth2.client.url }}
     kakka.oauth2.client.audience={{ .Values.configMap.oauth2.client.audience }}
 
-    # PubSub
+    # Authorization
+    kakka.security.authorization-service=token-based
+
+  # PubSub
     kakka.pubsub.project.id = {{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1

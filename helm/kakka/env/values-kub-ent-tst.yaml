@@ -55,3 +55,7 @@ monitoringEnabled: true
 cronjobTiamatExportStatus:
   environmentVar:
     bucketPath: gs://marduk-test/tiamat/
+
+cronjobGeocoderCurrentStatus:
+  environmentVar:
+    bucketPath: gs://ror-kakka-test/es-data/

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    {{- include "geocoder-current.labels" . | indent 4 }}
+  name: cronjob-geocoder-current-status
+  namespace: {{ .Release.Namespace }}
+spec:
+  concurrencyPolicy: {{ .Values.cronjobTiamatExportStatus.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.failedJobsHistoryLimit }}
+  jobTemplate:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        {{- include "geocoder-current.labels" . | indent 12 }}
+    spec:
+      template:
+        spec:
+          serviceAccountName: application
+          containers:
+            - command:
+                - ./geocoder_update_status.sh
+              env:
+                - name: TZ
+                  value: Europe/Oslo
+                - name: BUCKET_PATH
+                  value: {{ .Values.cronjobGeocoderCurrentStatus.environmentVar.bucketPath }}
+                - name: WARNING_DAYS
+                  value: "1"
+              envFrom:
+                - secretRef:
+                    name: ror-slack
+              image: {{ .Values.cronjobTiamatExportStatus.image.repo }}
+              imagePullPolicy: IfNotPresent
+              name: geocoder-current-status-job
+              resources:
+                limits:
+                  cpu: {{ .Values.cronjobTiamatExportStatus.resources.cpuLimit }}
+                  memory: {{ .Values.cronjobTiamatExportStatus.resources.memLimit }}
+                requests:
+                  cpu: {{ .Values.cronjobTiamatExportStatus.resources.cpuRequest }}
+                  memory: {{ .Values.cronjobTiamatExportStatus.resources.memRequest }}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: '30 6 * ? *'
+  successfulJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.successfulJobsHistoryLimit }}
+  suspend: false

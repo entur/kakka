@@ -46,3 +46,15 @@ slack: talk-ror
 type: cronjob
 namespace: {{ .Release.Namespace }}
 {{- end }}
+
+
+
+{{/* Generate basic labels */}}
+{{- define "geocoder-current.labels" }}
+app: cronjob-geocoder-current-status
+release: cronjob-tgeocoder-current-status
+team: ror
+slack: talk-ror
+type: cronjob
+namespace: {{ .Release.Namespace }}
+{{- end }}

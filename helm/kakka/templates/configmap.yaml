@@ -99,7 +99,7 @@ data:
     # Authorization
     kakka.security.authorization-service=token-based
 
-  # PubSub
+    # PubSub
     kakka.pubsub.project.id = {{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1

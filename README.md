@@ -20,6 +20,8 @@ server.admin.port=8888
 server.host=0.0.0.0
 server.port=8776
 
+kakka.security.user-context-service=full-access
+
 blobstore.gcs.container.name=marduk-test
 blobstore.gcs.credential.path=/home/tomgag/.ssh/Carbon-ef49cabc6d04.json
 blobstore.delete.external.blobs=false
@@ -53,6 +55,19 @@ kartverket.password=
      ```docker rm -f kakka ; mvn -Pf8-build && docker run -it --name kakka -e JAVA_OPTIONS="-Xmx1280m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" --link lamassu  -v /git/config/kakka/dev/application.properties:/app/config/application.properties:ro dr.rutebanken.org/rutebanken/kakka:0.0.1-SNAPSHOT```
 
 * For more docker plugin goals, see: http://ro14nd.de/docker-maven-plugin/goals.html
+
+## Security
+An authorization service implementation must be selected.
+The following implementation gives full access to all authenticated users:
+
+```properties
+kakka.security.user-context-service=full-access
+```
+
+The following implementation enables OAuth2 token-based authorization:
+```properties
+kakka.security.user-context-service=token-based
+```
 
 
 ## Liveness and readyiness

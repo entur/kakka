@@ -20,14 +20,13 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
-import no.entur.kakka.security.AuthorizationService;
+import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
-import org.rutebanken.helper.organisation.AuthorizationConstants;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
 import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
- * REST interface for backdoor triggering of messages
+ * API endpoint for managing the geocoder data import pipeline.
  */
 @Component
 public class AdminRestRouteBuilder extends BaseRouteBuilder {
@@ -61,7 +60,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
     private String host;
 
     @Autowired
-    private AuthorizationService authorizationService;
+    private KakkaAuthorizationService kakkaAuthorizationService;
 
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
@@ -220,12 +219,12 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
         from("direct:authorizeAdminRequest")
                 .doTry()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .process(e -> kakkaAuthorizationService.verifyRouteDataAdministratorPrivileges())
                 .routeId("admin-authorize-admin-request");
 
         from("direct:authorizeEditRequest")
                 .doTry()
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ORGANISATION_EDIT))
+                .process(e -> kakkaAuthorizationService.verifyOrganisationAdministratorPrivileges())
                 .routeId("admin-authorize-edit-request");
 
         from("direct:adminGeoCoderStart")
@@ -263,7 +262,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .setBody(simple("${exchange.getIn().getRequest().getParts()}"))
                 .streamCaching()
                 .setHeader(PROVIDER_ID, header("providerId"))
-                .process(e -> authorizationService.verifyAtLeastOne(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .process(e -> kakkaAuthorizationService.verifyRouteDataAdministratorPrivileges())
                 .to("direct:validateProvider")
                 .log(LoggingLevel.INFO, "Upload files and start import pipeline")
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)

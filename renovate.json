@@ -3,7 +3,7 @@
     "github>entur/ror-renovate-config"
   ],
   "baseBranches": [
-    "main"
+    "master"
   ],
   "separateMinorPatch": true
 }

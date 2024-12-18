@@ -5,5 +5,13 @@
   "baseBranches": [
     "master"
   ],
-  "separateMinorPatch": true
+  "separateMinorPatch": true,
+
+  "packageRules": [
+    {
+      "matchPackageNames": ["crosby.binary:osmpbf"],
+      "enabled": false
+    }
+  ]
+
 }

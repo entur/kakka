@@ -43,7 +43,7 @@
         <geojson-jackson.version>1.8.1</geojson-jackson.version>
         <gtfs-lib.version>3.3.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
-        <osmpbf.version>1.3.5</osmpbf.version>
+        <osmpbf.version>1.3.3-entur</osmpbf.version>
         <commons-text.version>1.10.0</commons-text.version>
         <commons-io.version>2.18.0</commons-io.version>
         <sosi-reader-impl.version>1.25</sosi-reader-impl.version>

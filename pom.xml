@@ -55,8 +55,14 @@
 
     <repositories>
         <repository>
-            <id>ECC</id>
-            <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
+            <id>osgeo</id>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

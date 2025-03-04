@@ -43,7 +43,7 @@
         <geojson-jackson.version>1.14</geojson-jackson.version>
         <gtfs-lib.version>3.3.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
-        <osmpbf.version>1.3.3-entur</osmpbf.version>
+        <osmpbf.version>1.3.5</osmpbf.version>
         <commons-text.version>1.13.0</commons-text.version>
         <commons-io.version>2.18.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
@@ -278,6 +278,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>crosby.binary</groupId>
             <artifactId>osmpbf</artifactId>
@@ -289,6 +290,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>

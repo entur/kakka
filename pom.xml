@@ -43,7 +43,8 @@
         <geojson-jackson.version>1.14</geojson-jackson.version>
         <gtfs-lib.version>3.3.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
-        <osmpbf.version>1.3.5</osmpbf.version>
+        <osmpbf.version>1.6.0</osmpbf.version>
+        <google-protobuf.version>4.29.3</google-protobuf.version>
         <commons-text.version>1.13.0</commons-text.version>
         <commons-io.version>2.18.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
@@ -280,15 +281,23 @@
         </dependency>
 
         <dependency>
-            <groupId>crosby.binary</groupId>
+            <groupId>org.openstreetmap.pbf</groupId>
             <artifactId>osmpbf</artifactId>
             <version>${osmpbf.version}</version>
+
             <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>
                     <artifactId>protobuf-java</artifactId>
                 </exclusion>
             </exclusions>
+
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${google-protobuf.version}</version>
         </dependency>
 
         <dependency>

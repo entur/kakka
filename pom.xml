@@ -44,7 +44,7 @@
         <gtfs-lib.version>3.3.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
         <osmpbf.version>1.6.0</osmpbf.version>
-        <google-protobuf.version>4.29.3</google-protobuf.version>
+        <google-protobuf.version>4.30.0</google-protobuf.version>
         <commons-text.version>1.13.0</commons-text.version>
         <commons-io.version>2.18.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>

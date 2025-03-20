@@ -1,4 +1,4 @@
-# Kakka [![CircleCI](https://circleci.com/gh/entur/kakka.svg?style=svg&circle-token=ad5039464c06f39960f03e52db5e67ce9633d507)](https://circleci.com/gh/entur/kakka)
+# Kakka ![Build](https://github.com/entur/kakka/actions/workflows/push.yml/badge.svg)
 
 Kakka is the build pipeline for the elastic search backing of the Pelias geocoder application. 
  

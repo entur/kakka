@@ -49,7 +49,7 @@ public class GeoJsonCollectionTopographicPlaceReader implements TopographicPlace
     public void addToQueue(BlockingQueue<TopographicPlace> queue) throws IOException, InterruptedException {
         for (File file : files) {
             FeatureJSON fJson = new FeatureJSON();
-            FeatureIterator<org.opengis.feature.simple.SimpleFeature> itr = fJson.streamFeatureCollection(FileUtils.openInputStream(file));
+            FeatureIterator<org.geotools.api.feature.simple.SimpleFeature> itr = fJson.streamFeatureCollection(FileUtils.openInputStream(file));
 
             while (itr.hasNext()) {
                 TopographicPlaceAdapter adapter = wrapperFactory.createWrapper(itr.next());

@@ -23,13 +23,13 @@ import no.entur.kakka.geocoder.routes.pelias.json.PeliasDocument;
 import no.entur.kakka.geocoder.services.AdminUnitRepository;
 import org.apache.camel.Body;
 import org.apache.camel.ExchangeProperty;
+import org.geotools.api.geometry.Position;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.referencing.operation.TransformException;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,8 +97,9 @@ public class PeliasIndexValidPlaceNameFilter {
 
                 final GeodeticCalculator gc = new GeodeticCalculator();
 
-                final DirectPosition placeDirectPosition = JTS.toDirectPosition(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()), gc.getCoordinateReferenceSystem());
-                final DirectPosition gospDirectPosition = JTS.toDirectPosition(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()), gc.getCoordinateReferenceSystem());
+
+                final Position placeDirectPosition = JTS.toDirectPosition(new Coordinate(placeNameCenterPoint.getLon(), placeNameCenterPoint.getLat()), gc.getCoordinateReferenceSystem());
+                final Position gospDirectPosition = JTS.toDirectPosition(new Coordinate(gospCentroid.getLocation().getLongitude().doubleValue(), gospCentroid.getLocation().getLatitude().doubleValue()), gc.getCoordinateReferenceSystem());
 
                 try {
                     gc.setStartingPosition(placeDirectPosition);

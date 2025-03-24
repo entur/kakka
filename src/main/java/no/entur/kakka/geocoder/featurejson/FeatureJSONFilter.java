@@ -19,12 +19,11 @@ package no.entur.kakka.geocoder.featurejson;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
-import org.opengis.feature.Feature;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -90,7 +89,7 @@ public class FeatureJSONFilter {
     }
 
 
-    protected <T> T getProperty(Feature feature, String propertyName) {
+    protected <T> T getProperty(SimpleFeature feature, String propertyName) {
         Property property = feature.getProperty(propertyName);
         if (property == null) {
             return null;

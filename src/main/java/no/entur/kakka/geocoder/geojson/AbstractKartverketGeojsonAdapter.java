@@ -19,8 +19,7 @@ package no.entur.kakka.geocoder.geojson;
 
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import org.apache.commons.lang3.StringUtils;
-import org.opengis.feature.simple.SimpleFeature;
-
+import org.geotools.api.feature.simple.SimpleFeature;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

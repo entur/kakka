@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.geojson;
 
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

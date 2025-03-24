@@ -18,7 +18,7 @@ package no.entur.kakka.geocoder.geojson;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 import java.util.Arrays;
 import java.util.List;

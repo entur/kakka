@@ -17,7 +17,7 @@
 package no.entur.kakka.geocoder.geojson;
 
 
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 public class KartverketCounty extends AbstractKartverketGeojsonAdapter {
 

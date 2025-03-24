@@ -17,8 +17,8 @@
 package no.entur.kakka.geocoder.geojson;
 
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.Property;
 
 public abstract class AbstractGeojsonAdapter {
 
@@ -31,8 +31,8 @@ public abstract class AbstractGeojsonAdapter {
     public Geometry getDefaultGeometry() {
         if (feature.getDefaultGeometryProperty() != null) {
             Object geometry = feature.getDefaultGeometryProperty().getValue();
-            if (geometry instanceof Geometry) {
-                return (Geometry) geometry;
+            if (geometry instanceof Geometry defaultGeometry) {
+                return defaultGeometry;
             }
         }
         return null;

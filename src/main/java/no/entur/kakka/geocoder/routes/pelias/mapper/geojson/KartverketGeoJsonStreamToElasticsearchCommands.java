@@ -25,7 +25,7 @@ import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.CountyToPeliasDoc
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.LocalityToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.PlaceToPeliasDocument;
 import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.TopographicPlaceAdapterToPeliasDocument;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

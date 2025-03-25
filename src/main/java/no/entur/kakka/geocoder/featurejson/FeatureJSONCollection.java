@@ -19,8 +19,7 @@ package no.entur.kakka.geocoder.featurejson;
 import no.entur.kakka.exceptions.FileValidationException;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
-import org.opengis.feature.simple.SimpleFeature;
-
+import org.geotools.api.feature.simple.SimpleFeature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

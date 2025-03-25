@@ -23,7 +23,7 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceMapper;
 import no.entur.kakka.geocoder.netex.TopographicPlaceReader;
 import org.apache.commons.io.FileUtils;
 import org.geotools.geojson.feature.FeatureJSON;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.netex.model.TopographicPlace;
 

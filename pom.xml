@@ -36,9 +36,7 @@
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.5</commons-fileupload.version>
 
-        <geotools.version>20.5</geotools.version>
-        <!-- HSQLDB version compatible with GeoTools 20.3 -->
-        <hsqldb.version>2.4.1</hsqldb.version>
+        <geotools.version>32.2</geotools.version>
 
         <geojson-jackson.version>1.14</geojson-jackson.version>
         <gtfs-lib.version>3.3.0</gtfs-lib.version>
@@ -228,6 +226,16 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
             <version>${geotools.version}</version>
         </dependency>
         <!--  Using de.grundid.opendatalab geojson for legacy reasons. would be better to swtich to org.wololo-->

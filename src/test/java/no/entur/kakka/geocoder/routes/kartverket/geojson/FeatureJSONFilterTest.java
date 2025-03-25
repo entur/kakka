@@ -22,7 +22,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.opengis.feature.Feature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 import java.io.FileInputStream;
 
@@ -41,18 +41,18 @@ public class FeatureJSONFilterTest {
 
         // 4 contains 4 fylke, buskerud twice. Expect only the largest buskerud to remain (20 > 5)
         Assertions.assertEquals(3, featureCollection.size());
-        Feature buskerud = getFeature(featureCollection, "Buskerud");
+        SimpleFeature buskerud = getFeature(featureCollection, "Buskerud");
         Assertions.assertNotNull(buskerud);
         Assertions.assertEquals(Long.valueOf(20), buskerud.getProperty("area").getValue());
 
     }
 
-    private Feature getFeature(FeatureCollection featureCollection, String name) {
-        Feature feature = null;
+    private SimpleFeature getFeature(FeatureCollection featureCollection, String name) {
+        SimpleFeature feature = null;
         FeatureIterator itr = featureCollection.features();
         while (itr.hasNext()) {
 
-            Feature candidate = itr.next();
+            SimpleFeature candidate = (SimpleFeature) itr.next();
 
             if (name.equals(candidate.getProperty("navn").getValue())) {
                 feature = candidate;

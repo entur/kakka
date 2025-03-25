@@ -17,15 +17,15 @@
 package no.entur.kakka.geocoder.routes.pelias.mapper.coordinates;
 
 
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
+
 
 public class GeometryTransformer {
 
@@ -33,14 +33,11 @@ public class GeometryTransformer {
 
     private static GeometryTransformer instance;
 
-    private final CRSAuthorityFactory factory;
-
     private final CoordinateReferenceSystem wgs84;
 
 
     private GeometryTransformer() throws FactoryException {
-        factory = CRS.getAuthorityFactory(true);
-        wgs84 = factory.createCoordinateReferenceSystem(WGS84_EPSG);
+        wgs84 = CRS.decode(WGS84_EPSG, true);
 
     }
 
@@ -48,7 +45,7 @@ public class GeometryTransformer {
         return getInstance().transformFromUTM(geometry, utmZone);
     }
 
-    public static Coordinate fromUTM(Coordinate coordinate, String utmZone) throws FactoryException, TransformException {
+    public static Coordinate fromUTM(Coordinate coordinate, String utmZone) throws FactoryException {
         return getInstance().transformFromUTM(coordinate, utmZone);
     }
 
@@ -77,7 +74,8 @@ public class GeometryTransformer {
     }
 
     private CoordinateReferenceSystem utmCoordinateReferenceSystem(String utmZone) throws FactoryException {
-        return factory.createCoordinateReferenceSystem("EPSG:326" + utmZone);
+        String epsgCode = "EPSG:326" + utmZone;
+        return CRS.decode(epsgCode, true);
     }
 
     /**

@@ -34,11 +34,12 @@ import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.wololo.geojson.Polygon;
 import org.wololo.jts2geojson.GeoJSONWriter;
@@ -56,9 +57,6 @@ public class TopographicPlaceConverterTest {
 
     private final TopographicPlaceConverter converter = new TopographicPlaceConverter("CET");
 
-    @Autowired
-    private GeojsonFeatureWrapperFactory geoJsonWrapperFactory;
-
     @Test
     public void testFilterConvertAdminUnitsFromGeoJson() throws Exception {
         String filteredFilePath = "target/filtered-fylker.geojson";
@@ -72,7 +70,7 @@ public class TopographicPlaceConverterTest {
     }
 
     @Test
-    public void testCovertAdminUnitsToGeoJson() throws Exception {
+    public void testCovertWOFCountriesToGeoJson() throws Exception {
         final List<AdministrativeZone> wof = new GeoJsonSingleTopographicPlaceReader(new GeojsonFeatureWrapperFactory(null),
                 new File("src/test/resources/no/entur/kakka/geocoder/geojson/finland.geojson")).read()
                 .stream()
@@ -81,7 +79,7 @@ public class TopographicPlaceConverterTest {
 
         final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         mapper.writeValue(new File("target/finland-baba.geojson"), wof);
-
+        Assertions.assertFalse(CollectionUtils.isEmpty(wof));
     }
 
     @Test
@@ -98,7 +96,7 @@ public class TopographicPlaceConverterTest {
 
     @Test
     public void testConvertAdminUnitsFromSosi() throws Exception {
-        TopographicPlaceReader reader = new SosiTopographicPlaceReader(new SosiElementWrapperFactory(), Arrays.asList(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")));
+        TopographicPlaceReader reader = new SosiTopographicPlaceReader(new SosiElementWrapperFactory(), List.of(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")));
         String targetPath = "target/admin-units-from-sosi.xml";
         converter.toNetexFile(reader,
                 targetPath);
@@ -118,17 +116,6 @@ public class TopographicPlaceConverterTest {
         validateNetexFile(targetPath);
     }
 
-
-
-//    @Test // File is to big for source control
-//    public void testConvertAdminUnitsFromSosiRealKartverketData() throws Exception {
-//        TopographicPlaceReader reader = new SosiTopographicPlaceReader(new File("files/ADM_enheter_Norge.sos"));
-//        String targetPath = "target/admin-units-from-sosi.xml";
-//        converter.toNetexFile(reader,
-//                targetPath);
-//
-//        validateNetexFile(targetPath);
-//    }
 
 
     private PublicationDeliveryStructure validateNetexFile(String path) throws Exception {
@@ -154,9 +141,9 @@ public class TopographicPlaceConverterTest {
 
     private AdministrativeZone toAdministrativeZone(TopographicPlaceAdapter topographicPlaceAdapter, String source) {
 
-        org.locationtech.jts.geom.Geometry geometry = topographicPlaceAdapter.getDefaultGeometry();
+        Geometry geometry = topographicPlaceAdapter.getDefaultGeometry();
 
-        if (geometry instanceof org.locationtech.jts.geom.MultiPolygon) {
+        if (geometry instanceof MultiPolygon) {
             CoordinateList coordinateList = new CoordinateList(geometry.getBoundary().getCoordinates());
             coordinateList.closeRing();
             geometry = geometry.getFactory().createPolygon(coordinateList.toCoordinateArray());
@@ -169,15 +156,12 @@ public class TopographicPlaceConverterTest {
     }
 
     private AdministrativeZone.AdministrativeZoneType toType(TopographicPlaceAdapter.Type type) {
-        switch (type) {
-            case COUNTRY:
-                return AdministrativeZone.AdministrativeZoneType.COUNTRY;
-            case COUNTY:
-                return AdministrativeZone.AdministrativeZoneType.COUNTY;
-            case LOCALITY:
-                return AdministrativeZone.AdministrativeZoneType.LOCALITY;
-        }
+        return switch (type) {
+            case COUNTRY -> AdministrativeZone.AdministrativeZoneType.COUNTRY;
+            case COUNTY -> AdministrativeZone.AdministrativeZoneType.COUNTY;
+            case LOCALITY -> AdministrativeZone.AdministrativeZoneType.LOCALITY;
+            default -> AdministrativeZone.AdministrativeZoneType.CUSTOM;
+        };
 
-        return AdministrativeZone.AdministrativeZoneType.CUSTOM;
     }
 }

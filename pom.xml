@@ -38,7 +38,7 @@
         <geotools.version>32.2</geotools.version>
 
         <geojson-jackson.version>1.14</geojson-jackson.version>
-        <gtfs-lib.version>3.3.0</gtfs-lib.version>
+        <gtfs-lib.version>6.2.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
         <osmpbf.version>1.6.0</osmpbf.version>
         <google-protobuf.version>4.30.1</google-protobuf.version>
@@ -243,6 +243,7 @@
             <artifactId>geojson-jackson</artifactId>
             <version>${geojson-jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.conveyal</groupId>
             <artifactId>gtfs-lib</artifactId>

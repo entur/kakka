@@ -62,6 +62,7 @@ public class NetexPeliasMapperUtil {
                     coordinate = null;
                 }
             }
+
             return new Polygon(coordinates);
 
         }

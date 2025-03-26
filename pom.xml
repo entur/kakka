@@ -26,7 +26,7 @@
         <camel.version>4.3.0</camel.version>
 
         <wololo.version>0.18.1</wololo.version>
-        <jskdata.version>1.0.15</jskdata.version>
+        <jskdata.version>1.0.20</jskdata.version>
 
         <netex-java-model.version>2.0.14</netex-java-model.version>
         <entur.helpers.version>4.9</entur.helpers.version>

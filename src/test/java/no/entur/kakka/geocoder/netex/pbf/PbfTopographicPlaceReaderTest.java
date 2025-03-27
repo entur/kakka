@@ -98,7 +98,7 @@ public class PbfTopographicPlaceReaderTest {
     @Test
     public void testIgnoreMultiPolygons() throws Exception {
         PbfTopographicPlaceReader reader =
-                new PbfTopographicPlaceReader(Arrays.asList(createFilter("tourism", "attraction")), IanaCountryTldEnumeration.NO,
+                new PbfTopographicPlaceReader(List.of(createFilter("tourism", "attraction")), IanaCountryTldEnumeration.NO,
                         new File("src/test/resources/no/entur/kakka/geocoder/pbf/uib.pbf"));
 
         BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();

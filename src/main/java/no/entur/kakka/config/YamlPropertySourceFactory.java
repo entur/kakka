@@ -44,7 +44,7 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
         }
 
         if (propertySource != null && !propertySource.isEmpty()) {
-            return propertySource.get(0);
+            return propertySource.getFirst();
         }
         return null;
     }

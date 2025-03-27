@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Objects;
 
 public class FileNameAndDigest {
 
@@ -82,8 +83,8 @@ public class FileNameAndDigest {
 
         FileNameAndDigest that = (FileNameAndDigest) o;
 
-        if (fileName != null ? !fileName.equals(that.fileName) : that.fileName != null) return false;
-        return digest != null ? digest.equals(that.digest) : that.digest == null;
+        if (!Objects.equals(fileName, that.fileName)) return false;
+        return Objects.equals(digest, that.digest);
     }
 
     @Override

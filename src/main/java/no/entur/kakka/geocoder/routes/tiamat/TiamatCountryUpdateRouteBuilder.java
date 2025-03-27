@@ -109,6 +109,6 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
     }
 
     private File[] getGeojsonCountryFiles() {
-        return FileUtils.listFiles(new File(localWorkingDirectory), new String[]{"geojson"}, false).stream().toArray(File[]::new);
+        return FileUtils.listFiles(new File(localWorkingDirectory), new String[]{"geojson"}, false).toArray(File[]::new);
     }
 }

@@ -35,7 +35,7 @@ import static no.entur.kakka.geocoder.GeoCoderConstants.PELIAS_UPDATE_START;
 
 
 /**
- * Fetch data file as listed on: https://download.geofabrik.de/europe/norway.html
+ * Fetch data file as listed on: <a href="https://download.geofabrik.de/europe/norway.html">...</a>
  * This is expected to be https://download.geofabrik.de/europe/norway-latest.osm.pbf
  *
  * <p>
@@ -140,7 +140,7 @@ public class FetchOsmRouteBuilder extends BaseRouteBuilder {
                 .convertBodyTo(String.class)
                 .process(p -> {
                     String md5 = (String) p.getIn().getBody();
-                    if (md5 == null || md5.length() == 0) {
+                    if (md5 == null || md5.isEmpty()) {
                         md5 = "flag that we need to fetch the data, as the file did not exist";
                     }
                     md5 = md5.split(" ")[0];

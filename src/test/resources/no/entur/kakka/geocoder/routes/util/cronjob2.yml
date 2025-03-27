@@ -109,7 +109,6 @@ spec:
           restartPolicy: Never
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccount: application
           serviceAccountName: application
           terminationGracePeriodSeconds: 30
           volumes:

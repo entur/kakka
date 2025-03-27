@@ -48,7 +48,7 @@ public class TopographicPlaceNetexWriter {
         try {
             return newInstance(clazz);
         } catch (JAXBException e) {
-            logger.warn("Could not create instance of jaxb context for class " + clazz, e);
+            logger.warn("Could not create instance of jaxb context for class {}", clazz, e);
             throw new RuntimeException(e);
         }
     }
@@ -92,11 +92,10 @@ public class TopographicPlaceNetexWriter {
         try {
             Marshaller topographicPlaceMarshaller = createTopographicPlaceMarshaller();
 
-            String lineSeparator = System.getProperty("line.separator");
+            String lineSeparator = System.lineSeparator();
             String[] publicationDeliveryLines = publicationDeliveryStructureXml.split(lineSeparator);
 
-            for (int index = 0; index < publicationDeliveryLines.length; index++) {
-                String publicationDeliveryLine = publicationDeliveryLines[index];
+            for (String publicationDeliveryLine : publicationDeliveryLines) {
                 logger.debug("Line: {}", publicationDeliveryLine);
 
                 if (publicationDeliveryLine.contains("</SiteFrame")) {

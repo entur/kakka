@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Parser for the OpenStreetMap PBF Format.
  * <p>
- * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
+ * Copied from OpenTripPlanner - <a href="https://github.com/opentripplanner/OpenTripPlanner">...</a>
  */
 public class BinaryOpenStreetMapParser extends BinaryParser {
     private final OpenStreetMapContentHandler handler;

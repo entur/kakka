@@ -81,8 +81,8 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         this.osmpoiFilterService = osmpoiFilterService;
         this.mapPOIFromNetex = mapPOIFromNetex;
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).collect(Collectors.toList());
-            logger.info("pelias poiFilter is set to: " + poiFilter);
+            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).toList();
+            logger.info("pelias poiFilter is set to: {}", poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();
             logger.info("No pelias poiFilter found");
@@ -105,9 +105,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         List<GroupOfStopPlaces> groupOfStopPlaces = null;
         for (JAXBElement<? extends Common_VersionFrameStructure> frameStructureElmt : deliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame()) {
             Common_VersionFrameStructure frameStructure = frameStructureElmt.getValue();
-            if (frameStructure instanceof Site_VersionFrameStructure) {
-                Site_VersionFrameStructure siteFrame = (Site_VersionFrameStructure) frameStructure;
-
+            if (frameStructure instanceof Site_VersionFrameStructure siteFrame) {
                 if (siteFrame.getStopPlaces() != null) {
                     stopPlaceCommands = addStopPlaceCommands(siteFrame.getStopPlaces().getStopPlace());
                     commands.addAll(stopPlaceCommands);
@@ -143,14 +141,14 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
         if (!CollectionUtils.isEmpty(groupsOfStopPlaces)) {
             GroupOfStopPlacesToPeliasMapper mapper = new GroupOfStopPlacesToPeliasMapper();
-            return groupsOfStopPlaces.stream().filter(gosp -> gosp.getMembers() != null).map(gos -> mapper.toPeliasDocuments(gos, getPopularityForGroupOfStopPlaces(gos, popularityPerStopPlaceId))).flatMap(documents -> documents.stream()).sorted(new PeliasDocumentPopularityComparator()).filter(d -> d != null).map(p -> ElasticsearchCommand.peliasIndexCommand(p)).collect(Collectors.toList());
+            return groupsOfStopPlaces.stream().filter(gosp -> gosp.getMembers() != null).map(gos -> mapper.toPeliasDocuments(gos, getPopularityForGroupOfStopPlaces(gos, popularityPerStopPlaceId))).flatMap(Collection::stream).sorted(new PeliasDocumentPopularityComparator()).filter(Objects::nonNull).map(ElasticsearchCommand::peliasIndexCommand).toList();
         }
         return new ArrayList<>();
     }
 
     private Long getPopularityForGroupOfStopPlaces(GroupOfStopPlaces groupOfStopPlaces, Map<String, Long> popularityPerStopPlaceId) {
         try {
-            double popularity = gosBoostFactor * groupOfStopPlaces.getMembers().getStopPlaceRef().stream().map(sp -> popularityPerStopPlaceId.get(sp.getRef())).filter(Objects::nonNull).reduce(1l, Math::multiplyExact);
+            double popularity = gosBoostFactor * groupOfStopPlaces.getMembers().getStopPlaceRef().stream().map(sp -> popularityPerStopPlaceId.get(sp.getRef())).filter(Objects::nonNull).reduce(1L, Math::multiplyExact);
             return (long) popularity;
         } catch (ArithmeticException ae) {
             return Long.MAX_VALUE;
@@ -159,18 +157,18 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
 
     private List<ElasticsearchCommand> addTopographicPlaceCommands(List<TopographicPlace> places, boolean mapPOIFromNetex) {
         if (!CollectionUtils.isEmpty(places)) {
-            logger.info("Total number of topographical places from tiamat: " + places.size());
+            logger.info("Total number of topographical places from tiamat: {}", places.size());
 
             TopographicPlaceToPeliasMapper mapper = new TopographicPlaceToPeliasMapper(poiBoost, poiFilter, osmpoiFilterService.getFilters());
             final List<ElasticsearchCommand> collect = places.stream()
                     .filter(mapPOIFromNetex ? p -> true : p -> p.getTopographicPlaceType() != TopographicPlaceTypeEnumeration.PLACE_OF_INTEREST)
                     .map(p -> mapper.toPeliasDocuments(new PlaceHierarchy<>(p)))
-                    .flatMap(documents -> documents.stream())
+                    .flatMap(Collection::stream)
                     .sorted(new PeliasDocumentPopularityComparator())
-                    .filter(d -> d != null)
-                    .map(p -> ElasticsearchCommand.peliasIndexCommand(p))
-                    .collect(Collectors.toList());
-            logger.info("Total topographical places mapped forElasticsearchCommand: " + collect.size());
+                    .filter(Objects::nonNull)
+                    .map(ElasticsearchCommand::peliasIndexCommand)
+                    .toList();
+            logger.info("Total topographical places mapped forElasticsearchCommand: {} ", collect.size());
             return collect;
         }
         return new ArrayList<>();
@@ -204,7 +202,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
     protected Set<PlaceHierarchy<StopPlace>> toPlaceHierarchies(List<StopPlace> places) {
         Map<String, List<StopPlace>> childrenByParentIdMap = places.stream().filter(sp -> sp.getParentSiteRef() != null).collect(Collectors.groupingBy(sp -> sp.getParentSiteRef().getRef()));
         Set<PlaceHierarchy<StopPlace>> allStopPlaces = new HashSet<>();
-        expandStopPlaceHierarchies(places.stream().filter(sp -> sp.getParentSiteRef() == null).map(sp -> createHierarchyForStopPlace(sp, null, childrenByParentIdMap)).collect(Collectors.toList()), allStopPlaces);
+        expandStopPlaceHierarchies(places.stream().filter(sp -> sp.getParentSiteRef() == null).map(sp -> createHierarchyForStopPlace(sp, null, childrenByParentIdMap)).toList(), allStopPlaces);
         return allStopPlaces;
     }
 
@@ -214,7 +212,7 @@ public class DeliveryPublicationStreamToElasticsearchCommands {
         List<PlaceHierarchy<StopPlace>> childHierarchies = new ArrayList<>();
         PlaceHierarchy<StopPlace> hierarchy = new PlaceHierarchy<>(stopPlace, parent);
         if (children != null) {
-            childHierarchies = children.stream().map(child -> createHierarchyForStopPlace(child, hierarchy, childrenByParentIdMap)).collect(Collectors.toList());
+            childHierarchies = children.stream().map(child -> createHierarchyForStopPlace(child, hierarchy, childrenByParentIdMap)).toList();
         }
         hierarchy.setChildren(childHierarchies);
         return hierarchy;

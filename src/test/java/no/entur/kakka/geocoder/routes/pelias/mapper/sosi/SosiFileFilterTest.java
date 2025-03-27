@@ -38,7 +38,7 @@ public class SosiFileFilterTest {
 
         Assertions.assertEquals(1, commands.size());
 
-        Assertions.assertEquals(((PeliasDocument) commands.iterator().next().getSource()).getDefaultName(), "Stornesodden");
+        Assertions.assertEquals("Stornesodden",((PeliasDocument) commands.iterator().next().getSource()).getDefaultName());
     }
 
 }

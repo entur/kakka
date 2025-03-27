@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
 @JsonRootName("parent")
@@ -171,11 +170,11 @@ public class Parent {
     }
 
     private <T> List<T> asList(T obj) {
-        return obj == null ? null : Arrays.asList(obj);
+        return obj == null ? null : List.of(obj);
     }
 
     private <T> T getFirst(List<T> list) {
-        return CollectionUtils.isEmpty(list) ? null : list.get(0);
+        return CollectionUtils.isEmpty(list) ? null : list.getFirst();
     }
 
     public static class Builder {

@@ -46,14 +46,14 @@ public class AddressStreamToElasticSearchCommands {
         Collection<KartverketAddress> addresses = new KartverketAddressReader().read(addressStream);
 
         // Create documents for all individual addresses
-        List<PeliasDocument> peliasDocuments = addresses.stream().map(a -> addressMapper.toPeliasDocument(a))
+        List<PeliasDocument> peliasDocuments = addresses.stream().map(addressMapper::toPeliasDocument)
                 .sorted(Comparator.comparing(PeliasDocument::getDefaultName)).collect(Collectors.toList());
 
         // Create separate document per unique street
         peliasDocuments.addAll(addressToStreetMapper.createStreetPeliasDocumentsFromAddresses(peliasDocuments));
 
         // Create elastic search commands for documents
-        return peliasDocuments.stream().map(d -> ElasticsearchCommand.peliasIndexCommand(d)).collect(Collectors.toList());
+        return peliasDocuments.stream().map(ElasticsearchCommand::peliasIndexCommand).toList();
     }
 
 

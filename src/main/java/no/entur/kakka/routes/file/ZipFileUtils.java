@@ -106,10 +106,10 @@ public class ZipFileUtils {
     public static File zipFilesInFolder(String folder, String targetFilePath) {
         try {
 
-            FileOutputStream out = new FileOutputStream(new File(targetFilePath));
+            FileOutputStream out = new FileOutputStream(targetFilePath);
             ZipOutputStream outZip = new ZipOutputStream(out);
 
-            FileUtils.listFiles(new File(folder), null, false).stream().forEach(file -> addToZipFile(file, outZip));
+            FileUtils.listFiles(new File(folder), null, false).forEach(file -> addToZipFile(file, outZip));
 
             outZip.close();
             out.close();

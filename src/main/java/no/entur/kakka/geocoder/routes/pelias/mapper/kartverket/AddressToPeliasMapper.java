@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 public class AddressToPeliasMapper {
@@ -56,7 +57,7 @@ public class AddressToPeliasMapper {
         document.setParent(toParent(address));
 
         document.setDefaultNameAndPhrase(toName(address));
-        document.setCategory(Arrays.asList(address.getType()));
+        document.setCategory(Collections.singletonList(address.getType()));
         document.setPopularity(popularity);
         return document;
     }
@@ -71,7 +72,7 @@ public class AddressToPeliasMapper {
         }
         String utmZone = KartverketCoordinatSystemMapper.toUTMZone(address.getKoordinatsystemKode());
         if (utmZone == null) {
-            logger.info("Ignoring center point for address with non-utm coordinate system: " + address.getKoordinatsystemKode());
+            logger.info("Ignoring center point for address with non-utm coordinate system: {}", address.getKoordinatsystemKode());
             return null;
         }
         Point p = factory.createPoint(new Coordinate(address.getOst(), address.getNord()));
@@ -79,7 +80,7 @@ public class AddressToPeliasMapper {
             Point conv = GeometryTransformer.fromUTM(p, utmZone);
             return new GeoPoint(conv.getY(), conv.getX());
         } catch (Exception e) {
-            logger.info("Ignoring center point for address (" + address.getAddresseId() + ") where geometry transformation failed: " + address.getKoordinatsystemKode());
+            logger.info("Ignoring center point for address ({}) where geometry transformation failed: {}", address.getAddresseId(), address.getKoordinatsystemKode());
         }
 
         return null;

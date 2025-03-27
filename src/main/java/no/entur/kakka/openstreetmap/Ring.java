@@ -32,9 +32,9 @@ public class Ring {
             coordinates.add(coordinate);
         }
         try {
-            return new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()]));
+            return new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[0]));
         } catch (IllegalArgumentException illegalArgumentException) {
-            logger.debug("Unable to create polygon: " + illegalArgumentException.getMessage());
+            logger.debug("Unable to create polygon: {}", illegalArgumentException.getMessage());
             return null;
         }
     }

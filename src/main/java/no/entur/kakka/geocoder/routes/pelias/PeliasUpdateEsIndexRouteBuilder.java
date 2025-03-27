@@ -260,7 +260,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
 
         from("direct:insertToPeliasFromZipArchive")
                 .process(e -> ZipFileUtils.unzipAddressFile(e.getIn().getBody(InputStream.class), e.getIn().getHeader(WORKING_DIRECTORY, String.class)))
-                .split().exchange(e -> listFiles(e)).stopOnException()
+                .split().exchange(this::listFiles).stopOnException()
                 .aggregationStrategy(new MarkContentChangedAggregationStrategy())
                 .to("direct:haltIfAborted")
                 .log(LoggingLevel.INFO, "Updating indexes in elasticsearch from file: ${body.name}")
@@ -276,7 +276,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .routeId("pelias-insert-from-zip");
 
         from("direct:convertToPeliasCommandsFromPlaceNames")
-                .process(e -> filterSosiFile(e))
+                .process(this::filterSosiFile)
                 .bean("kartverketSosiStreamToElasticsearchCommands", "transform")
                 .bean("peliasIndexValidPlaceNameFilter")
                 .routeId("pelias-convert-commands-place_names");

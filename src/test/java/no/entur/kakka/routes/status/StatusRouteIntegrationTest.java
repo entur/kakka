@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
-public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
+class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTestBase {
 
 
     @Produce("direct:updateStatus")
@@ -38,7 +38,7 @@ public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTest
     protected MockEndpoint jobEventQueue;
 
     @Test
-    public void testJobEventQueue() throws Exception {
+    void testJobEventQueue() throws Exception {
 
         AdviceWith.adviceWith(context,"update-status", a -> a.weaveByToUri("google-pubsub:(.*):JobEventQueue").replace().to("mock:JobEventQueue") );
 
@@ -46,7 +46,7 @@ public class StatusRouteIntegrationTest extends KakkaRouteBuilderIntegrationTest
         updateStatus.sendBody(status().toString());
 
         jobEventQueue.expectedMessageCount(1);
-        final String body = jobEventQueue.getExchanges().get(0).getIn().getBody(String.class);
+        final String body = jobEventQueue.getExchanges().getFirst().getIn().getBody(String.class);
         Assertions.assertFalse(body.isEmpty());
         Assertions.assertTrue(body.contains("EXPORT"));
     }

@@ -23,7 +23,7 @@ import no.entur.kakka.openstreetmap.model.OSMWay;
 /**
  * An interface to process/store parsed OpenStreetMap data.
  * <p>
- * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
+ * Copied from OpenTripPlanner - <a href="https://github.com/opentripplanner/OpenTripPlanner">...</a>
  */
 
 public interface OpenStreetMapContentHandler {

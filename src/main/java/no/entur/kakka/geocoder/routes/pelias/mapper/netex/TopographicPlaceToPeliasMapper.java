@@ -126,30 +126,19 @@ public class TopographicPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDo
         return typeFilter.stream()
                 .anyMatch(filter -> place.getKeyList().getKeyValue().stream()
                         .map(key -> key.getKey() + "=" + key.getValue())
-                        .anyMatch(tag -> filter.startsWith(tag)));
+                        .anyMatch(filter::startsWith));
     }
 
     @Override
     protected String getLayer(TopographicPlace place) {
-        switch (place.getTopographicPlaceType()) {
-
-            case PLACE_OF_INTEREST:
-                return "address";
-            case MUNICIPALITY:
-                return "locality";
-
-            case COUNTY:
-                return "county";
-
-            case COUNTRY:
-                return "country";
-
-            case AREA:
-                return "borough";
-            default:
-                return null;
-
-        }
+        return switch (place.getTopographicPlaceType()) {
+            case PLACE_OF_INTEREST -> "address";
+            case MUNICIPALITY -> "locality";
+            case COUNTY -> "county";
+            case COUNTRY -> "country";
+            case AREA -> "borough";
+            default -> null;
+        };
     }
 
 

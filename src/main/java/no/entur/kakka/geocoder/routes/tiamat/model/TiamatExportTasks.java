@@ -94,7 +94,7 @@ public class TiamatExportTasks {
         if (tasks.isEmpty()) {
             currentTask = null;
         } else {
-            currentTask = tasks.remove(0);
+            currentTask = tasks.removeFirst();
         }
         return currentTask;
     }

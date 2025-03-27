@@ -20,7 +20,6 @@ package no.entur.kakka.geocoder.geojson;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.api.feature.simple.SimpleFeature;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -70,6 +69,6 @@ public class KartverketPlace extends AbstractKartverketGeojsonAdapter {
 
     @Override
     public List<String> getCategories() {
-        return Arrays.asList("" + getProperty("enh_navntype"));
+        return List.of("" + getProperty("enh_navntype"));
     }
 }

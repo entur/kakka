@@ -39,21 +39,21 @@ public class SosiCoordinates {
     private String utmZone = "33";
 
     public SosiCoordinates(SosiElement head) {
-        SosiElement transpar = head.findSubElement(se -> "TRANSPAR".equals(se.getName())).get();
+        SosiElement transpar = head.findSubElement(se -> "TRANSPAR".equals(se.getName())).orElse(null);
 
         if (transpar != null) {
-            SosiElement unitElement = transpar.findSubElement(se -> "ENHET".equals(se.getName())).get();
+            SosiElement unitElement = transpar.findSubElement(se -> "ENHET".equals(se.getName())).orElse(null);
             if (unitElement != null) {
                 unit = unitElement.getValueAs(SosiNumber.class).doubleValue();
             } else {
-                logger.warn("Unable to read unit from SOSI file header. Using default value: " + unit);
+                logger.warn("Unable to read unit from SOSI file header. Using default value: {}", unit);
             }
 
-            SosiElement coordSysElement = transpar.findSubElement(se -> "KOORDSYS".equals(se.getName())).get();
+            SosiElement coordSysElement = transpar.findSubElement(se -> "KOORDSYS".equals(se.getName())).orElse(null);
             if (coordSysElement != null) {
                 utmZone = KartverketCoordinatSystemMapper.toUTMZone(coordSysElement.getValueAs(SosiValue.class).toString());
             } else {
-                logger.warn("Unable to read utmZone from SOSI file header. Using default value: " + utmZone);
+                logger.warn("Unable to read utmZone from SOSI file header. Using default value: {}", utmZone);
             }
 
 
@@ -88,12 +88,12 @@ public class SosiCoordinates {
             if (y == null) {
                 y = sosiNumber.longValue() * unit;
             } else {
-                Double x = sosiNumber.longValue() * unit;
+                double x = sosiNumber.longValue() * unit;
                 try {
                     Coordinate utmCoord = new Coordinate(x, y);
                     coordinates.add(GeometryTransformer.fromUTM(utmCoord, utmZone));
                 } catch (Exception e) {
-                    logger.warn("Failed to convert coordinates from utm to wgs84:" + e.getMessage(), e);
+                    logger.warn("Failed to convert coordinates from utm to wgs84:{}", e.getMessage(), e);
                 }
                 y = null;
             }

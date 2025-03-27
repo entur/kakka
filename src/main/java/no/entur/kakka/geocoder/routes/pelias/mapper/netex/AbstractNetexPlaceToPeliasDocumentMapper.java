@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+
 public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_VersionStructure> {
 
     protected static final String DEFAULT_LANGUAGE = "nor";
@@ -62,7 +63,7 @@ public abstract class AbstractNetexPlaceToPeliasDocumentMapper<T extends Place_V
             document.setDefaultNameAndPhrase(name.getValue());
         }
 
-        // Add official name as display name. Not a part of standard pelias model, will be copied to name.default before deduping and labelling in Entur-pelias API.
+        // Add official name as display name. Not a part of standard pelias model, will be copied to name.default before deducting and labelling in Entur-pelias API.
         MultilingualString displayName = getDisplayName(placeHierarchy);
         if (displayName != null) {
             document.getNameMap().put("display", displayName.getValue());

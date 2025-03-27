@@ -74,10 +74,6 @@ variable "ror-kakka-db-username" {
   description = "kakka database username"
   default     = "kakka"
 }
-
-variable "kube_namespace" {
-  default = "kakka"
-}
 variable "nabu_job_event_pubsub_project" {
   description = "project name of job event pubsub topic"
 }

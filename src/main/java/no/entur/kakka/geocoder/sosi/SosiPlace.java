@@ -23,8 +23,6 @@ import no.vegvesen.nvdb.sosi.document.SosiValue;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +31,6 @@ import java.util.Map;
 
 public class SosiPlace extends SosiElementWrapper {
     public static final String OBJECT_TYPE = "Sted";
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public SosiPlace(SosiElement sosiElement, SosiCoordinates coordinates) {
         super(sosiElement, coordinates);
@@ -107,7 +104,7 @@ public class SosiPlace extends SosiElementWrapper {
             return null;
         }
 
-        geometry = new GeometryFactory().createPoint(coordinateList.get(0));
+        geometry = new GeometryFactory().createPoint(coordinateList.getFirst());
         return geometry;
     }
 

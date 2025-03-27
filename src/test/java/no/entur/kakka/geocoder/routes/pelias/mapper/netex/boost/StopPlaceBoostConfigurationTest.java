@@ -27,6 +27,7 @@ import org.rutebanken.netex.model.StopTypeEnumeration;
 import org.rutebanken.netex.model.WaterSubmodeEnumeration;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class StopPlaceBoostConfigurationTest {
 
@@ -54,14 +55,14 @@ public class StopPlaceBoostConfigurationTest {
 
     @Test
     public void emptyConfigShouldYieldPopularity0ForAllStops() {
-        Assertions.assertEquals(0, new StopPlaceBoostConfiguration("{}").getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.FERRY_STOP, null)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
-        Assertions.assertEquals(0, new StopPlaceBoostConfiguration("{}").getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.BUS_STATION, BusSubmodeEnumeration.REGIONAL_BUS)), InterchangeWeightingEnumeration.PREFERRED_INTERCHANGE));
+        Assertions.assertEquals(0, new StopPlaceBoostConfiguration("{}").getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.FERRY_STOP, null)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
+        Assertions.assertEquals(0, new StopPlaceBoostConfiguration("{}").getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.BUS_STATION, BusSubmodeEnumeration.REGIONAL_BUS)), InterchangeWeightingEnumeration.PREFERRED_INTERCHANGE));
     }
 
 
     @Test
     public void allValuesMatchedShouldYieldMultipliedPopularity() {
-        Assertions.assertEquals(1000 * 6 * 10, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.RAIL_STATION, RailSubmodeEnumeration.HIGH_SPEED_RAIL)), InterchangeWeightingEnumeration.PREFERRED_INTERCHANGE));
+        Assertions.assertEquals(1000 * 6 * 10, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.RAIL_STATION, RailSubmodeEnumeration.HIGH_SPEED_RAIL)), InterchangeWeightingEnumeration.PREFERRED_INTERCHANGE));
     }
 
 
@@ -73,28 +74,28 @@ public class StopPlaceBoostConfigurationTest {
 
     @Test
     public void noValuesMatchedShouldYieldDefaultPopularity() {
-        Assertions.assertEquals(1000, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.FERRY_STOP, WaterSubmodeEnumeration.AIRPORT_BOAT_LINK)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
+        Assertions.assertEquals(1000, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.FERRY_STOP, WaterSubmodeEnumeration.AIRPORT_BOAT_LINK)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
     }
 
     @Test
     public void subModeNotFoundShouldYieldDefaultForStopType() {
-        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, AirSubmodeEnumeration.DOMESTIC_FLIGHT)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
+        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, AirSubmodeEnumeration.DOMESTIC_FLIGHT)), InterchangeWeightingEnumeration.NO_INTERCHANGE));
     }
 
     @Test
     public void subModeNotSetShouldYieldDefaultForStopType() {
-        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, null)), null));
+        Assertions.assertEquals(1000 * 2, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.AIRPORT, null)), null));
     }
 
 
     @Test
     public void subModeNotFoundAndNoStopTypeDefaultShouldYieldDefaultPopularity() {
-        Assertions.assertEquals(1000, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(StopTypeEnumeration.BUS_STATION, BusSubmodeEnumeration.REGIONAL_BUS)), null));
+        Assertions.assertEquals(1000, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(StopTypeEnumeration.BUS_STATION, BusSubmodeEnumeration.REGIONAL_BUS)), null));
     }
 
     @Test
     public void noValuesSetShouldYieldDefaultPopularity() {
-        Assertions.assertEquals(1000, boostConfiguration.getPopularity(Arrays.asList(new ImmutablePair<>(null, null)), null));
+        Assertions.assertEquals(1000, boostConfiguration.getPopularity(List.of(new ImmutablePair<>(null, null)), null));
     }
 
 }

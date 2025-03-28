@@ -21,6 +21,7 @@ import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class WhosOnFirstCountry extends AbstractGeojsonAdapter implements Topogr
         if (CollectionUtils.isEmpty(names)) {
             return null;
         }
-        return names.get(0);
+        return names.getFirst();
     }
 
     @Override
@@ -89,6 +90,6 @@ public class WhosOnFirstCountry extends AbstractGeojsonAdapter implements Topogr
 
     @Override
     public List<String> getCategories() {
-        return null;
+        return Collections.emptyList();
     }
 }

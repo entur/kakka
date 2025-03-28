@@ -29,7 +29,7 @@ public class KartverketServiceTest {
     @Test
     public void testAPIDownloaderIsUsedForUUIDs() {
         Downloader downloader = new KartverketService().getDownloader(UUID.randomUUID().toString(), null);
-        Assertions.assertTrue(downloader instanceof GeoNorgeDownloadAPI);
+        Assertions.assertInstanceOf(GeoNorgeDownloadAPI.class, downloader);
     }
 
     @Test

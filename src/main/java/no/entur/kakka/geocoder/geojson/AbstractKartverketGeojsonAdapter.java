@@ -20,6 +20,8 @@ package no.entur.kakka.geocoder.geojson;
 import no.entur.kakka.geocoder.netex.TopographicPlaceAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.api.feature.simple.SimpleFeature;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,7 @@ public abstract class AbstractKartverketGeojsonAdapter extends AbstractGeojsonAd
 
     @Override
     public List<String> getCategories() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

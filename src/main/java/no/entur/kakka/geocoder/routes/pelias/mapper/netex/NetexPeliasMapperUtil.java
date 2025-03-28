@@ -16,16 +16,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class NetexPeliasMapperUtil {
 
     public static List<MultilingualString> filterUnique(List<MultilingualString> strings) {
-        return strings.stream().filter(distinctByKey(name -> name.getValue())).collect(Collectors.toList());
+        return strings.stream().filter(distinctByKey(MultilingualString::getValue)).toList();
     }
 
     public static boolean isValid(GroupOfEntities_VersionStructure object) {
-        return CollectionUtils.isEmpty(object.getValidBetween()) || object.getValidBetween().stream().anyMatch(vb -> isValidNow(vb));
+        return CollectionUtils.isEmpty(object.getValidBetween()) || object.getValidBetween().stream().anyMatch(NetexPeliasMapperUtil::isValidNow);
     }
 
     // Should compare instant with validbetween from/to in timezone defined in PublicationDelivery, but makes little difference in practice
@@ -43,9 +42,7 @@ public class NetexPeliasMapperUtil {
 
     public static Polygon toPolygon(AbstractRingType ring) {
 
-        if (ring instanceof LinearRingType) {
-            LinearRingType linearRing = (LinearRingType) ring;
-
+        if (ring instanceof LinearRingType linearRing) {
             List<LngLatAlt> coordinates = new ArrayList<>();
             LngLatAlt coordinate = null;
             LngLatAlt prevCoordinate = null;
@@ -62,6 +59,7 @@ public class NetexPeliasMapperUtil {
                     coordinate = null;
                 }
             }
+
             return new Polygon(coordinates);
 
         }

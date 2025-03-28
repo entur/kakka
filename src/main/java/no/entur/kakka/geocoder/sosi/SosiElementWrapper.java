@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -62,8 +61,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
         if (refElement.isPresent()) {
             for (SosiValue ref : refElement.get().getValuesAs(SosiValue.class)) {
 
-                if (ref instanceof SosiRefNumber) {
-                    SosiRefNumber sosiRefNumber = (SosiRefNumber) ref;
+                if (ref instanceof SosiRefNumber sosiRefNumber) {
                     Long refId = sosiRefNumber.longValue();
                     List<Coordinate> coordinatesForRef = coordinates.getForRef(refId);
                     if (coordinatesForRef != null) {
@@ -76,13 +74,13 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
                             }
 
                         } else {
-                            logger.info("Bad coord sequence for  SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
+                            logger.info("Bad coord sequence for  SosiRef: {} for: {}: {}: {}", refId, getType(), getId(), getName());
                         }
                     } else {
-                        logger.info("Ignore unknown SosiRef: " + refId + " for: " + getType() + ": " + getId() + ": " + getName());
+                        logger.info("Ignore unknown SosiRef: {} for: {}: {}: {}", refId, getType(), getId(), getName());
                     }
                 } else if (ref instanceof SosiRefIsland) {
-                    logger.info("Ignore SosiRefIsland (enclave) for: " + getType() + ": " + getId() + ": " + getName());
+                    logger.info("Ignore SosiRefIsland (enclave) for: {}: {}: {}", getType(), getId(), getName());
                 }
 
             }
@@ -92,7 +90,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
             return null;
         }
 
-        geometry = new GeometryFactory().createPolygon(coordinateList.toArray(new Coordinate[coordinateList.size()]));
+        geometry = new GeometryFactory().createPolygon(coordinateList.toArray(new Coordinate[0]));
         return geometry;
     }
 
@@ -144,7 +142,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
     protected Map<String, String> getNames() {
         if (names == null) {
             names = new HashMap<>();
-            for (SosiElement nameElement : sosiElement.findSubElements(se -> getNamePropertyName().equals(se.getName())).collect(Collectors.toList())) {
+            for (SosiElement nameElement : sosiElement.findSubElements(se -> getNamePropertyName().equals(se.getName())).toList()) {
                 String lang = null;
                 String name = null;
 
@@ -154,7 +152,7 @@ public abstract class SosiElementWrapper implements TopographicPlaceAdapter {
                     name = nameElement.findSubElement(se -> "NAVN".equals(se.getName())).get().getValueAs(SosiValue.class).toString();
                 } else {
                     List<SosiValue> values = nameElement.getValuesAs(SosiValue.class);
-                    if (values.size() > 0) {
+                    if (!values.isEmpty()) {
                         name = values.get(0).getString();
                         if (values.size() > 1) {
                             lang = values.get(1).getString();

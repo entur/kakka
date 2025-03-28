@@ -65,7 +65,7 @@ public class KartverketService {
                     byte[] content = IOUtils.toByteArray(in);
                     if (minBytes > 0 && content.length < minBytes) {
 
-                        logger.warn("Got too small file from kartverket, assuming it is an error message: " + new String(content));
+                        logger.warn("Got too small file from kartverket, assuming it is an error message: {}", new String(content));
                         throw new KakkaException("File content fetched from Kartverket was less than accepted minimum. Probably error message. Filename: " + fileName);
                     }
 

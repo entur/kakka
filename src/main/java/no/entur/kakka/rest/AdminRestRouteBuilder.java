@@ -128,7 +128,7 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .post("/build_pipeline")
                 .param().name("task")
                 .type(RestParamType.query)
-                .allowableValues(Arrays.asList(GeoCoderTaskType.values()).stream().map(GeoCoderTaskType::name).collect(Collectors.toList()))
+                .allowableValues(Arrays.stream(GeoCoderTaskType.values()).map(GeoCoderTaskType::name).toList())
                 .required(Boolean.TRUE)
                 .description("Tasks to be executed")
                 .endParam()

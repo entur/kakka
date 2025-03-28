@@ -29,10 +29,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AddressStreamToElasticsearchCommandsTest {
     private static final Long ADDRESS_POPULARITY = 7L;
@@ -49,12 +47,12 @@ public class AddressStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(28, commands.size());
 
 
-        commands.forEach(c -> assertCommand(c));
+        commands.forEach(this::assertCommand);
 
-        List<PeliasDocument> documents = commands.stream().map(c -> (PeliasDocument) c.getSource()).collect(Collectors.toList());
-        Assertions.assertEquals(8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).collect(Collectors.toList()).size(), "Should be 8 streets");
+        List<PeliasDocument> documents = commands.stream().map(c -> (PeliasDocument) c.getSource()).toList();
+        Assertions.assertEquals(8, documents.stream().filter(d -> PeliasDocument.DEFAULT_SOURCE.equals(d.getSource())).toList().size(), "Should be 8 streets");
 
-        PeliasDocument knownDocument = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().endsWith("416246828")).collect(Collectors.toList()).get(0);
+        PeliasDocument knownDocument = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().endsWith("416246828")).toList().getFirst();
         assertKnownAddress(knownDocument);
     }
 
@@ -85,7 +83,7 @@ public class AddressStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(ADDRESS_POPULARITY, known.getPopularity());
 
         Assertions.assertEquals("Vestlundveien 25", known.getNameMap().get("default"));
-        Assertions.assertEquals(Arrays.asList("vegadresse"), known.getCategory());
+        Assertions.assertEquals(List.of("vegadresse"), known.getCategory());
     }
 
     private void assertCommand(ElasticsearchCommand command) {

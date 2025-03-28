@@ -17,7 +17,7 @@
 package no.entur.kakka.openstreetmap.model;
 
 /**
- * Copied from OpenTripPlanner - https://github.com/opentripplanner/OpenTripPlanner
+ * Copied from OpenTripPlanner - <a href="https://github.com/opentripplanner/OpenTripPlanner">...</a>
  */
 public class OSMNode extends OSMWithTags {
 

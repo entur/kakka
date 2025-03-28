@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class GtfsStopPlaceStreamToElasticsearchCommandsTest {
         Map<String, PeliasDocument> documents = commands.stream().map(ec -> (PeliasDocument) ec.getSource()).collect(Collectors.toMap(PeliasDocument::getSourceId, Function.identity()));
 
         Assertions.assertTrue(documents.values().stream().allMatch(d -> d.getPopularity() == POPULARITY));
-        Assertions.assertTrue(documents.values().stream().allMatch(d -> d.getLayer() == "venue"));
+        Assertions.assertTrue(documents.values().stream().allMatch(d -> Objects.equals(d.getLayer(), "venue")));
 
         assertKnownStopPlace(documents.get("NSR:StopPlace:457"));
 

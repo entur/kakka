@@ -214,7 +214,7 @@ public class AdminUnitRepositoryBuilder {
         private void addAdminUnit(TopographicPlace topographicPlace) {
             if (isCurrent(topographicPlace)) {
                 var polygon = topographicPlace.getPolygon();
-                final LocalDateTime toDate = topographicPlace.getValidBetween().get(0).getToDate();
+                final LocalDateTime toDate = topographicPlace.getValidBetween().getFirst().getToDate();
                 if (toDate == null || toDate.isAfter(LocalDateTime.now())) {
                     if (polygon != null) {
                         final Polygon geometry = new GeometryFactory().createPolygon(convertToCoordinateSequence(polygon.getExterior()));
@@ -244,8 +244,7 @@ public class AdminUnitRepositoryBuilder {
                 PublicationDeliveryStructure deliveryStructure = unmarshall(new FileInputStream(publicationDeliveryStream));
                 for (JAXBElement<? extends Common_VersionFrameStructure> frameStructureElmt : deliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame()) {
                     Common_VersionFrameStructure frameStructure = frameStructureElmt.getValue();
-                    if (frameStructure instanceof Site_VersionFrameStructure) {
-                        Site_VersionFrameStructure siteFrame = (Site_VersionFrameStructure) frameStructure;
+                    if (frameStructure instanceof Site_VersionFrameStructure siteFrame) {
                         if (siteFrame.getTopographicPlaces() != null) {
                             topographicPlaces.addAll(siteFrame.getTopographicPlaces().getTopographicPlace());
                         }
@@ -272,7 +271,7 @@ public class AdminUnitRepositoryBuilder {
         private boolean isCurrent(TopographicPlace topographicPlace) {
             ValidBetween validBetween = null;
             if (!topographicPlace.getValidBetween().isEmpty()) {
-                validBetween = topographicPlace.getValidBetween().get(0);
+                validBetween = topographicPlace.getValidBetween().getFirst();
             }
             if (validBetween == null) {
                 return false;
@@ -296,7 +295,8 @@ public class AdminUnitRepositoryBuilder {
             }
             var name = topographicPlace.getDescriptor().getName().getValue();
             var topographicPlaceType = topographicPlace.getTopographicPlaceType();
-            var countryRef = new Locale("en", topographicPlace.getCountryRef().getRef().name());
+
+            var countryRef = Locale.of("en", topographicPlace.getCountryRef().getRef().name());
             return new TopographicPlaceAdapter() {
 
 
@@ -322,16 +322,12 @@ public class AdminUnitRepositoryBuilder {
 
                 @Override
                 public Type getType() {
-                    switch (topographicPlaceType) {
-                        case COUNTRY:
-                            return Type.COUNTRY;
-                        case COUNTY:
-                            return Type.COUNTY;
-                        case MUNICIPALITY:
-                            return Type.LOCALITY;
-                        default:
-                            return null;
-                    }
+                    return switch (topographicPlaceType) {
+                        case COUNTRY -> Type.COUNTRY;
+                        case COUNTY -> Type.COUNTY;
+                        case MUNICIPALITY -> Type.LOCALITY;
+                        default -> null;
+                    };
 
                 }
 

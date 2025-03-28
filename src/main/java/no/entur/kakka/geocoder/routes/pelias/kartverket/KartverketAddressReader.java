@@ -65,8 +65,7 @@ public class KartverketAddressReader {
         Object record;
         while ((record = in.read()) != null) {
             if (in.getLineNumber() == 1) {
-                if (record instanceof KartverketAddress) {
-                    KartverketAddress address = (KartverketAddress) record;
+                if (record instanceof KartverketAddress address) {
                     addresses.add(address);
                 }
             } else {

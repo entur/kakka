@@ -22,10 +22,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,7 +53,7 @@ public class AddressToStreetMapper {
         Collection<List<PeliasDocument>> addressesPerStreet =
                 addresses.stream().filter(a -> a.getAddressParts() != null && !ObjectUtils.isEmpty(a.getAddressParts().getStreet()))
                         .collect(Collectors.groupingBy(this::fromAddress, Collectors.mapping(Function.identity(), Collectors.toList()))).values();
-        return addressesPerStreet.stream().map(this::createPeliasStreetDocFromAddresses).collect(Collectors.toList());
+        return addressesPerStreet.stream().map(this::createPeliasStreetDocFromAddresses).toList();
     }
 
 
@@ -73,7 +73,7 @@ public class AddressToStreetMapper {
         addressParts.setStreet(streetName);
         streetDocument.setAddressParts(addressParts);
 
-        streetDocument.setCategory(Arrays.asList(STREET_CATEGORY));
+        streetDocument.setCategory(List.of(STREET_CATEGORY));
         streetDocument.setPopularity(popularity);
 
         return streetDocument;
@@ -83,8 +83,7 @@ public class AddressToStreetMapper {
      * Use median address in street (ordered by number + alpha) as representative of the street.
      */
     private PeliasDocument getAddressRepresentingStreet(List<PeliasDocument> addressesOnStreet) {
-        Collections.sort(addressesOnStreet,
-                (o1, o2) -> o1.getAddressParts().getNumber().compareTo(o2.getAddressParts().getNumber()));
+        addressesOnStreet.sort(Comparator.comparing(o -> o.getAddressParts().getNumber()));
 
         return addressesOnStreet.get(addressesOnStreet.size() / 2);
     }
@@ -114,8 +113,8 @@ public class AddressToStreetMapper {
 
             UniqueStreetKey that = (UniqueStreetKey) o;
 
-            if (streetName != null ? !streetName.equals(that.streetName) : that.streetName != null) return false;
-            return localityId != null ? localityId.equals(that.localityId) : that.localityId == null;
+            if (!Objects.equals(streetName, that.streetName)) return false;
+            return Objects.equals(localityId, that.localityId);
         }
 
         @Override

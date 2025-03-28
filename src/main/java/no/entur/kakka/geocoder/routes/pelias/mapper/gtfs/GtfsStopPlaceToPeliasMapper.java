@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class GtfsStopPlaceToPeliasMapper {
@@ -28,7 +29,7 @@ public class GtfsStopPlaceToPeliasMapper {
         document.setDefaultNameAndPhrase(stop.stop_name);
         document.setCenterPoint(toCenterPoint(stop));
         document.setPopularity(popularity);
-        document.setCategory(Arrays.asList("GtfsStop"));
+        document.setCategory(List.of("GtfsStop"));
         return document;
     }
 

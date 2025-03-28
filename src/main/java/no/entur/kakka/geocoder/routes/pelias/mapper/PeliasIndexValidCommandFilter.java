@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PeliasIndexValidCommandFilter {
@@ -36,7 +35,7 @@ public class PeliasIndexValidCommandFilter {
      * Certain commands will be acceptable for insert into Elasticsearch, but will cause Pelias API to fail upon subsequent queries.
      */
     public List<ElasticsearchCommand> removeInvalidCommands(Collection<ElasticsearchCommand> commands) {
-        return commands.stream().filter(c -> isValid(c)).collect(Collectors.toList());
+        return commands.stream().filter(this::isValid).toList();
     }
 
     boolean isValid(ElasticsearchCommand command) {
@@ -45,28 +44,27 @@ public class PeliasIndexValidCommandFilter {
             return false;
         }
         if (command.getIndex().getIndex() == null || command.getIndex().getType() == null) {
-            logger.warn("Removing invalid command with missing index name or type:" + command);
+            logger.warn("Removing invalid command with missing index name or type: {}", command);
             return false;
         }
 
-        if (!(command.getSource() instanceof PeliasDocument)) {
-            logger.warn("Removing invalid command with missing pelias document:" + command);
+        if (command.getSource() instanceof PeliasDocument peliasDocument) {
+            if (peliasDocument.getLayer() == null || peliasDocument.getSource() == null || peliasDocument.getSourceId() == null) {
+                logger.warn("Removing invalid command where pelias document is missing mandatory fields: {}", command);
+                return false;
+            }
+
+            if (peliasDocument.getCenterPoint() == null) {
+                logger.debug("Removing invalid command where geometry is missing: {}", command);
+                return false;
+            }
+
+            return true;
+        } else {
+            logger.warn("Removing invalid command with missing pelias document: {}", command);
             return false;
         }
 
-        PeliasDocument doc = (PeliasDocument) command.getSource();
-
-        if (doc.getLayer() == null || doc.getSource() == null || doc.getSourceId() == null) {
-            logger.warn("Removing invalid command where pelias document is missing mandatory fields:" + command);
-            return false;
-        }
-
-        if (doc.getCenterPoint() == null) {
-            logger.debug("Removing invalid command where geometry is missing:" + command);
-            return false;
-        }
-
-        return true;
     }
 
 }

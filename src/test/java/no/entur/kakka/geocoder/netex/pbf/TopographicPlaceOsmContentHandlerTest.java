@@ -68,8 +68,7 @@ public class TopographicPlaceOsmContentHandlerTest {
 
         BlockingQueue<TopographicPlace> queue = new LinkedBlockingDeque<>();
 
-        TopographicPlaceOsmContentHandler handler = new TopographicPlaceOsmContentHandler(queue, Arrays.asList(filter), "OSM", IanaCountryTldEnumeration.NO);
-        return handler;
+        return new TopographicPlaceOsmContentHandler(queue, Arrays.asList(filter), "OSM", IanaCountryTldEnumeration.NO);
     }
 
 

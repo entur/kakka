@@ -34,7 +34,7 @@ class KinguPublishExportsRouteBuilderTest extends KakkaRouteBuilderIntegrationTe
         context.start();
         startNetexExport.sendBody("");
 
-        final Message in = netexExportQueue.getExchanges().get(0).getIn();
+        final Message in = netexExportQueue.getExchanges().getFirst().getIn();
         final String body = in.getBody(String.class);
         Assertions.assertEquals(2,netexExportQueue.getExchanges().size());
         Assertions.assertFalse(body.isEmpty());

@@ -31,15 +31,14 @@ import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class DeliveryPublicationStreamToElasticsearchCommandsTest {
+class DeliveryPublicationStreamToElasticsearchCommandsTest {
 
-    private static final Long POI_POPULARITY = 5l;
+    private static final Long POI_POPULARITY = 5L;
 
 
     @Test
-    public void testTransform() throws Exception {
+    void testTransform() throws Exception {
         OSMPOIFilterRepository osmpoiFilterRepository = new OSMPOIFilterRepositoryStub();
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
@@ -50,7 +49,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
                 .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"));
 
         Assertions.assertEquals(16, commands.size());
-        commands.forEach(c -> assertCommand(c));
+        commands.forEach(this::assertCommand);
 
         assertKnownPoi(byId(commands, "NSR:TopographicPlace:724"));
         assertKnownStopPlace(byId(commands, "NSR:StopPlace:39231"), "Harstad/Narvik Lufthavn");
@@ -73,7 +72,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
     }
 
     @Test
-    public void testPOIFilterProperty() throws Exception {
+    void testPOIFilterProperty() throws Exception {
         OSMPOIFilterRepository osmpoiFilterRepository = new OSMPOIFilterRepositoryStub();
         OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
         DeliveryPublicationStreamToElasticsearchCommands mapper =
@@ -87,13 +86,13 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         commands.forEach(this::assertCommand);
 
 
-        final List<PeliasDocument> collect = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(p -> p.getCategory().contains("poi")).collect(Collectors.toList());
+        final List<PeliasDocument> collect = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(p -> p.getCategory().contains("poi")).toList();
 
         Assertions.assertTrue(collect.isEmpty());
     }
 
     private PeliasDocument byId(Collection<ElasticsearchCommand> commands, String sourceId) {
-        return commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().equals(sourceId)).collect(Collectors.toList()).get(0);
+        return commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().equals(sourceId)).toList().getFirst();
     }
 
     private void assertNotMapped(Collection<ElasticsearchCommand> commands, String sourceId) {
@@ -104,7 +103,7 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals("QuayLessParentStop", known.getDefaultName());
         Assertions.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
         Assertions.assertEquals(StopPlaceToPeliasMapper.SOURCE_PARENT_STOP_PLACE, known.getSource());
-        Assertions.assertEquals(known.getCategory().size(), 2);
+        Assertions.assertEquals(2,known.getCategory().size());
         Assertions.assertTrue(known.getCategory().containsAll(Arrays.asList("airport", "onstreetBus")));
         Assertions.assertTrue(known.getCategoryFilter().containsAll(Arrays.asList("airport", "onstreetbus")));
         Assertions.assertEquals(5000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by sum of stop type boosts (airport=3, onstreetBus=2)");
@@ -128,12 +127,12 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals("Evenes", known.getAliasMap().get("nor"));
         Assertions.assertEquals(StopPlaceToPeliasMapper.STOP_PLACE_LAYER, known.getLayer());
         Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assertions.assertEquals(Arrays.asList("airport"), known.getCategory());
-        Assertions.assertEquals(Arrays.asList("airport"), known.getCategoryFilter());
+        Assertions.assertEquals(List.of("airport"), known.getCategory());
+        Assertions.assertEquals(List.of("airport"), known.getCategoryFilter());
         Assertions.assertEquals(68.490412, known.getCenterPoint().getLat(), 0.0001);
         Assertions.assertEquals(16.687364, known.getCenterPoint().getLon(), 0.0001);
         Assertions.assertEquals(List.of("AKT:TariffZone:505","AKT:FareZone:55"), known.getTariffZones());
-        Assertions.assertEquals(Arrays.asList("AKT"), known.getTariffZoneAuthorities());
+        Assertions.assertEquals(List.of("AKT"), known.getTariffZoneAuthorities());
         Assertions.assertEquals(3000, known.getPopularity().longValue(), "Expected popularity to be default (1000) boosted by stop type (airport)");
         Assertions.assertEquals("Norsk beskrivelse", known.getDescriptionMap().get("nor"));
     }
@@ -145,8 +144,8 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals("GoS Name", known.getNameMap().get("display"));
         Assertions.assertEquals("address", known.getLayer());
         Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assertions.assertEquals(Arrays.asList("GroupOfStopPlaces"), known.getCategory());
-        Assertions.assertEquals(Arrays.asList("groupofstopplaces"), known.getCategoryFilter());
+        Assertions.assertEquals(List.of("GroupOfStopPlaces"), known.getCategory());
+        Assertions.assertEquals(List.of("groupofstopplaces"), known.getCategoryFilter());
         Assertions.assertEquals(60.002417, known.getCenterPoint().getLat(), 0.0001);
         Assertions.assertEquals(10.272200, known.getCenterPoint().getLon(), 0.0001);
 
@@ -160,8 +159,8 @@ public class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals("Stranda kyrkje", known.getNameMap().get("nor"));
         Assertions.assertEquals("address", known.getLayer());
         Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
-        Assertions.assertEquals(Arrays.asList("poi"), known.getCategory());
-        Assertions.assertEquals(Arrays.asList("poi"), known.getCategoryFilter());
+        Assertions.assertEquals(List.of("poi"), known.getCategory());
+        Assertions.assertEquals(List.of("poi"), known.getCategoryFilter());
         Assertions.assertEquals(62.308413, known.getCenterPoint().getLat(), 0.0001);
         Assertions.assertEquals(6.947573, known.getCenterPoint().getLon(), 0.0001);
         Assertions.assertEquals(POI_POPULARITY, known.getPopularity());

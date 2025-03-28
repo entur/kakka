@@ -58,7 +58,7 @@ public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
                 .setHeader(FILE_PARENT, simple(localDownloadDir + "/${date:now:yyyyMMddHHmmss}"))
                 .doTry()
                 .bean("kartverketService", "downloadFiles")
-                .process(e -> deleteNoLongerActiveFiles(e))
+                .process(this::deleteNoLongerActiveFiles)
                 .to("direct:kartverketUploadOnlyUpdatedFiles")
                 .doFinally()
                 .to("direct:cleanUpLocalDirectory")
@@ -93,7 +93,7 @@ public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
     }
 
     private void deleteNoLongerActiveBlob(BlobStoreFiles.File blob, Exchange e) {
-        log.info("Delete blob no longer part of Kartverekt dataset: " + blob);
+        log.info("Delete blob no longer part of Kartverekt dataset: {}", blob);
         blobStoreService.deleteBlob(blob.getName(), e);
     }
 }

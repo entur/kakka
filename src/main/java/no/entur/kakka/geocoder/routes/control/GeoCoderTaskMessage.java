@@ -69,7 +69,7 @@ public class GeoCoderTaskMessage {
 
     @JsonIgnore
     public boolean isComplete() {
-        return tasks.stream().allMatch(t -> t.isComplete());
+        return tasks.stream().allMatch(GeoCoderTask::isComplete);
     }
 
     public void addTask(GeoCoderTask task) {

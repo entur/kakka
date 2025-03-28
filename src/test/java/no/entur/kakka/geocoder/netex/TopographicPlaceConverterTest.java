@@ -124,11 +124,11 @@ public class TopographicPlaceConverterTest {
 
         NeTExValidator neTExValidator = new NeTExValidator();
         unmarshaller.setSchema(neTExValidator.getSchema());
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(new File(path)));
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(path));
         JAXBElement<PublicationDeliveryStructure> jaxbElement = unmarshaller.unmarshal(xmlReader, PublicationDeliveryStructure.class);
         PublicationDeliveryStructure publicationDeliveryStructure = jaxbElement.getValue();
 
-        boolean containsTopographicPlaces = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().stream().map(frame -> frame.getValue())
+        boolean containsTopographicPlaces = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame().stream().map(JAXBElement::getValue)
                 .filter(frame -> frame instanceof Site_VersionFrameStructure).anyMatch(frame -> ((Site_VersionFrameStructure) frame).getTopographicPlaces() != null && !CollectionUtils.isEmpty(((Site_VersionFrameStructure) frame).getTopographicPlaces().getTopographicPlace()));
 
         Assertions.assertTrue(containsTopographicPlaces, "Expected publication delivery to contain site frame with topograhpic places");

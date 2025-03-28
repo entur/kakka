@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 public class KartverketGeoJsonStreamToElasticsearchCommands {
@@ -49,25 +49,20 @@ public class KartverketGeoJsonStreamToElasticsearchCommands {
     public Collection<ElasticsearchCommand> transform(InputStream placeNamesStream) {
         return new FeatureJSONCollection(placeNamesStream)
                 .mapToList(f -> createMapper(f).toPeliasDocument()).stream()
-                .filter(peliasDocument -> peliasDocument != null).map(pd -> ElasticsearchCommand.peliasIndexCommand(pd)).collect(Collectors.toList());
+                .filter(Objects::nonNull).map(ElasticsearchCommand::peliasIndexCommand).toList();
     }
 
     TopographicPlaceAdapterToPeliasDocument createMapper(SimpleFeature feature) {
 
         TopographicPlaceAdapter wrapper = wrapperFactory.createWrapper(feature);
 
-        switch (wrapper.getType()) {
-
-            case COUNTY:
-                return new CountyToPeliasDocument(wrapper);
-            case LOCALITY:
-                return new LocalityToPeliasDocument(wrapper);
-            case BOROUGH:
-                return new BoroughToPeliasDocument(wrapper);
-            case PLACE:
-                return new PlaceToPeliasDocument(wrapper, placeBoost);
-        }
-        return null;
+        return switch (wrapper.getType()) {
+            case COUNTY -> new CountyToPeliasDocument(wrapper);
+            case LOCALITY -> new LocalityToPeliasDocument(wrapper);
+            case BOROUGH -> new BoroughToPeliasDocument(wrapper);
+            case PLACE -> new PlaceToPeliasDocument(wrapper, placeBoost);
+            default -> null;
+        };
     }
 
 

@@ -100,31 +100,27 @@ public class TopographicPlaceMapper {
     }
 
     protected TopographicPlaceTypeEnumeration getType() {
-        switch (feature.getType()) {
-            case COUNTRY:
-                return TopographicPlaceTypeEnumeration.COUNTRY;
-            case COUNTY:
-                return TopographicPlaceTypeEnumeration.COUNTY;
-            case LOCALITY:
-                return TopographicPlaceTypeEnumeration.MUNICIPALITY;
-            case BOROUGH:
-                return TopographicPlaceTypeEnumeration.AREA;
-        }
-        return null;
+        return switch (feature.getType()) {
+            case COUNTRY -> TopographicPlaceTypeEnumeration.COUNTRY;
+            case COUNTY -> TopographicPlaceTypeEnumeration.COUNTY;
+            case LOCALITY -> TopographicPlaceTypeEnumeration.MUNICIPALITY;
+            case BOROUGH -> TopographicPlaceTypeEnumeration.AREA;
+            default -> null;
+        };
     }
 
 
     private PolygonType getPolygon() {
         Geometry geometry = feature.getDefaultGeometry();
 
-        if (geometry instanceof MultiPolygon) {
-            CoordinateList coordinateList = new CoordinateList(geometry.getBoundary().getCoordinates());
+        if (geometry instanceof MultiPolygon multiPolygon) {
+            CoordinateList coordinateList = new CoordinateList(multiPolygon.getBoundary().getCoordinates());
             coordinateList.closeRing();
             geometry = geometry.getFactory().createPolygon(coordinateList.toCoordinateArray());
         }
 
-        if (geometry instanceof Polygon) {
-            return NetexGeoUtil.toNetexPolygon((Polygon) geometry).withId(participantRef + "-" + feature.getId());
+        if (geometry instanceof Polygon polygon) {
+            return NetexGeoUtil.toNetexPolygon(polygon).withId(participantRef + "-" + feature.getId());
         }
         return null;
     }
@@ -148,9 +144,9 @@ public class TopographicPlaceMapper {
 
     private void initCountryCodeMapping() {
         String[] countries = Locale.getISOCountries();
-        localeMap = new HashMap<>(countries.length);
+        localeMap =HashMap.newHashMap(countries.length);
         for (String country : countries) {
-            Locale locale = new Locale("", country);
+            Locale locale = Locale.of("", country);
             localeMap.put(locale.getISO3Country().toUpperCase(), locale);
         }
     }

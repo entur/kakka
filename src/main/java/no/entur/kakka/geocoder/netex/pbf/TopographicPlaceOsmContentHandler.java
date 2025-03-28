@@ -118,7 +118,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         if (nodesById.size() % 100000 == 0) {
-            logger.debug(String.format("nodes=%d", nodesById.size()));
+            logger.debug("nodes={}", nodesById.size());
         }
     }
 
@@ -168,14 +168,14 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         }
 
         if (coordinates.size() != osmWay.getNodeRefs().size()) {
-            logger.info("Ignoring osmWay with missing nodes: " + osmWay.getAssumedName());
+            logger.info("Ignoring osmWay with missing nodes: {}", osmWay.getAssumedName());
             return false;
         }
         topographicPlace.withCentroid(toCentroid(coordinates));
         try {
             topographicPlace.withPolygon(toPolygon(coordinates, participantRef + "-" + osmWay.getId()));
         } catch (RuntimeException e) {
-            logger.info("Could not create polygon for osm way: " + osmWay.getAssumedName() + ". Exception: " + e.getMessage());
+            logger.info("Could not create polygon for osm way: {}. Exception: {}", osmWay.getAssumedName(), e.getMessage());
         }
         return true;
     }
@@ -190,23 +190,23 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         var outerPolygons = outerRingNodes.stream()
                 .map(ring -> new Ring(ring, nodesById).getPolygon())
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         var innerPolygons = innerRingNodes.stream()
                 .map(ring -> new Ring(ring, nodesById).getPolygon())
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
         if (!outerPolygons.isEmpty() && !checkPolygonProximity(outerPolygons)) {
             polygons.addAll(outerPolygons);
             polygons.addAll(innerPolygons);
 
             try {
-                var multiPolygon = new GeometryFactory().createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+                var multiPolygon = new GeometryFactory().createMultiPolygon(polygons.toArray(new Polygon[0]));
                 var interiorPoint = multiPolygon.getInteriorPoint();
                 topographicPlace.withCentroid(toCentroid(interiorPoint.getY(), interiorPoint.getX()));
                 return true;
             } catch (RuntimeException e) {
-                logger.warn("unable to add geometry" + e);
+                logger.warn("unable to add geometry{}", String.valueOf(e));
                 return false;
             }
         }
@@ -241,8 +241,8 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         for (OSMWay way : ways) {
             final List<Long> refs = way.getNodeRefs();
 
-            var start = refs.get(0);
-            var end = refs.get(refs.size() - 1);
+            var start = refs.getFirst();
+            var end = refs.getLast();
 
             if (start.equals(end)) {
                 ArrayList<Long> ring = new ArrayList<>(refs);
@@ -273,11 +273,11 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
         for (Long endpoint : waysByEndpoint.keySet()) {
             final List<OSMWay> list = waysByEndpoint.get(endpoint);
-            firstWay = list.get(0);
+            firstWay = list.getFirst();
             final List<Long> nodeRefs = firstWay.getNodeRefs();
             partialRing.addAll(nodeRefs);
-            firstEndpoint = nodeRefs.get(0);
-            otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+            firstEndpoint = nodeRefs.getFirst();
+            otherEndpoint = nodeRefs.getLast();
             break;
         }
         waysByEndpoint.get(firstEndpoint).remove(firstWay);
@@ -296,8 +296,8 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
         for (OSMWay way : ways) {
             //remove this way from the map
             List<Long> nodeRefs = way.getNodeRefs();
-            long firstEndpoint = nodeRefs.get(0);
-            long otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+            long firstEndpoint = nodeRefs.getFirst();
+            long otherEndpoint = nodeRefs.getLast();
 
             waysByEndpoint.remove(firstEndpoint, way);
             waysByEndpoint.remove(otherEndpoint, way);
@@ -316,11 +316,11 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                 newFirstEndpoint = firstEndpoint;
             }
 
-            if (newRing.get(newRing.size() - 1).equals(newRing.get(0))) {
+            if (newRing.getLast().equals(newRing.getFirst())) {
                 //Closing ring
                 closedRings.add(newRing);
                 //out of endpoints done parsing
-                if (waysByEndpoint.size() == 0) {
+                if (waysByEndpoint.isEmpty()) {
                     return true;
                 }
 
@@ -329,11 +329,11 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                 OSMWay firstWay = null;
                 for (Long entry : waysByEndpoint.keySet()) {
                     final List<OSMWay> list = waysByEndpoint.get(entry);
-                    firstWay = list.get(0);
+                    firstWay = list.getFirst();
                     nodeRefs = firstWay.getNodeRefs();
                     newRing.addAll(nodeRefs);
-                    firstEndpoint = nodeRefs.get(0);
-                    otherEndpoint = nodeRefs.get(nodeRefs.size() - 1);
+                    firstEndpoint = nodeRefs.getFirst();
+                    otherEndpoint = nodeRefs.getLast();
                     break;
                 }
 
@@ -390,7 +390,7 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
                         } else if (role.equals("outer")) {
                             outerWays.add(way);
                         } else {
-                            logger.warn("Unexpected role " + role + " in multipolygon");
+                            logger.warn("Unexpected role {} in multipolygon", role);
                         }
                     }
                 }
@@ -461,9 +461,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
 
 
     private PolygonType toPolygon(List<Coordinate> coordinates, String id) {
-        Polygon polygon = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()]));
+        Polygon polygon = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[0]));
         if (!polygon.isValid()) {
-            logger.info("Invalid polygon: " + polygon);
+            logger.info("Invalid polygon: {}", polygon);
             return null;
         }
         return NetexGeoUtil.toNetexPolygon(polygon).withId(id);
@@ -481,9 +481,9 @@ public class TopographicPlaceOsmContentHandler implements OpenStreetMapContentHa
     SimplePoint_VersionStructure toCentroid(List<Coordinate> coordinates) {
         Point centroid;
         try {
-            centroid = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
+            centroid = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[0])).getCentroid();
         } catch (RuntimeException re) {
-            centroid = new GeometryFactory().createMultiPointFromCoords(coordinates.toArray(new Coordinate[coordinates.size()])).getCentroid();
+            centroid = new GeometryFactory().createMultiPointFromCoords(coordinates.toArray(new Coordinate[0])).getCentroid();
         }
         return toCentroid(centroid.getY(), centroid.getX());
     }

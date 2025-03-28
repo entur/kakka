@@ -44,7 +44,7 @@ public class PeliasIndexValidCommandFilterTest {
         List<ElasticsearchCommand> filteredList = filter.removeInvalidCommands(commandList);
 
         Assertions.assertEquals(1, filteredList.size());
-        Assertions.assertEquals(validCmnd.getIndex().getId(), filteredList.get(0).getIndex().getId());
+        Assertions.assertEquals(validCmnd.getIndex().getId(), filteredList.getFirst().getIndex().getId());
     }
 
     @Test

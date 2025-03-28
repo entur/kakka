@@ -81,7 +81,7 @@ public class SosiTopographicPlaceAdapterReader {
         SosiDocument doc = reader.read();
         coordinates = new SosiCoordinates(doc.getHead());
         doc.getElements().forEach(se -> coordinates.collectCoordinates(se));
-        doc.getElements().forEach(se -> collectAdminUnits(se));
+        doc.getElements().forEach(this::collectAdminUnits);
         sosiInputStream.close();
     }
 

@@ -28,12 +28,14 @@ import org.rutebanken.netex.model.NameTypeEnumeration;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.StopTypeEnumeration;
 import org.rutebanken.netex.model.VehicleModeEnumeration;
+import org.rutebanken.netex.model.VersionOfObjectRefStructure;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentMapper<StopPlace> {
 
@@ -103,7 +105,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         List<Pair<StopTypeEnumeration, Enum>> stopTypeAndSubModeList = aggregateStopTypeAndSubMode(placeHierarchy);
 
-        document.setCategory(stopTypeAndSubModeList.stream().map(pair -> pair.getLeft()).filter(type -> type != null).map(type -> type.value()).collect(Collectors.toList()));
+        document.setCategory(stopTypeAndSubModeList.stream().map(Pair::getLeft).filter(Objects::nonNull).map(StopTypeEnumeration::value).toList());
 
         if (place.getAlternativeNames() != null && !CollectionUtils.isEmpty(place.getAlternativeNames().getAlternativeName())) {
             place.getAlternativeNames().getAlternativeName().stream().filter(an -> NameTypeEnumeration.TRANSLATION.equals(an.getNameType()) && an.getName() != null && an.getName().getLang() != null).forEach(n -> document.addName(n.getName().getLang(), n.getName().getValue()));
@@ -120,15 +122,15 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
 
         if (place.getTariffZones() != null && place.getTariffZones().getTariffZoneRef() != null) {
             document.setTariffZones(place.getTariffZones().getTariffZoneRef().stream()
-                    .map(zoneRef -> zoneRef.getRef())
-                    .collect(Collectors.toList()));
+                    .map(VersionOfObjectRefStructure::getRef)
+                    .toList());
 
 
             // A bug in elasticsearch 2.3.4 used for pelias causes prefix queries for array values to fail, thus making it impossible to query by tariff zone prefixes. Instead adding
             // tariff zone authorities as a distinct indexed value.
             document.setTariffZoneAuthorities(place.getTariffZones().getTariffZoneRef().stream()
                     .map(zoneRef -> zoneRef.getRef().split(":")[0]).distinct()
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         // Add parent info locality/county/country
@@ -188,7 +190,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
         types.add(new ImmutablePair<>(stopPlace.getStopPlaceType(), getStopSubMode(stopPlace)));
 
         if (!CollectionUtils.isEmpty(placeHierarchy.getChildren())) {
-            types.addAll(placeHierarchy.getChildren().stream().map(child -> aggregateStopTypeAndSubMode(child)).flatMap(typesForChild -> typesForChild.stream()).collect(Collectors.toList()));
+            types.addAll(placeHierarchy.getChildren().stream().map(this::aggregateStopTypeAndSubMode).flatMap(Collection::stream).toList());
         }
 
         return types;
@@ -198,25 +200,15 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
     private Enum getStopSubMode(StopPlace stopPlace) {
 
         if (stopPlace.getStopPlaceType() != null) {
-            switch (stopPlace.getStopPlaceType()) {
-                case AIRPORT:
-                    return stopPlace.getAirSubmode();
-                case HARBOUR_PORT:
-                case FERRY_STOP:
-                case FERRY_PORT:
-                    return stopPlace.getWaterSubmode();
-                case BUS_STATION:
-                case COACH_STATION:
-                case ONSTREET_BUS:
-                    return stopPlace.getBusSubmode();
-                case RAIL_STATION:
-                    return stopPlace.getRailSubmode();
-                case METRO_STATION:
-                    return stopPlace.getMetroSubmode();
-                case ONSTREET_TRAM:
-                case TRAM_STATION:
-                    return stopPlace.getTramSubmode();
-            }
+            return switch (stopPlace.getStopPlaceType()) {
+                case AIRPORT -> stopPlace.getAirSubmode();
+                case HARBOUR_PORT, FERRY_STOP, FERRY_PORT -> stopPlace.getWaterSubmode();
+                case BUS_STATION, COACH_STATION, ONSTREET_BUS -> stopPlace.getBusSubmode();
+                case RAIL_STATION -> stopPlace.getRailSubmode();
+                case METRO_STATION -> stopPlace.getMetroSubmode();
+                case ONSTREET_TRAM, TRAM_STATION -> stopPlace.getTramSubmode();
+                default -> throw new IllegalStateException("Unexpected value: " + stopPlace.getStopPlaceType());
+            };
         }
         return null;
     }

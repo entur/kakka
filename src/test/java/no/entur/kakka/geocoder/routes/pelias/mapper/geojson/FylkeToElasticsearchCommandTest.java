@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public class FylkeToElasticsearchCommandTest {
 
@@ -37,9 +36,9 @@ public class FylkeToElasticsearchCommandTest {
 
         Assertions.assertEquals(4, commands.size());
 
-        commands.forEach(c -> assertCommand(c));
+        commands.forEach(this::assertCommand);
 
-        PeliasDocument kalland = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> "Buskerud".equals(d.getDefaultName())).collect(Collectors.toList()).get(0);
+        PeliasDocument kalland = commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> "Buskerud".equals(d.getDefaultName())).toList().getFirst();
         assertBuskerud(kalland);
     }
 

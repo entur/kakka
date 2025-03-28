@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PeliasIndexValidPlaceNameFilter {
@@ -56,7 +55,7 @@ public class PeliasIndexValidPlaceNameFilter {
 
         this.adminUnitRepository = adminUnitRepository;
 
-        return commands.stream().filter(c -> isValid(c)).collect(Collectors.toList());
+        return commands.stream().filter(this::isValid).toList();
     }
 
     boolean isValid(ElasticsearchCommand command) {
@@ -65,24 +64,22 @@ public class PeliasIndexValidPlaceNameFilter {
             return false;
         }
         if (command.getIndex().getIndex() == null || command.getIndex().getType() == null) {
-            logger.warn("Removing invalid command with missing index name or type:" + command);
+            logger.warn("Removing invalid command with missing index name or type: {}", command);
             return false;
         }
 
-        if (!(command.getSource() instanceof PeliasDocument)) {
-            logger.warn("Removing invalid command with missing pelias document:" + command);
+        if (!(command.getSource() instanceof PeliasDocument doc)) {
+            logger.warn("Removing invalid command with missing pelias document: {}", command);
             return false;
         }
-
-        PeliasDocument doc = (PeliasDocument) command.getSource();
 
         if (doc.getLayer() == null || doc.getSource() == null || doc.getSourceId() == null) {
-            logger.warn("Removing invalid command where pelias document is missing mandatory fields:" + command);
+            logger.warn("Removing invalid command where pelias document is missing mandatory fields: {}", command);
             return false;
         }
 
         if (doc.getCenterPoint() == null) {
-            logger.debug("Removing invalid command where geometry is missing:" + command);
+            logger.debug("Removing invalid command where geometry is missing: {}", command);
             return false;
         }
 
@@ -114,9 +111,9 @@ public class PeliasIndexValidPlaceNameFilter {
                 int totalDistanceMeters = (int) orthodromicDistance;
 
 
-                logger.debug(String.format("placename cordinates: %s", placeNamePoint));
-                logger.debug(String.format("gosp cordinates: %s", gospPoint));
-                logger.debug(String.format("Distance between placename and gosp %s is %s", doc.getDefaultName(), totalDistanceMeters));
+                logger.debug("placename cordinates: {}", placeNamePoint);
+                logger.debug("gosp cordinates: {}", gospPoint);
+                logger.debug("Distance between placename and gosp {} is {}", doc.getDefaultName(), totalDistanceMeters);
 
                 return totalDistanceMeters >= 1000;
 

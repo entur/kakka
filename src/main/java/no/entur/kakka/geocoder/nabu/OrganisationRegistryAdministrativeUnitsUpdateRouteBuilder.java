@@ -165,7 +165,7 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
     }
 
     private File[] getGeojsonCountryFiles() {
-        return FileUtils.listFiles(new File(localWorkingDirectory), new String[]{"geojson"}, false).stream().toArray(File[]::new);
+        return FileUtils.listFiles(new File(localWorkingDirectory), new String[]{"geojson"}, false).toArray(File[]::new);
     }
 
     private AdministrativeZone toAdministrativeZone(TopographicPlaceAdapter topographicPlaceAdapter, String source) {
@@ -179,22 +179,18 @@ public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends B
         }
 
         Polygon geoJsonPolygon = (Polygon) geoJSONWriter.write(geometry);
-        AdministrativeZone administrativeZone = new AdministrativeZone(adminZoneCodeSpaceId, topographicPlaceAdapter.getId(),
+        return new AdministrativeZone(adminZoneCodeSpaceId, topographicPlaceAdapter.getId(),
                 topographicPlaceAdapter.getName(), geoJsonPolygon, toType(topographicPlaceAdapter.getType()), source);
-        return administrativeZone;
     }
 
 
     private AdministrativeZone.AdministrativeZoneType toType(TopographicPlaceAdapter.Type type) {
-        switch (type) {
-            case COUNTRY:
-                return AdministrativeZone.AdministrativeZoneType.COUNTRY;
-            case COUNTY:
-                return AdministrativeZone.AdministrativeZoneType.COUNTY;
-            case LOCALITY:
-                return AdministrativeZone.AdministrativeZoneType.LOCALITY;
-        }
+        return switch (type) {
+            case COUNTRY -> AdministrativeZone.AdministrativeZoneType.COUNTRY;
+            case COUNTY -> AdministrativeZone.AdministrativeZoneType.COUNTY;
+            case LOCALITY -> AdministrativeZone.AdministrativeZoneType.LOCALITY;
+            default -> AdministrativeZone.AdministrativeZoneType.CUSTOM;
+        };
 
-        return AdministrativeZone.AdministrativeZoneType.CUSTOM;
     }
 }

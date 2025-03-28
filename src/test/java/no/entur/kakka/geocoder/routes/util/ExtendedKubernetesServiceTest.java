@@ -8,7 +8,6 @@ import io.fabric8.kubernetes.api.model.batch.v1.Job;
 import io.fabric8.kubernetes.api.model.batch.v1.JobBuilder;
 import io.fabric8.kubernetes.api.model.batch.v1.JobSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
@@ -30,14 +29,15 @@ class ExtendedKubernetesServiceTest {
     private static final String ES_DATA_PATH = "ES_DATA_PATH" ;
     private static final String ES_DATA_FILE_NAME = "data/es-data-20221208093933.tar.gz";
     @Rule
-    public KubernetesServer server = new KubernetesServer();
+    public KubernetesServer server = new KubernetesServer(true, true);
 
-    public KubernetesClient client = new KubernetesClientBuilder().build();
+    public KubernetesClient client;
 
 
     @Test
     @DisplayName("Should test env variable in a container")
     void testContainerEnvVariables() throws FileNotFoundException {
+        client= server.getClient();
         CronJob cronJob = client.batch().v1().cronjobs().load(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/routes/util/cronjob2.yml")).item();
         final Job job = buildJobFromCronJobSpecTemplate(cronJob, "geocoder-job", getEnvVars(ES_DATA_FILE_NAME));
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OSMPOIFilterServiceTest {
 
@@ -57,7 +56,7 @@ public class OSMPOIFilterServiceTest {
 
                     return updated;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         repository.setFilters(all);
         service.updateFilters(toBeUpdated);
@@ -73,7 +72,7 @@ public class OSMPOIFilterServiceTest {
     public void testDefaultPriority() {
         OSMPOIFilter testFilter = new OSMPOIFilter();
         service.updateFilters(List.of(testFilter));
-        Assertions.assertEquals(Integer.valueOf(1), repository.findAll().get(0).getPriority());
+        Assertions.assertEquals(Integer.valueOf(1), repository.findAll().getFirst().getPriority());
     }
 
     private List<OSMPOIFilter> getTestFilters(int count) {

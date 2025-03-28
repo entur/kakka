@@ -78,7 +78,7 @@ public class GroupOfStopPlacesToPeliasMapper {
         }
 
         document.setPopularity(popularity);
-        document.setCategory(Arrays.asList(GroupOfStopPlaces.class.getSimpleName()));
+        document.setCategory(List.of(GroupOfStopPlaces.class.getSimpleName()));
 
         return document;
     }

@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class SosiElementWrapperFactory {
 
     public SosiElementWrapper createWrapper(SosiElement sosiElement, SosiCoordinates coordinates) {
-        SosiElement objectType = sosiElement.findSubElement(se -> "OBJTYPE".equals(se.getName())).get();
+        SosiElement objectType = sosiElement.findSubElement(se -> "OBJTYPE".equals(se.getName())).orElse(null);
 
         if (objectType != null) {
             String type = objectType.getValueAs(SosiString.class).getString();

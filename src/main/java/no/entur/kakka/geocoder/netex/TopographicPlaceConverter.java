@@ -59,7 +59,7 @@ public class TopographicPlaceConverter {
             netexWriter.stream(createPublicationDeliveryStructure(input, siteFrameId), topographicPlaceQueue, new FileOutputStream(target));
 
             reader.verify();
-            logger.info("Wrote TopographicPlace NeTEx file with SiteFrame id=" + siteFrameId);
+            logger.info("Wrote TopographicPlace NeTEx file with SiteFrame id={}", siteFrameId);
         } catch (Exception e) {
             throw new RuntimeException("Conversion to Netex failed with exception: " + e.getMessage(), e);
         }

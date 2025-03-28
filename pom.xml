@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>2.17</version>
+        <version>3.4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,14 +23,13 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <camel.version>4.3.0</camel.version>
+        <camel.version>4.4.5</camel.version>
 
         <wololo.version>0.18.1</wololo.version>
-        <jskdata.version>1.0.15</jskdata.version>
+        <jskdata.version>1.0.20</jskdata.version>
 
-        <auth0.version>1.26.0</auth0.version>
         <netex-java-model.version>2.0.14</netex-java-model.version>
-        <entur.helpers.version>2.34</entur.helpers.version>
+        <entur.helpers.version>4.9</entur.helpers.version>
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
@@ -39,7 +38,7 @@
         <geotools.version>32.2</geotools.version>
 
         <geojson-jackson.version>1.14</geojson-jackson.version>
-        <gtfs-lib.version>3.3.0</gtfs-lib.version>
+        <gtfs-lib.version>6.2.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
         <osmpbf.version>1.6.0</osmpbf.version>
         <google-protobuf.version>4.30.2</google-protobuf.version>
@@ -47,7 +46,7 @@
         <commons-io.version>2.18.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
         <osmosis-osm-binary.version>0.48.3</osmosis-osm-binary.version>
-        <kubernetes-server-mock.version>6.9.2</kubernetes-server-mock.version>
+        <kubernetes-server-mock.version>6.12.1</kubernetes-server-mock.version>
         <argLine/>
         <spring-webmvc.version>5.3.28</spring-webmvc.version>
     </properties>
@@ -93,7 +92,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>gcp-storage</artifactId>
+            <artifactId>storage-gcp-gcs</artifactId>
             <version>${entur.helpers.version}</version>
             <exclusions>
                 <exclusion>
@@ -244,6 +243,7 @@
             <artifactId>geojson-jackson</artifactId>
             <version>${geojson-jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.conveyal</groupId>
             <artifactId>gtfs-lib</artifactId>

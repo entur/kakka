@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -95,7 +94,7 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
     @Override
     public BlobStoreFiles listBlobs(String prefix) {
-        return listBlobs(Arrays.asList(prefix));
+        return listBlobs(Collections.singletonList(prefix));
     }
 
 
@@ -168,7 +167,7 @@ public class GcsBlobStoreRepository implements BlobStoreRepository {
 
 
     private BlobStoreFiles.File toBlobStoreFile(Blob blob, String fileName) {
-        BlobStoreFiles.File file = new BlobStoreFiles.File(fileName, new Date(blob.getCreateTime()), new Date(blob.getUpdateTime()), blob.getSize());
+        BlobStoreFiles.File file = new BlobStoreFiles.File(fileName, Date.from(blob.getCreateTimeOffsetDateTime().toInstant()), Date.from(blob.getUpdateTimeOffsetDateTime().toInstant()), blob.getSize());
 
         if (blob.getAcl() != null) {
             if (blob.getAcl().stream().anyMatch(acl -> Acl.User.ofAllUsers().equals(acl.getEntity()) && acl.getRole() != null)) {

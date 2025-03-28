@@ -30,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Component
@@ -52,7 +51,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
     private String geoCoderQueueSubscription;
 
     private GeoCoderTaskMessage createMessageFromTaskTypes(Collection<GeoCoderTaskType> taskTypes) {
-        return new GeoCoderTaskMessage(taskTypes.stream().map(t -> t.getGeoCoderTask()).collect(Collectors.toList()));
+        return new GeoCoderTaskMessage(taskTypes.stream().map(GeoCoderTaskType::getGeoCoderTask).toList());
     }
 
     @Override
@@ -118,11 +117,11 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
                 .routeId("geocoder-merge-messages");
 
         from("direct:geoCoderRehydrate")
-                .process(e -> rehydrate(e))
+                .process(this::rehydrate)
                 .routeId("geocoder-rehydrate-task");
 
         from("direct:geoCoderDehydrate")
-                .process(e -> dehydrate(e))
+                .process(this::dehydrate)
                 .routeId("geocoder-dehydrate-task");
 
         from("direct:geoCoderRescheduleTask")
@@ -168,7 +167,7 @@ public class GeoCoderControlRouteBuilder extends BaseRouteBuilder {
                     GeoCoderTaskMessage taskMessage = GeoCoderTaskMessage.fromString(jsonString);
                     merged.getTasks().addAll(taskMessage.getTasks());
                 } catch (Exception ex) {
-                    log.warn("Discarded unparseable text msg: " + msg + ". Exception:" + ex.getMessage(), ex);
+                    log.warn("Discarded unparseable text msg: {}. Exception:{}", msg, ex.getMessage(), ex);
                 }
             }
         }

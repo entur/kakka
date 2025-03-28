@@ -89,7 +89,7 @@ public class ExtendedKubernetesService {
 
     public void rolloutDeployment(){
         try {
-            log.info("Rolling out deployment: " + deploymentName);
+            log.info("Rolling out deployment: {}", deploymentName);
             kubernetesClient.apps().deployments().inNamespace(kubernetesNamespace).withName(deploymentName)
                     .rolling()
                     .restart();

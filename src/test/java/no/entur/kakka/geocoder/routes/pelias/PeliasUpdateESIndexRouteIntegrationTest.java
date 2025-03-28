@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
 import java.io.FileInputStream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestApp.class)
@@ -78,11 +77,11 @@ public class PeliasUpdateESIndexRouteIntegrationTest extends KakkaRouteBuilderIn
 
 
         inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/placeNames/placenames.sos",
-                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos")), false);
+                new FileInputStream("src/test/resources/no/entur/kakka/geocoder/sosi/placeNames.sos"), false);
         inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForKartverket + "/addresses/addresses.csv",
-                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv")), false);
+                new FileInputStream("src/test/resources/no/entur/kakka/geocoder/csv/addresses.csv"), false);
         inMemoryBlobStoreRepository.uploadBlob(blobStoreSubdirectoryForTiamatGeoCoderExport + "/tiamat/tiamat-export-latest.xml",
-                new FileInputStream(new File("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml")), false);
+                new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/tiamat-export.xml"), false);
 
 
         esScratchAdminIndexMock.expectedMessageCount(2);

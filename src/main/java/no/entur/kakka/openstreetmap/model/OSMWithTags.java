@@ -57,7 +57,7 @@ public class OSMWithTags {
      */
     public void addTag(OSMTag tag) {
         if (_tags == null)
-            _tags = new HashMap<String, String>();
+            _tags = new HashMap<>();
 
         _tags.put(tag.getK().toLowerCase(), tag.getV());
     }
@@ -70,7 +70,7 @@ public class OSMWithTags {
             return;
 
         if (_tags == null)
-            _tags = new HashMap<String, String>();
+            _tags = new HashMap<>();
 
         _tags.put(key.toLowerCase(), value);
     }
@@ -164,7 +164,7 @@ public class OSMWithTags {
     }
 
     public Map<String, String> getTagsByPrefix(String prefix) {
-        Map<String, String> out = new HashMap<String, String>();
+        Map<String, String> out = new HashMap<>();
         for (Map.Entry<String, String> entry : _tags.entrySet()) {
             String k = entry.getKey();
             if (k.equals(prefix) || k.startsWith(prefix + ":")) {
@@ -290,10 +290,9 @@ public class OSMWithTags {
      */
     public boolean isThroughTrafficExplicitlyDisallowed() {
         String access = getTag("access");
-        boolean noThruTraffic = "destination".equals(access) || "private".equals(access)
+        return  "destination".equals(access) || "private".equals(access)
                 || "customers".equals(access) || "delivery".equals(access)
                 || "forestry".equals(access) || "agricultural".equals(access);
-        return noThruTraffic;
     }
 
     /**

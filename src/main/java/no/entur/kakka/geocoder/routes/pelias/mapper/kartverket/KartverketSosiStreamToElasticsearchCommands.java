@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 public class KartverketSosiStreamToElasticsearchCommands {
@@ -44,22 +44,17 @@ public class KartverketSosiStreamToElasticsearchCommands {
 
     public Collection<ElasticsearchCommand> transform(InputStream placeNamesStream) {
         return new SosiTopographicPlaceAdapterReader(sosiElementWrapperFactory, placeNamesStream).read().stream()
-                .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(d -> d != null).collect(Collectors.toList());
+                .map(w -> ElasticsearchCommand.peliasIndexCommand(createMapper(w).toPeliasDocument())).filter(Objects::nonNull).toList();
     }
 
     TopographicPlaceAdapterToPeliasDocument createMapper(TopographicPlaceAdapter wrapper) {
 
-        switch (wrapper.getType()) {
-
-            case COUNTY:
-                return new CountyToPeliasDocument(wrapper);
-            case LOCALITY:
-                return new LocalityToPeliasDocument(wrapper);
-            case BOROUGH:
-                return new BoroughToPeliasDocument(wrapper);
-            case PLACE:
-                return new PlaceToPeliasDocument(wrapper, placeBoost);
-        }
-        return null;
+        return switch (wrapper.getType()) {
+            case COUNTY -> new CountyToPeliasDocument(wrapper);
+            case LOCALITY -> new LocalityToPeliasDocument(wrapper);
+            case BOROUGH -> new BoroughToPeliasDocument(wrapper);
+            case PLACE -> new PlaceToPeliasDocument(wrapper, placeBoost);
+            default -> null;
+        };
     }
 }

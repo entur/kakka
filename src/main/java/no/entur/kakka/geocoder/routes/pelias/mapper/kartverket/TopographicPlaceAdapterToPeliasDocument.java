@@ -98,15 +98,13 @@ public abstract class TopographicPlaceAdapterToPeliasDocument {
     protected Polygon mapShape() {
         Geometry geometry = feature.getDefaultGeometry();
 
-        if (geometry instanceof org.locationtech.jts.geom.Polygon) {
-            org.locationtech.jts.geom.Polygon jtsPolygon = (org.locationtech.jts.geom.Polygon) geometry;
-
+        if (geometry instanceof org.locationtech.jts.geom.Polygon jtsPolygon) {
             if (jtsPolygon.isValid()) {
 
                 List<LngLatAlt> coord = Arrays.stream(jtsPolygon.getExteriorRing().getCoordinates()).map(c -> new LngLatAlt(c.x, c.y)).collect(Collectors.toList());
                 return new Polygon(removeConsecutiveDuplicates(coord));
             } else {
-                logger.warn("Ignoring polygon for kartverket feature with invalid geometry: " + getLayer() + ":" + feature.getName());
+                logger.warn("Ignoring polygon for kartverket feature with invalid geometry: {} : {} " ,getLayer(), feature.getName());
             }
         }
         return null;

@@ -41,7 +41,7 @@ public class KakkaWebSecurityConfigurerAdapter{
     public SecurityFilterChain filterChain(HttpSecurity http, MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver) throws Exception {
         http.cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeRequests(authz -> authz
+                .authorizeHttpRequests(authz -> authz
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/geocoder_admin/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/organisation_admin/openapi.json")).permitAll()

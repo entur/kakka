@@ -207,7 +207,7 @@ public class StopPlaceToPeliasMapper extends AbstractNetexPlaceToPeliasDocumentM
                 case RAIL_STATION -> stopPlace.getRailSubmode();
                 case METRO_STATION -> stopPlace.getMetroSubmode();
                 case ONSTREET_TRAM, TRAM_STATION -> stopPlace.getTramSubmode();
-                default -> throw new IllegalStateException("Unexpected value: " + stopPlace.getStopPlaceType());
+                default -> null;
             };
         }
         return null;

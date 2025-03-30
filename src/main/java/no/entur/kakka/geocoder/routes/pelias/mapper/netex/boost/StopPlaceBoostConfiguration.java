@@ -126,7 +126,7 @@ public class StopPlaceBoostConfiguration {
     }
 
 
-    private class StopTypeBoostConfig {
+    private static class StopTypeBoostConfig {
 
         public double defaultFactor = 1;
 

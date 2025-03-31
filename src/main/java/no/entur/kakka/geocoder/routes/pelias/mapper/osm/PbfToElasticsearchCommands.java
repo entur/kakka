@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.stream.Collectors;
 
 @Service
 public class PbfToElasticsearchCommands {
@@ -48,7 +47,7 @@ public class PbfToElasticsearchCommands {
         this.osmpoiFilterService = osmpoiFilterService;
         this.poiBoost = poiBoost;
         if (poiFilter != null) {
-            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).collect(Collectors.toList());
+            this.poiFilter = poiFilter.stream().filter(filter -> !ObjectUtils.isEmpty(filter)).toList();
             logger.info("pelias poiFilter is set to: {}", poiFilter);
         } else {
             this.poiFilter = new ArrayList<>();
@@ -69,8 +68,9 @@ public class PbfToElasticsearchCommands {
     private File getFile(InputStream poiStream) throws IOException {
         File tmpPoiFile = File.createTempFile("tmp", "poi");
         tmpPoiFile.deleteOnExit();
-        var out = new FileOutputStream(tmpPoiFile);
-        IOUtils.copy(poiStream, out);
+        try (var out = new FileOutputStream(tmpPoiFile)) {
+            IOUtils.copy(poiStream, out);
+        }
         return tmpPoiFile;
     }
 
@@ -85,7 +85,7 @@ public class PbfToElasticsearchCommands {
                     .sorted(new PeliasDocumentPopularityComparator())
                     .filter(Objects::nonNull)
                     .map(ElasticsearchCommand::peliasIndexCommand)
-                    .collect(Collectors.toList());
+                    .toList();
             logger.info("Total topographical places mapped forElasticsearchCommand: {}", collect.size());
             return collect;
         }

@@ -21,6 +21,7 @@ import no.entur.kakka.Constants;
 import no.entur.kakka.exceptions.KakkaException;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.GeoCoderConstants;
+import no.entur.kakka.geocoder.routes.pelias.mapper.osm.PbfToElasticsearchCommands;
 import no.entur.kakka.geocoder.routes.util.AbortRouteException;
 import no.entur.kakka.geocoder.routes.util.MarkContentChangedAggregationStrategy;
 import no.entur.kakka.geocoder.sosi.SosiFileFilter;
@@ -58,6 +59,9 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
     private static final String HEADER_EXPAND_ZIP = "EXPAND_ZIP";
     private static final String FILE_EXTENSION = "RutebankenFileExtension";
     private static final String CONVERSION_ROUTE = "RutebankenConversionRoute";
+    @Autowired
+    private PbfToElasticsearchCommands pbfToElasticsearchCommands;
+
     @Value("${elasticsearch.scratch.url:http://es-scratch:9200}")
     private String elasticsearchScratchUrl;
     @Value("${osm.pbf.blobstore.subdirectory:osm}")
@@ -308,7 +312,7 @@ public class PeliasUpdateEsIndexRouteBuilder extends BaseRouteBuilder {
                 .choice()
                 .when(header(FILE_HANDLE).endsWith(".pbf"))
                  .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands: ${header."+FILE_HANDLE+"}")
-                 .bean("pbfToElasticsearchCommands", "transform")
+                 .bean(pbfToElasticsearchCommands, "transform")
                  .log(LoggingLevel.INFO, "Transform pbf To Elasticsearch Commands completed")
                 .otherwise()
                  .log(LoggingLevel.WARN,"Invalid file format")

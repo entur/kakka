@@ -35,7 +35,7 @@
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.5</commons-fileupload.version>
 
-        <geotools.version>32.2</geotools.version>
+        <geotools.version>33.0</geotools.version>
 
         <geojson-jackson.version>1.14</geojson-jackson.version>
         <gtfs-lib.version>6.2.0</gtfs-lib.version>

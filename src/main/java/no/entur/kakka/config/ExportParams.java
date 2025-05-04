@@ -16,7 +16,6 @@ public class ExportParams implements Serializable {
     private ExportMode fareZoneExportMode = ExportMode.RELEVANT;
     private ExportMode groupOfStopPlacesExportMode = ExportMode.RELEVANT;
     private ExportMode groupOfTariffZonesExportMode = ExportMode.RELEVANT;
-    private ExportMode serviceFrameExportMode = ExportMode.NONE;
     private ExportMode topographicPlaceExportMode = ExportMode.RELEVANT;
     private List<String> municipalityReferences;
     private List<String> countyReferences;
@@ -32,7 +31,6 @@ public class ExportParams implements Serializable {
                         ExportMode fareZoneExportMode,
                         ExportMode groupOfStopPlacesExportMode,
                         ExportMode groupOfTariffZonesExportMode,
-                        ExportMode serviceFrameExportMode,
                         ExportMode topographicPlaceExportMode,
                         List<String> municipalityReferences,
                         List<String> countyReferences,
@@ -43,7 +41,6 @@ public class ExportParams implements Serializable {
         this.fareZoneExportMode = fareZoneExportMode;
         this.groupOfStopPlacesExportMode = groupOfStopPlacesExportMode;
         this.groupOfTariffZonesExportMode = groupOfTariffZonesExportMode;
-        this.serviceFrameExportMode = serviceFrameExportMode;
         this.topographicPlaceExportMode = topographicPlaceExportMode;
         this.municipalityReferences = municipalityReferences;
         this.countyReferences = countyReferences;
@@ -98,14 +95,6 @@ public class ExportParams implements Serializable {
 
     public void setGroupOfTariffZonesExportMode(ExportMode groupOfTariffZonesExportMode) {
         this.groupOfTariffZonesExportMode = groupOfTariffZonesExportMode;
-    }
-
-    public ExportMode getServiceFrameExportMode() {
-        return serviceFrameExportMode;
-    }
-
-    public void setServiceFrameExportMode(ExportMode serviceFrameExportMode) {
-        this.serviceFrameExportMode = serviceFrameExportMode;
     }
 
     public ExportMode getTopographicPlaceExportMode() {

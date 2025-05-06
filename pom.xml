@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>3.4</version>
+        <version>4.4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,7 @@
         <jskdata.version>1.0.20</jskdata.version>
 
         <netex-java-model.version>2.0.14</netex-java-model.version>
-        <entur.helpers.version>4.9</entur.helpers.version>
+        <entur.helpers.version>5.9</entur.helpers.version>
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>

@@ -129,6 +129,12 @@
             <artifactId>slack</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.entur.ror.helpers</groupId>
+            <artifactId>permission-store-proxy</artifactId>
+            <version>${entur.helpers.version}</version>
+        </dependency>
+
 
         <!-- Spring -->
         <dependency>

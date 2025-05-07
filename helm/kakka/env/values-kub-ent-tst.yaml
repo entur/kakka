@@ -22,9 +22,14 @@ configMap:
         url: https://partner.staging.entur.org/
   oauth2:
     client:
-      id: 8qtEWzdSAaH7auRqBwSdRzjOdjMVNVlw
-      url: https://ror-entur-staging.eu.auth0.com/oauth/token
+      id: SFjrD7CIaPnFMYtnsQf4K1kGJ2rxZGcB
+      url: https://internal.staging.entur.org/oauth/token
       audience: https://ror.api.staging.entur.io
+  baba:
+    service: http://baba.staging.entur.internal
+
+  roleAssignmentExtractor: jwt
+
   tiamatExportSchedule: 0+0+02+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
   gecoderExportSchedule: 0+0+04+*+*+?

@@ -22,9 +22,12 @@ configMap:
         url: https://partner.entur.org/
   oauth2:
     client:
-      id: XBcxAAtgvAM9QtAs20ZFE77owIp9HUua
-      url: https://auth2.entur.org/oauth/token
+      id: FQtSn5xAI0Pc448PBcrjCM8YP3vot40A
+      url: https://internal.entur.org/oauth/token
       audience: https://ror.api.entur.io
+  baba:
+    service: http://baba.entur.internal
+  roleAssignmentExtractor: jwt
   tiamatExportSchedule: 0+0+23+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
   gecoderExportSchedule: 0+0+22+*+*+?

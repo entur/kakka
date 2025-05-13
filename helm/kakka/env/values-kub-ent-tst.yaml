@@ -28,7 +28,7 @@ configMap:
   baba:
     service: http://baba.staging.entur.internal
 
-  roleAssignmentExtractor: jwt
+  roleAssignmentExtractor: baba
 
   tiamatExportSchedule: 0+0+02+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?

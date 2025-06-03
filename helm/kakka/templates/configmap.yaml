@@ -48,7 +48,8 @@ data:
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
-    kartverket.address.download.autoStartup=true
+    # Downloads of Addresses from Kartverket are disabled because latest dataset does work with geocoder
+    kartverket.address.download.autoStartup=false
     kartverket.addresses.download.cron.schedule=0+0+11+?+*+MON-FRI
 
     # Geocoder

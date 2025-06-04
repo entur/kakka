@@ -71,8 +71,9 @@ data:
     pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
     pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
     pelias.download.directory=/tmp/tiamat/pelias
-    # Include POIs from tiamat netex file
+    # Include POIs from netex file
     pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
+    pelias.poi.filter=custom_poi=festival
 
     # Blob store
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}

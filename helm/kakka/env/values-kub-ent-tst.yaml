@@ -46,7 +46,7 @@ configMap:
     streetBoost: 20
     stopPlaceBoost: 40
     osmPoiFilterDefaultPriority: 10
-    poiInclude: false
+    poiInclude: true
     geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
   elasticsearchDeploymentName: es-scratch
   elasticsearchUploadJobEnabled: true

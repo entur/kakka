@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='utf-8'?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.5">
+    <PublicationTimestamp>2025-06-03T00:00:00</PublicationTimestamp>
+    <ParticipantRef>ENT</ParticipantRef>
+    <Description>Enturs markedsavdelings-NeTEx</Description>
+    <dataObjects>
+        <SiteFrame version="1" id="ENT:SiteFrame:1">
+            <ValidBetween>
+                <FromDate>2025-06-03T00:00:00</FromDate>
+            </ValidBetween>
+            <codespaces>
+                <Codespace id="ENT">
+                    <Xmlns>ENT</Xmlns>
+                    <XmlnsUrl>http://www.rutebanken.org/ns/ent</XmlnsUrl>
+                </Codespace>
+            </codespaces>
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                    <DefaultLanguage>no</DefaultLanguage>
+                </DefaultLocale>
+            </FrameDefaults>
+            <topographicPlaces>
+                <TopographicPlace id="ENT:TopographicPlace:1" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-07-07T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Stavernfestivalen</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>10.0156944</Longitude>
+                            <Latitude>59.0334167</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Stavernfestivalen</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:2" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-06-16T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Bergenfest</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>5.3186667</Longitude>
+                            <Latitude>60.3991111</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Bergenfest</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:3" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-06-09T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Neon Festival</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>10.4240379</Longitude>
+                            <Latitude>63.4394127</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Neon Festival</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:4" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-06-16T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Vaulen Open Air</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>5.7469722</Longitude>
+                            <Latitude>58.9261667</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Vaulen Open Air</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:5" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-08-18T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Parkenfestivalen</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>14.4029109</Longitude>
+                            <Latitude>67.2827757</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Parkenfestivalen</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:6" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-06-07T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Trondheim Rocks</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>10.4240278</Longitude>
+                            <Latitude>63.4394167</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Trondheim Rocks</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+                <TopographicPlace id="ENT:TopographicPlace:7" version="1">
+                    <ValidBetween>
+                        <FromDate>2025-06-03T00:00:00</FromDate>
+                        <ToDate>2025-08-25T00:00:00</ToDate>
+                    </ValidBetween>
+                    <keyList>
+                        <KeyValue>
+                            <Key>custom_poi</Key>
+                            <Value>festival</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nor">Feelings Festival</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>5.3176389</Longitude>
+                            <Latitude>60.4016111</Latitude>
+                        </Location>
+                    </Centroid>
+                    <Descriptor>
+                        <Name lang="nor">Feelings Festival</Name>
+                    </Descriptor>
+                    <TopographicPlaceType>placeOfInterest</TopographicPlaceType>
+                </TopographicPlace>
+            </topographicPlaces>
+        </SiteFrame>
+    </dataObjects>
+</PublicationDelivery>

@@ -91,6 +91,24 @@ class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertTrue(collect.isEmpty());
     }
 
+    @Test
+    public void testCustomPoiTransform() throws Exception {
+        OSMPOIFilterRepository osmpoiFilterRepository = new OSMPOIFilterRepositoryStub();
+        OSMPOIFilterService osmpoiFilterService = new OSMPOIFilterServiceImpl(osmpoiFilterRepository, 1);
+        DeliveryPublicationStreamToElasticsearchCommands mapper =
+                new DeliveryPublicationStreamToElasticsearchCommands(new StopPlaceBoostConfiguration("{\"defaultValue\":1000, \"stopTypeFactors\":{\"airport\":{\"*\":3},\"onstreetBus\":{\"*\":2}}}"),
+                        POI_POPULARITY, List.of("custom_poi=festival"), 1.0, true, osmpoiFilterService, true);
+
+        Collection<ElasticsearchCommand> commands = mapper
+                .transform(new FileInputStream("src/test/resources/no/entur/kakka/geocoder/netex/festivals_netex_poi.xml"));
+
+        Assertions.assertEquals(7, commands.size());
+        commands.forEach(this::assertCommand);
+
+        PeliasDocument known = byId(commands, "ENT:TopographicPlace:7");
+        assertKnownCustomPoi(known);
+    }
+
     private PeliasDocument byId(Collection<ElasticsearchCommand> commands, String sourceId) {
         return commands.stream().map(c -> (PeliasDocument) c.getSource()).filter(d -> d.getSourceId().equals(sourceId)).toList().getFirst();
     }
@@ -166,6 +184,18 @@ class DeliveryPublicationStreamToElasticsearchCommandsTest {
         Assertions.assertEquals(POI_POPULARITY, known.getPopularity());
     }
 
+
+    private void assertKnownCustomPoi(PeliasDocument known) throws Exception {
+        Assertions.assertEquals("Feelings Festival", known.getDefaultName());
+        Assertions.assertEquals("Feelings Festival", known.getNameMap().get("nor"));
+        Assertions.assertEquals("address", known.getLayer());
+        Assertions.assertEquals(PeliasDocument.DEFAULT_SOURCE, known.getSource());
+        Assertions.assertEquals(List.of("poi"), known.getCategory());
+        Assertions.assertEquals(List.of("poi"), known.getCategoryFilter());
+        Assertions.assertEquals(60.4016111, known.getCenterPoint().getLat(), 0.0001);
+        Assertions.assertEquals(5.3176389, known.getCenterPoint().getLon(), 0.0001);
+        Assertions.assertEquals(POI_POPULARITY, known.getPopularity());
+    }
 
     private void assertCommand(ElasticsearchCommand command) {
         Assertions.assertNotNull(command.getIndex());

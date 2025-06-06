@@ -73,7 +73,6 @@ data:
     pelias.download.directory=/tmp/tiamat/pelias
     # Include POIs from netex file
     pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
-    pelias.poi.filter=custom_poi=festival
 
     # Blob store
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}

@@ -33,7 +33,7 @@
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
 
         <geotools.version>32.2</geotools.version>
 

@@ -24,7 +24,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:1" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-07-07T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -47,7 +46,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:2" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-06-16T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -70,7 +68,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:3" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-06-09T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -93,7 +90,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:4" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-06-16T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -116,7 +112,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:5" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-08-18T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -139,7 +134,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:6" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-06-07T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>
@@ -162,7 +156,6 @@
                 <TopographicPlace id="ENT:TopographicPlace:7" version="1">
                     <ValidBetween>
                         <FromDate>2025-06-03T00:00:00</FromDate>
-                        <ToDate>2025-08-25T00:00:00</ToDate>
                     </ValidBetween>
                     <keyList>
                         <KeyValue>

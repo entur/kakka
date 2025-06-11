@@ -17,7 +17,15 @@ jobs:
         with:
           java-version: 21.0.1+12
           distribution: liberica
-          cache: 'maven'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+            ${{ runner.os }}-maven-
+            ${{ runner.os }}-
       - run: mvn verify
       - uses: actions/upload-artifact@v4.6.2
         with:

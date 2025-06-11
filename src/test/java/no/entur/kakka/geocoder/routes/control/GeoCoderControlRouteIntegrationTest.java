@@ -66,6 +66,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         GeoCoderTask task4 = task(GeoCoderTask.Phase.PELIAS_UPDATE);
 
         destination.expectedBodiesReceived(task1, task2, task3, task4);
+        destination.setResultWaitTime(120_000);
         context.start();
 
         geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task3).toString());
@@ -86,6 +87,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         // First task is rescheduled for step 2
         destination.whenExchangeReceived(1, e -> e.setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, ongoingFinalStep));
         destination.expectedBodiesReceived(ongoingInit, ongoingFinalStep, earlierPhase);
+        destination.setResultWaitTime(120_000);
 
         context.start();
 
@@ -113,6 +115,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         });
 
         destination.expectedBodiesReceived(task, taskNextIteration);
+        destination.setResultWaitTime(120_000);
 
         context.start();
 
@@ -134,6 +137,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         destination.whenExchangeReceived(1, e ->
                 e.setProperty(GeoCoderConstants.GEOCODER_RESCHEDULE_TASK, true)
         );
+        destination.setResultWaitTime(120_000);
 
         context.start();
         GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);

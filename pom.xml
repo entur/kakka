@@ -29,7 +29,7 @@
         <jskdata.version>1.0.20</jskdata.version>
 
         <netex-java-model.version>2.0.14</netex-java-model.version>
-        <entur.helpers.version>5.11</entur.helpers.version>
+        <entur.helpers.version>5.14</entur.helpers.version>
         <guava.version>31.1-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>

@@ -8,7 +8,7 @@ import org.apache.camel.Message;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.google.pubsub.GooglePubsubConstants;
-import org.apache.camel.component.google.pubsub.consumer.AcknowledgeAsync;
+import org.apache.camel.component.google.pubsub.consumer.AcknowledgeCompletion;
 import org.apache.camel.component.master.MasterConsumer;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.support.DefaultExchange;
@@ -106,7 +106,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder {
      */
     public void removeSynchronizationForAggregatedExchange(Exchange e) {
         DefaultExchange temporaryExchange = new DefaultExchange(e.getContext());
-        e.getUnitOfWork().handoverSynchronization(temporaryExchange, AcknowledgeAsync.class::isInstance);
+        e.getUnitOfWork().handoverSynchronization(temporaryExchange, AcknowledgeCompletion.class::isInstance);
         e.getIn().setHeader(SYNCHRONIZATION_HOLDER, temporaryExchange);
     }
 

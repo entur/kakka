@@ -2,16 +2,16 @@
   "extends": [
     "github>entur/ror-renovate-config"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "master"
   ],
   "separateMinorPatch": true,
-
   "packageRules": [
     {
-      "matchPackageNames": ["crosby.binary:osmpbf"],
+      "matchPackageNames": [
+        "crosby.binary:osmpbf"
+      ],
       "enabled": false
     }
   ]
-
 }

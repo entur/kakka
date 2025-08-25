@@ -27,7 +27,7 @@ configMap:
       audience: https://ror.api.entur.io
   baba:
     service: http://baba.entur.internal
-  roleAssignmentExtractor: jwt
+  roleAssignmentExtractor: baba
   tiamatExportSchedule: 0+0+23+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
   gecoderExportSchedule: 0+0+22+*+*+?

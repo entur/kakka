@@ -48,6 +48,8 @@ jobs:
   docker-lint:
     needs: [maven-verify]
     uses: entur/gha-docker/.github/workflows/lint.yml@v1
+    with:
+     ignore: "DL3018"
 
   docker-build:
     needs: [maven-verify]

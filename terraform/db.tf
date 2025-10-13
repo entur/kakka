@@ -1,6 +1,6 @@
 resource "google_sql_database_instance" "db_instance" {
   name             = "kakka-db"
-  database_version = "POSTGRES_13"
+  database_version = "POSTGRES_17"
   project          = var.cloudsql_project
   region           = var.db_region
 

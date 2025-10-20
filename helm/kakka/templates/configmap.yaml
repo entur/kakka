@@ -146,6 +146,7 @@ data:
     # TariffZone Import valid providers/authority
     tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
     fetch.osm.cron.schedule=0+0+19+?+*+MON-FRI
+    fetch.osm.map.url=https://storage.googleapis.com/ror-osmdata-prd/osm-data/norway-latest.osm.pbf
     kakka.slack.end.point=${SLACK_URL}
 
 kind: ConfigMap

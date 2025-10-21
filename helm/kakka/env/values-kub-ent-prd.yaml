@@ -26,7 +26,7 @@ configMap:
       url: https://internal.entur.org/oauth/token
       audience: https://ror.api.entur.io
   baba:
-    service: http://baba.entur.internal
+    service: http://baba.prd.entur.internal
   roleAssignmentExtractor: baba
   tiamatExportSchedule: 0+0+23+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?

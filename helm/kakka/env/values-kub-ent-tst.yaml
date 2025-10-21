@@ -22,7 +22,6 @@ configMap:
         url: https://partner.staging.entur.org/
   oauth2:
     client:
-      id: SFjrD7CIaPnFMYtnsQf4K1kGJ2rxZGcB
       url: https://internal.staging.entur.org/oauth/token
       audience: https://ror.api.staging.entur.io
   baba:

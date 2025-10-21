@@ -93,7 +93,6 @@ data:
 
     # OAuth2 Client
     spring.security.oauth2.client.registration.kakka.authorization-grant-type=client_credentials
-    spring.security.oauth2.client.registration.kakka.client-id={{ .Values.configMap.oauth2.client.id }}
     spring.security.oauth2.client.provider.kakka.token-uri={{ .Values.configMap.oauth2.client.url }}
     kakka.oauth2.client.audience={{ .Values.configMap.oauth2.client.audience }}
 

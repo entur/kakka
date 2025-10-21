@@ -62,6 +62,8 @@ spec:
             - secretRef:
                 name: ror-kakka-secrets
             - secretRef:
+                name: auth-internal-credentials
+            - secretRef:
                 name: ror-slack
           image: {{.Values.image.identifier }}
           imagePullPolicy: {{.Values.image.imagePullPolicy }}

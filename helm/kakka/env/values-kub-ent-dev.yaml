@@ -22,7 +22,6 @@ configMap:
         url: https://partner.dev.entur.org/
   oauth2:
     client:
-      id: rXbflD8gpO22ZLZowotAFKBhuS6YYS50
       url: https://internal.dev.entur.org/oauth/token
       audience: https://ror.api.dev.entur.io
   baba:

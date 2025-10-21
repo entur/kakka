@@ -147,14 +147,17 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .description("OSM POI Filters REST service")
                 .consumes(JSON)
                 .produces(JSON)
+
                 .get().description("Get all filters").outType(OSMPOIFilter[].class)
                 .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
                 .to("bean:osmpoifilterService?method=getFilters")
+
                 .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
                 .param().name("body").type(RestParamType.body).description("List of filters").endParam()
                 .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
-                .to("direct:authorizeAdminRequest")
-                .to("bean:osmpoifilterService?method=updateFilters");
+                .to("direct:adminUpdateOsmpoifilter");
+
+
 
         rest("/organisation_admin")
                 .post("/administrative_zones/update")
@@ -268,6 +271,13 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
                 .to("direct:uploadFilesAndStartImport")
                 .routeId("admin-tariff-zone-upload-file");
+
+        from("direct:adminUpdateOsmpoifilter")
+                .to("direct:authorizeAdminRequest")
+                .to("bean:osmpoifilterService?method=updateFilters")
+                .routeId("admin-updateosm-poi-filter");
+
+
     }
 
     private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {

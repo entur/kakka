@@ -49,7 +49,7 @@
         <kubernetes-server-mock.version>6.12.1</kubernetes-server-mock.version>
         <argLine/>
         <spring-webmvc.version>5.3.28</spring-webmvc.version>
-        <netty.version>4.1.125.Final</netty.version>
+        <netty.version>4.1.128.Final</netty.version>
     </properties>
 
     <repositories>

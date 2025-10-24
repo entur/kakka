@@ -35,7 +35,7 @@ configMap:
   tiamatExportConfig: env/tiamat-exports-kub-ent-dev.yml
   slackSecret: ror-dev-slack-url
   pelias:
-    gtfs: true
+    gtfs: false
     placeBoost: 40
     boostConfig: '{"defaultValue":30, "stopTypeFactors":{"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}}}'
     boostFactor: 10

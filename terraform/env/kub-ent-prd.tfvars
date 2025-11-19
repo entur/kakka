@@ -6,3 +6,10 @@ nabu_job_event_pubsub_project="ent-nabu-prd"
 service_account="serviceAccount:application@ent-kakka-prd.iam.gserviceaccount.com"
 kingu_storage_bucket="ror-kingu-production"
 bucket_instance_suffix="production"
+labels = {
+  manager     = "terraform"
+  team        = "ror"
+  slack       = "talk-ror"
+  app         = "kakka"
+  environment = "prd"
+}

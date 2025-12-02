@@ -26,6 +26,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Configure Spring Beans for OAuth2 resource server and OAuth2 client security.
  */
@@ -47,21 +50,19 @@ public class OAuth2Config {
             @Value("${kakka.oauth2.resourceserver.auth0.entur.partner.jwt.audience:}")
             String enturPartnerAuth0Audience,
             @Value("${kakka.oauth2.resourceserver.auth0.entur.partner.jwt.issuer-uri:}")
-            String enturPartnerAuth0Issuer,
-            @Value("${kakka.oauth2.resourceserver.auth0.ror.jwt.audience:}")
-            String rorAuth0Audience,
-            @Value("${kakka.oauth2.resourceserver.auth0.ror.jwt.issuer-uri:}")
-            String rorAuth0Issuer,
-            @Value("${kakka.oauth2.resourceserver.auth0.ror.claim.namespace:}")
-            String rorAuth0ClaimNamespace) {
+            String enturPartnerAuth0Issuer) {
 
         return new MultiIssuerAuthenticationManagerResolverBuilder()
                 .withEnturPartnerAuth0Issuer(enturPartnerAuth0Issuer)
-                .withEnturPartnerAuth0Audience(enturPartnerAuth0Audience)
-                .withRorAuth0Issuer(rorAuth0Issuer)
-                .withRorAuth0Audience(rorAuth0Audience)
-                .withRorAuth0ClaimNamespace(rorAuth0ClaimNamespace)
+                .withEnturPartnerAuth0Audiences(parseAudiences(enturPartnerAuth0Audience))
                 .build();
+    }
+
+    private List<String> parseAudiences(String audiences) {
+        if (audiences == null || audiences.trim().isEmpty()) {
+            return List.of();
+        }
+        return Arrays.asList(audiences.split(","));
     }
 
 }

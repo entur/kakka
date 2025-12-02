@@ -39,7 +39,6 @@ spring.main.sources=no.entur.kakka
 spring.profiles.active=gcs-blobstore
 
 tiamat.url=http4://tiamat:1888
-babylon.url=http4://babylon:9030/rest
 
 kartverket.username=
 kartverket.password=

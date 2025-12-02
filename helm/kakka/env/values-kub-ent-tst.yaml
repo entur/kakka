@@ -15,11 +15,9 @@ configMap:
   tiamatExporterUrl: http://tiamat-exporter.tst.entur.internal:80
   babaUrl: http://baba.tst.entur.internal/services/organisations/
   auth0:
-    ror:
-      url: https://ror-entur-staging.eu.auth0.com/
-      audience: https://ror.api.staging.entur.io
     partner:
-        url: https://partner.staging.entur.org/
+      url: https://partner.staging.entur.org/
+      audience: https://ror.api.staging.entur.io,https://api.staging.entur.io
   oauth2:
     client:
       url: https://internal.staging.entur.org/oauth/token

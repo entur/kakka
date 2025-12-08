@@ -42,7 +42,7 @@
         <beanio.version>2.1.0</beanio.version>
         <osmpbf.version>1.6.0</osmpbf.version>
         <google-protobuf.version>4.33.2</google-protobuf.version>
-        <commons-text.version>1.14.0</commons-text.version>
+        <commons-text.version>1.15.0</commons-text.version>
         <commons-io.version>2.21.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
         <osmosis-osm-binary.version>0.48.3</osmosis-osm-binary.version>

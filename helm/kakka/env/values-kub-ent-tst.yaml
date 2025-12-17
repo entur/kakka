@@ -21,7 +21,7 @@ configMap:
   oauth2:
     client:
       url: https://internal.staging.entur.org/oauth/token
-      audience: https://ror.api.staging.entur.io
+      audience: https://api.staging.entur.io
   baba:
     service: http://baba.tst.entur.internal
 

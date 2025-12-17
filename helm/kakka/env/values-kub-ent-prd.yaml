@@ -21,7 +21,7 @@ configMap:
   oauth2:
     client:
       url: https://internal.entur.org/oauth/token
-      audience: https://ror.api.entur.io
+      audience: https://api.entur.io
   baba:
     service: http://baba.prd.entur.internal
   roleAssignmentExtractor: baba

@@ -40,7 +40,7 @@
         <geojson-jackson.version>1.14</geojson-jackson.version>
         <gtfs-lib.version>6.2.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
-        <osmpbf.version>1.6.0</osmpbf.version>
+        <osmpbf.version>1.6.1</osmpbf.version>
         <google-protobuf.version>4.33.2</google-protobuf.version>
         <commons-text.version>1.15.0</commons-text.version>
         <commons-io.version>2.21.0</commons-io.version>

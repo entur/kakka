@@ -17,7 +17,7 @@ configMap:
   auth0:
     partner:
       url: https://partner.dev.entur.org/
-      audience: https://ror.api.dev.entur.io,https://api.dev.entur.io
+      audience: https://api.dev.entur.io
   oauth2:
     client:
       url: https://internal.dev.entur.org/oauth/token

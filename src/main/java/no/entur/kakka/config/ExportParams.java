@@ -20,6 +20,7 @@ public class ExportParams implements Serializable {
     private List<String> municipalityReferences;
     private List<String> countyReferences;
     private List<String> countryReferences;
+    private boolean multiSurfaceExport = false;
     private StopPlaceSearch stopPlaceSearch;
 
 
@@ -35,6 +36,7 @@ public class ExportParams implements Serializable {
                         List<String> municipalityReferences,
                         List<String> countyReferences,
                         List<String> countryReferences,
+                        boolean multiSurfaceExport,
                         StopPlaceSearch stopPlaceSearch) {
         this.name = name;
         this.tariffZoneExportMode = tariffZoneExportMode;
@@ -45,6 +47,7 @@ public class ExportParams implements Serializable {
         this.municipalityReferences = municipalityReferences;
         this.countyReferences = countyReferences;
         this.countryReferences = countryReferences;
+        this.multiSurfaceExport = multiSurfaceExport;
         this.stopPlaceSearch = stopPlaceSearch;
     }
 
@@ -115,6 +118,14 @@ public class ExportParams implements Serializable {
 
     public List<String> getCountyReferences() {
         return countyReferences;
+    }
+
+    public boolean isMultiSurfaceExport() {
+        return multiSurfaceExport;
+    }
+
+    public void setMultiSurfaceExport(boolean multiSurfaceExport) {
+        this.multiSurfaceExport = multiSurfaceExport;
     }
 
     public void setCountyReferences(List<String> countyReferences) {

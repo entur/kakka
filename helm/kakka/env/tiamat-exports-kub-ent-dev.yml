@@ -28,6 +28,15 @@ tiamat:
         groupOfStopPlacesExportMode: ALL
         stopPlaceSearch:
           versionValidity: CURRENT
+
+      - name: Current-MultiSurface
+        tariffZoneExportMode: ALL
+        fareZoneExportMode: ALL
+        groupOfStopPlacesExportMode: ALL
+        multiSurfaceExport: true
+        stopPlaceSearch:
+          versionValidity: CURRENT
+      -
       -
         name: RailStations
         stopPlaceSearch:

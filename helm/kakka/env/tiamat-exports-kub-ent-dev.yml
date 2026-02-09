@@ -37,7 +37,6 @@ tiamat:
         stopPlaceSearch:
           versionValidity: CURRENT
       -
-      -
         name: RailStations
         stopPlaceSearch:
           versionValidity: CURRENT

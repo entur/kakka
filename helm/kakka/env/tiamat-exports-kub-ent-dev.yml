@@ -33,7 +33,7 @@ tiamat:
         tariffZoneExportMode: ALL
         fareZoneExportMode: ALL
         groupOfStopPlacesExportMode: ALL
-        multiSurfaceExport: true
+        exportMultiSurface: true
         stopPlaceSearch:
           versionValidity: CURRENT
       -

@@ -124,7 +124,7 @@ public class ExportParams implements Serializable {
         return exportMultiSurface;
     }
 
-    public void setMultiSurfaceExport(boolean exportMultiSurface) {
+    public void setExportMultiSurface(boolean exportMultiSurface) {
         this.exportMultiSurface = exportMultiSurface;
     }
 

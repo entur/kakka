@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:21.0.10 AS builder
+FROM bellsoft/liberica-openjre-alpine:25.0.2 AS builder
 WORKDIR /builder
 # Patch OpenSSL/libssl3 in the builder stage too (for image scanning)
 RUN apk update \
@@ -7,7 +7,7 @@ RUN apk update \
 COPY target/*-SNAPSHOT.jar application.jar
 RUN java -Djarmode=tools  -jar application.jar extract --layers --destination extracted
 
-FROM bellsoft/liberica-openjre-alpine:21.0.10
+FROM bellsoft/liberica-openjre-alpine:25.0.2
 # Patch OpenSSL / libssl3 in the runtime image
 RUN apk update \
  && apk upgrade --no-cache openssl libssl3 libcrypto3 \

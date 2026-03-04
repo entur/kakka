@@ -17,7 +17,6 @@
 package no.entur.kakka.geocoder.routes.tiamat;
 
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.geocoder.GeoCoderConstants;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,17 +45,15 @@ public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
         singletonFrom("quartz://kakka/tiamatGeoCoderExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.geocoder.export.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
-                .log(LoggingLevel.INFO, "Quartz triggers pelias update.")
-                .setBody(constant(GeoCoderConstants.PELIAS_UPDATE_START))
-                .to(ExchangePattern.InOnly, "direct:geoCoderStart")
+                .log(LoggingLevel.INFO, "Quartz triggers netex export.")
+                .to(ExchangePattern.InOnly, "direct:startNetexExport")
                 .routeId("tiamat-geocoder-export-quartz");
 
         singletonFrom("quartz://kakka/tiamatGeoCoderExportMidDay?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{tiamat.geocoder.export.mid.day.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronScheduleMidDay))
-                .log(LoggingLevel.INFO, "Quartz triggers mid day pelias update.")
-                .setBody(constant(GeoCoderConstants.PELIAS_UPDATE_START))
-                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
+                .log(LoggingLevel.INFO, "Quartz triggers mid day netex export.")
+                .to(ExchangePattern.InOnly,"direct:startNetexExport")
                 .routeId("tiamat-geocoder-export-mid-day-quartz");
     }
 }

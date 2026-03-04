@@ -72,8 +72,7 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .autoStartup("{{tiamat.administrative.units.update.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat update of administrative units.")
-                .setBody(constant(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START))
-                .to(ExchangePattern.InOnly, "direct:geoCoderStart")
+                .to(ExchangePattern.InOnly, GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
                 .routeId("tiamat-admin-units-update-quartz");
 
         from(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())

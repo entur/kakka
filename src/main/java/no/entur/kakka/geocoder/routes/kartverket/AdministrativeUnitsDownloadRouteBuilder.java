@@ -55,8 +55,7 @@ public class AdministrativeUnitsDownloadRouteBuilder extends BaseRouteBuilder {
                 .autoStartup("{{kartverket.administrative.units.download.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")
-                .setBody(constant(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD))
-                .to(ExchangePattern.InOnly,"direct:geoCoderStart")
+                .to(ExchangePattern.InOnly, GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
                 .routeId("admin-units-download-quartz");
 
         from(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
@@ -67,8 +66,7 @@ public class AdministrativeUnitsDownloadRouteBuilder extends BaseRouteBuilder {
                 .choice()
                 .when(simple("${header." + Constants.CONTENT_CHANGED + "}"))
                 .log(LoggingLevel.INFO, "Uploaded updated administrative units from mapping authority. Initiating update of Tiamat")
-                .setBody(constant(null))
-                .setProperty(GeoCoderConstants.GEOCODER_NEXT_TASK, constant(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START))
+                .to(ExchangePattern.InOnly, GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
                 .otherwise()
                 .log(LoggingLevel.INFO, "Finished downloading administrative units from mapping authority with no changes")
                 .end()

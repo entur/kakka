@@ -38,14 +38,9 @@
         <geotools.version>32.2</geotools.version>
 
         <geojson-jackson.version>1.14</geojson-jackson.version>
-        <gtfs-lib.version>6.2.0</gtfs-lib.version>
-        <beanio.version>2.1.0</beanio.version>
-        <osmpbf.version>1.6.1</osmpbf.version>
-        <google-protobuf.version>4.33.5</google-protobuf.version>
         <commons-text.version>1.15.0</commons-text.version>
         <commons-io.version>2.21.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
-        <osmosis-osm-binary.version>0.48.3</osmosis-osm-binary.version>
         <kubernetes-server-mock.version>6.12.1</kubernetes-server-mock.version>
         <argLine/>
         <spring-webmvc.version>5.3.28</spring-webmvc.version>
@@ -221,14 +216,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!--Used by Spring Actuator to expose metrics to Prometheus-->
@@ -269,10 +256,6 @@
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-openapi-java-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-sql-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
@@ -325,17 +308,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.conveyal</groupId>
-            <artifactId>gtfs-lib</artifactId>
-            <version>${gtfs-lib.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
@@ -350,44 +322,9 @@
             <artifactId>janino</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.beanio</groupId>
-            <artifactId>beanio</artifactId>
-            <version>${beanio.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openstreetmap.pbf</groupId>
-            <artifactId>osmpbf</artifactId>
-            <version>${osmpbf.version}</version>
-
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.protobuf</groupId>
-                    <artifactId>protobuf-java</artifactId>
-                </exclusion>
-            </exclusions>
-
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>${google-protobuf.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
@@ -416,11 +353,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openstreetmap.osmosis</groupId>
-            <artifactId>osmosis-osm-binary</artifactId>
-            <version>${osmosis-osm-binary.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

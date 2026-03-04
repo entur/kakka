@@ -16,14 +16,12 @@
 
 package no.entur.kakka.rest;
 
-import no.entur.kakka.Constants;
-import no.entur.kakka.domain.OSMPOIFilter;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -52,7 +50,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
     public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
     private static final String PROVIDER_ID = "ProviderId";
-    private static final String JSON = "application/json";
     @Value("${server.port:8080}")
     private String port;
 
@@ -61,6 +58,9 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private KakkaAuthorizationService kakkaAuthorizationService;
+
+    @Autowired
+    private ProducerTemplate producerTemplate;
 
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
@@ -143,22 +143,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to(commonApiDocEndpoint);
 
 
-        rest("/osmpoifilter")
-                .description("OSM POI Filters REST service")
-                .consumes(JSON)
-                .produces(JSON)
-
-                .get().description("Get all filters").outType(OSMPOIFilter[].class)
-                .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
-                .to("bean:osmpoifilterService?method=getFilters")
-
-                .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
-                .param().name("body").type(RestParamType.body).description("List of filters").endParam()
-                .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
-                .to("direct:adminUpdateOsmpoifilter");
-
-
-
         rest("/organisation_admin")
                 .post("/administrative_zones/update")
                 .description("Update administrative zones in the organisation registry")
@@ -170,15 +154,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .to(commonApiDocEndpoint);
-
-
-        rest("/map_admin")
-                .post("/download")
-                .description("Triggers downloading of the latest OSM data")
-                .consumes(PLAIN)
-                .produces(PLAIN)
-                .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .to("direct:AdminFetchOsm");
 
 
         rest("/export")
@@ -234,9 +209,13 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:authorizeAdminRequest")
                 .validate(header("task").isNotNull())
                 .removeHeaders(camelHttpPattern)
-                .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .to(ExchangePattern.InOnly, "direct:geoCoderStartBatch")
-                .setBody(constant(null))
+                .process(e -> {
+                    @SuppressWarnings("unchecked")
+                    Collection<String> taskHeaders = e.getIn().getHeader("task", Collection.class);
+                    geoCoderTaskTypesFromString(taskHeaders).forEach(taskType ->
+                            producerTemplate.asyncSendBody(taskType.getGeoCoderTask().getEndpoint(), null));
+                })
+                .setBody(constant((Object) null))
                 .routeId("admin-geocoder-start-route");
 
         from("direct:adminOrgRegImportAdminZones")
@@ -245,13 +224,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:updateAdminUnitsInOrgReg")
                 .setBody(simple("done"))
                 .routeId("admin-org-reg-import-admin-zones");
-
-        from("direct:AdminFetchOsm")
-                .to("direct:authorizeAdminRequest")
-                .log(LoggingLevel.INFO, "OSM update map data")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
-                .to("direct:considerToFetchOsmMapOverNorway")
-                .routeId("admin-fetch-osm");
 
         from("direct:adminTiamatPublishExportFull")
                 .to("direct:authorizeAdminRequest")
@@ -268,15 +240,9 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .process(e -> kakkaAuthorizationService.verifyRouteDataAdministratorPrivileges())
                 .to("direct:validateProvider")
                 .log(LoggingLevel.INFO, "Upload files and start import pipeline")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
+                .removeHeaders("CamelHttp*")
                 .to("direct:uploadFilesAndStartImport")
                 .routeId("admin-tariff-zone-upload-file");
-
-        from("direct:adminUpdateOsmpoifilter")
-                .to("direct:authorizeAdminRequest")
-                .to("bean:osmpoifilterService?method=updateFilters")
-                .routeId("admin-updateosm-poi-filter");
-
 
     }
 
@@ -285,6 +251,3 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
     }
 
 }
-
-
-

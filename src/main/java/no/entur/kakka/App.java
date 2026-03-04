@@ -23,8 +23,6 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import no.entur.kakka.config.GcsStorageConfig;
-import no.entur.kakka.config.IdempotentRepositoryConfig;
-import no.entur.kakka.config.TransactionManagerConfig;
 import org.apache.camel.builder.RouteBuilder;
 import org.entur.pubsub.base.config.GooglePubSubConfig;
 import org.slf4j.Logger;
@@ -44,7 +42,7 @@ import java.util.Set;
  */
 @SpringBootApplication(exclude={UserDetailsServiceAutoConfiguration.class})
 @EnableScheduling
-@Import({GcsStorageConfig.class, TransactionManagerConfig.class, IdempotentRepositoryConfig.class, GooglePubSubConfig.class})
+@Import({GcsStorageConfig.class, GooglePubSubConfig.class})
 public class App extends RouteBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);

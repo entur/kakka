@@ -16,8 +16,8 @@
 
 package no.entur.kakka.geocoder.sosi;
 
-import no.entur.kakka.geocoder.routes.pelias.mapper.coordinates.GeometryTransformer;
-import no.entur.kakka.geocoder.routes.pelias.mapper.kartverket.KartverketCoordinatSystemMapper;
+import no.entur.kakka.geocoder.sosi.GeometryTransformer;
+import no.entur.kakka.geocoder.sosi.KartverketCoordinatSystemMapper;
 import no.vegvesen.nvdb.sosi.document.SosiElement;
 import no.vegvesen.nvdb.sosi.document.SosiNumber;
 import no.vegvesen.nvdb.sosi.document.SosiSerialNumber;

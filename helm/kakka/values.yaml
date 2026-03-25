@@ -48,7 +48,5 @@ cronjobTiamatExportStatus:
     repo: eu.gcr.io/entur-system-1287/deployment-rollout-restart:master.20250722-SHA1bec838
 
 secrets:
-  ror-kakka-secrets:
-    - SPRING_DATASOURCE_PASSWORD
   ror-slack:
     - SLACK_URL

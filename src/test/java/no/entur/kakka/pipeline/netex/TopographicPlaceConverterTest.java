@@ -54,7 +54,7 @@ public class TopographicPlaceConverterTest {
     @Test
     public void testCovertWOFCountriesToGeoJson() throws Exception {
         final List<AdministrativeZone> wof = new GeoJsonSingleTopographicPlaceReader(new GeojsonFeatureWrapperFactory(null),
-                new File("src/test/resources/no/entur/kakka/geocoder/geojson/finland.geojson")).read()
+                new File("src/test/resources/no/entur/kakka/pipeline/geojson/finland.geojson")).read()
                 .stream()
                 .map(tpa -> toAdministrativeZone(tpa, "WOF"))
                 .toList();
@@ -66,7 +66,7 @@ public class TopographicPlaceConverterTest {
 
     @Test
     public void testConvertAdminUnitsFromSosi() throws Exception {
-        TopographicPlaceReader reader = new SosiTopographicPlaceReader(new SosiElementWrapperFactory(), List.of(new File("src/test/resources/no/entur/kakka/geocoder/sosi/SosiTest.sos")));
+        TopographicPlaceReader reader = new SosiTopographicPlaceReader(new SosiElementWrapperFactory(), List.of(new File("src/test/resources/no/entur/kakka/pipeline/sosi/SosiTest.sos")));
         String targetPath = "target/admin-units-from-sosi.xml";
         converter.toNetexFile(reader,
                 targetPath);
@@ -78,7 +78,7 @@ public class TopographicPlaceConverterTest {
     @Test
     public void testConvertNeighbouringCountriesFromGeoJson() throws Exception {
         TopographicPlaceReader reader = new GeoJsonSingleTopographicPlaceReader(new GeojsonFeatureWrapperFactory(null),
-                new File("src/test/resources/no/entur/kakka/geocoder/geojson/finland.geojson"));
+                new File("src/test/resources/no/entur/kakka/pipeline/geojson/finland.geojson"));
         String targetPath = "target/neighbouring-countries_from_geosjon.xml";
         converter.toNetexFile(reader,
                 targetPath);

@@ -37,13 +37,9 @@
 
         <geotools.version>32.2</geotools.version>
 
-        <geojson-jackson.version>1.14</geojson-jackson.version>
-        <commons-text.version>1.15.0</commons-text.version>
         <commons-io.version>2.21.0</commons-io.version>
         <sosi-reader-impl.version>1.26</sosi-reader-impl.version>
-        <kubernetes-server-mock.version>6.12.1</kubernetes-server-mock.version>
         <argLine/>
-        <spring-webmvc.version>5.3.28</spring-webmvc.version>
         <netty.version>4.2.10.Final</netty.version>
     </properties>
 
@@ -195,11 +191,6 @@
         </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>slack</artifactId>
-            <version>${entur.helpers.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>permission-store-proxy</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
@@ -300,13 +291,6 @@
             <artifactId>gt-epsg-hsql</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-        <!--  Using de.grundid.opendatalab geojson for legacy reasons. would be better to swtich to org.wololo-->
-        <dependency>
-            <groupId>de.grundid.opendatalab</groupId>
-            <artifactId>geojson-jackson</artifactId>
-            <version>${geojson-jackson.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -324,11 +308,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>${commons-text.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -375,17 +354,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test-spring-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.fabric8</groupId>
-            <artifactId>kubernetes-server-mock</artifactId>
-            <version>${kubernetes-server-mock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-migrationsupport</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

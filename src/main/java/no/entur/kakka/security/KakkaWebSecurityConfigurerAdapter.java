@@ -43,10 +43,8 @@ public class KakkaWebSecurityConfigurerAdapter{
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/openapi.json")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/services/geocoder_admin/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/organisation_admin/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/export/openapi.json")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/services/osmpoifilter")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/liveness")).permitAll()

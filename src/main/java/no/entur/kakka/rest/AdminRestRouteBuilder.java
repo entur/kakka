@@ -17,11 +17,9 @@
 package no.entur.kakka.rest;
 
 import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -32,12 +30,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import jakarta.ws.rs.NotFoundException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
@@ -58,9 +52,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private KakkaAuthorizationService kakkaAuthorizationService;
-
-    @Autowired
-    private ProducerTemplate producerTemplate;
 
     @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
     private List<String> tariffZoneProviders;
@@ -122,25 +113,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
 
         String commonApiDocEndpoint = "http:" + host + ":" + port + "/services/openapi.json?bridgeEndpoint=true";
-
-
-        rest("/geocoder_admin")
-                .post("/build_pipeline")
-                .param().name("task")
-                .type(RestParamType.query)
-                .allowableValues(Arrays.stream(GeoCoderTaskType.values()).map(GeoCoderTaskType::name).toList())
-                .required(Boolean.TRUE)
-                .description("Tasks to be executed")
-                .endParam()
-                .description("Update geocoder tasks")
-                .responseMessage().code(200).endResponseMessage()
-                .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .to("direct:adminGeoCoderStart")
-
-                .get(openApiJsonPath)
-                .apiDocs(false)
-                .bindingMode(RestBindingMode.off)
-                .to(commonApiDocEndpoint);
 
 
         rest("/organisation_admin")
@@ -205,19 +177,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .process(e -> kakkaAuthorizationService.verifyOrganisationAdministratorPrivileges())
                 .routeId("admin-authorize-edit-request");
 
-        from("direct:adminGeoCoderStart")
-                .to("direct:authorizeAdminRequest")
-                .validate(header("task").isNotNull())
-                .removeHeaders(camelHttpPattern)
-                .process(e -> {
-                    @SuppressWarnings("unchecked")
-                    Collection<String> taskHeaders = e.getIn().getHeader("task", Collection.class);
-                    geoCoderTaskTypesFromString(taskHeaders).forEach(taskType ->
-                            producerTemplate.asyncSendBody(taskType.getGeoCoderTask().getEndpoint(), null));
-                })
-                .setBody(constant((Object) null))
-                .routeId("admin-geocoder-start-route");
-
         from("direct:adminOrgRegImportAdminZones")
                 .to("direct:authorizeEditRequest")
                 .removeHeaders(camelHttpPattern)
@@ -244,10 +203,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:uploadFilesAndStartImport")
                 .routeId("admin-tariff-zone-upload-file");
 
-    }
-
-    private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {
-        return typeStrings.stream().map(GeoCoderTaskType::valueOf).collect(Collectors.toSet());
     }
 
 }

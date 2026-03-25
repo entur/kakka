@@ -57,7 +57,7 @@ data:
     geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
     #geocoder.autoStartup=true
     elasticsearch.scratch.deployment.name= {{ .Values.configMap.elasticsearchDeploymentName }}
-    elasticsearch.scratch.upload.job.enabled={{ .Values.configMap.elasticsearchUploadJobEnabled }}
+    elasticsearch.scratch.upload.job.enabled=false
     elasticsearch.scratch.url={{ .Values.configMap.elasticsearchUrl }}
     kakka.remote.kubernetes.cronjob=es-data-upload-job
     kakka.remote.kubernetes.geocoder.cronjob={{ .Values.configMap.geoCoderCronJob }}
@@ -139,6 +139,8 @@ data:
     # TariffZone Import valid providers/authority
     tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
     fetch.osm.cron.schedule=0+0+19+?+*+MON-FRI
+    osm.download.autoStartup=false
+    pelias.update.autoStartup=false
     fetch.osm.map.url=https://storage.googleapis.com/ror-osmdata-prd/osm-data/norway-latest.osm.pbf
     kakka.slack.end.point=${SLACK_URL}
 

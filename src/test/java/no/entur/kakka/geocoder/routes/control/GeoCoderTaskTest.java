@@ -14,7 +14,7 @@
  *
  */
 
-package no.entur.kakka.geocoder.routes.control;
+package no.entur.kakka.pipeline.routes.control;
 
 
 import org.junit.jupiter.api.Assertions;

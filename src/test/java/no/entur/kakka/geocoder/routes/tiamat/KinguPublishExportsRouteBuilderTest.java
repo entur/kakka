@@ -1,4 +1,4 @@
-package no.entur.kakka.geocoder.routes.tiamat;
+package no.entur.kakka.pipeline.routes.tiamat;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;

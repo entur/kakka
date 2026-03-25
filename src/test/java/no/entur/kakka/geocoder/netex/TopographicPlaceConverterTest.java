@@ -14,7 +14,7 @@
  *
  */
 
-package no.entur.kakka.geocoder.netex;
+package no.entur.kakka.pipeline.netex;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
-import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
-import no.entur.kakka.geocoder.nabu.rest.AdministrativeZone;
-import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
-import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
-import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
+import no.entur.kakka.pipeline.geojson.GeojsonFeatureWrapperFactory;
+import no.entur.kakka.pipeline.nabu.rest.AdministrativeZone;
+import no.entur.kakka.pipeline.netex.geojson.GeoJsonSingleTopographicPlaceReader;
+import no.entur.kakka.pipeline.netex.sosi.SosiTopographicPlaceReader;
+import no.entur.kakka.pipeline.sosi.SosiElementWrapperFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.CoordinateList;

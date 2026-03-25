@@ -16,7 +16,7 @@
 
 package no.entur.kakka.rest;
 
-import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.pipeline.BaseRouteBuilder;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

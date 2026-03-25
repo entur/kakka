@@ -1,6 +1,6 @@
 package no.entur.kakka.routes.file;
 
-import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.pipeline.TransactionalBaseRouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;

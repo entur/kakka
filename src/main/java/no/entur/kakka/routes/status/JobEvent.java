@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import no.entur.kakka.Constants;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.pipeline.routes.control.GeoCoderTaskType;
 import org.apache.camel.Exchange;
 
 import java.io.IOException;

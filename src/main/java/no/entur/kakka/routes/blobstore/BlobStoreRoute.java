@@ -17,7 +17,7 @@
 package no.entur.kakka.routes.blobstore;
 
 import no.entur.kakka.Constants;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
+import no.entur.kakka.pipeline.BaseRouteBuilder;
 import org.apache.camel.LoggingLevel;
 import org.springframework.stereotype.Component;
 

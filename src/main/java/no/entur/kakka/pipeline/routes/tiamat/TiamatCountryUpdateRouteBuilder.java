@@ -19,7 +19,7 @@ package no.entur.kakka.pipeline.routes.tiamat;
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
 import no.entur.kakka.pipeline.BaseRouteBuilder;
-import no.entur.kakka.pipeline.GeoCoderConstants;
+import no.entur.kakka.pipeline.PipelineTasks;
 import no.entur.kakka.pipeline.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.pipeline.netex.TopographicPlaceConverter;
 import no.entur.kakka.pipeline.netex.geojson.GeoJsonSingleTopographicPlaceReader;
@@ -64,7 +64,7 @@ public class TiamatCountryUpdateRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        from(GeoCoderConstants.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START.getEndpoint())
+        from(PipelineTasks.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START.getEndpoint())
                 .log(LoggingLevel.INFO, "Starting update of neighbouring countries in Tiamat")
 
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))

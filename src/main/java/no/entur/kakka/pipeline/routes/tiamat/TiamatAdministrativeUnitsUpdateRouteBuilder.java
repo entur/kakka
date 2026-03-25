@@ -18,10 +18,10 @@ package no.entur.kakka.pipeline.routes.tiamat;
 
 
 import no.entur.kakka.pipeline.BaseRouteBuilder;
-import no.entur.kakka.pipeline.GeoCoderConstants;
+import no.entur.kakka.pipeline.PipelineTasks;
 import no.entur.kakka.pipeline.netex.TopographicPlaceConverter;
 import no.entur.kakka.pipeline.netex.sosi.SosiTopographicPlaceReader;
-import no.entur.kakka.pipeline.routes.control.GeoCoderTaskType;
+import no.entur.kakka.pipeline.routes.control.PipelineTaskType;
 import no.entur.kakka.pipeline.sosi.SosiElementWrapperFactory;
 import no.entur.kakka.routes.file.ZipFileUtils;
 import no.entur.kakka.routes.status.JobEvent;
@@ -72,12 +72,12 @@ public class TiamatAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilde
                 .autoStartup("{{tiamat.administrative.units.update.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers Tiamat update of administrative units.")
-                .to(ExchangePattern.InOnly, GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
+                .to(ExchangePattern.InOnly, PipelineTasks.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
                 .routeId("tiamat-admin-units-update-quartz");
 
-        from(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
+        from(PipelineTasks.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
                 .log(LoggingLevel.INFO, "Starting update of administrative units in Tiamat")
-                .process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).startPipeline(PipelineTaskType.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE).build()).to("direct:updateStatus")
                 .setHeader(Exchange.FILE_PARENT, constant(localWorkingDirectory))
                 .doTry()
                 .to("direct:cleanUpLocalDirectory")

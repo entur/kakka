@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import no.entur.kakka.Constants;
-import no.entur.kakka.pipeline.routes.control.GeoCoderTaskType;
+import no.entur.kakka.pipeline.routes.control.PipelineTaskType;
 import org.apache.camel.Exchange;
 
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class JobEvent {
     }
 
 
-    public enum JobDomain {GEOCODER, TIAMAT}
+    public enum JobDomain {TIAMAT}
 
     public enum State {PENDING, STARTED, TIMEOUT, FAILED, OK, DUPLICATE, CANCELLED}
 
@@ -91,10 +91,10 @@ public class JobEvent {
             return this;
         }
 
-        public Builder startGeocoder(GeoCoderTaskType action) {
+        public Builder startPipeline(PipelineTaskType action) {
             jobEvent = new JobEvent();
             newCorrelationId();
-            jobDomain(JobDomain.GEOCODER);
+            jobDomain(JobDomain.TIAMAT);
             state(State.STARTED);
             return action(action.toString());
         }

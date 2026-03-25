@@ -49,7 +49,7 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
- * Update admin units in organisation registry. Not part of the geocoder, but placed here as it reuses most of the code from the corresponding Tiamat route.
+ * Update admin units in organisation registry.
  */
 @Component
 public class OrganisationRegistryAdministrativeUnitsUpdateRouteBuilder extends BaseRouteBuilder {

@@ -31,7 +31,7 @@ public class GeojsonFeatureWrapperFactory {
     private final List<String> placeTypeWhiteList;
 
     // 101,102,103,104,105,106,107,132,228,266 = Plass/torg,by, bydel, tettsted, tettsteddel, bygd, grend, boligfelt, hyttefelt, industriområde (not ordered)
-    public GeojsonFeatureWrapperFactory(@Value("#{'${geocoder.place.type.whitelist:101,102,103,104,105,107,132,228,266}'.split(',')}") List<String> placeTypeWhiteList) {
+    public GeojsonFeatureWrapperFactory(@Value("#{'${tiamat.pipeline.place.type.whitelist:101,102,103,104,105,107,132,228,266}'.split(',')}") List<String> placeTypeWhiteList) {
         this.placeTypeWhiteList = placeTypeWhiteList;
     }
 

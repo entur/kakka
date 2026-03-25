@@ -13,14 +13,14 @@ data:
     camel.cluster.kubernetes.config-map-name=kakka-leaders
 
     # Tiamat
-    tiamat.geocoder.export.autoStartup=true
+    tiamat.export.autoStartup=true
     tiamat.url={{ .Values.configMap.tiamatUrl }}
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
-    tiamat.geocoder.export.mid.day.autoStartup=true
-    tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
-    tiamat.geocoder.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
+    tiamat.export.mid.day.autoStartup=true
+    tiamat.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
+    tiamat.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
     tiamat.export.max.retries=720
     tiamat.export.retry.delay=25000
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits

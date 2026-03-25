@@ -16,20 +16,20 @@
 
 package no.entur.kakka.pipeline.routes.control;
 
-import no.entur.kakka.pipeline.GeoCoderConstants;
+import no.entur.kakka.pipeline.PipelineTasks;
 
-public enum GeoCoderTaskType {
-    ADMINISTRATIVE_UNITS_DOWNLOAD(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD),
-    TIAMAT_ADMINISTRATIVE_UNITS_UPDATE(GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START),
-    TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE(GeoCoderConstants.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START);
+public enum PipelineTaskType {
+    ADMINISTRATIVE_UNITS_DOWNLOAD(PipelineTasks.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD),
+    TIAMAT_ADMINISTRATIVE_UNITS_UPDATE(PipelineTasks.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START),
+    TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE(PipelineTasks.TIAMAT_NEIGHBOURING_COUNTRIES_UPDATE_START);
 
-    private final GeoCoderTask geoCoderTask;
+    private final PipelineTask pipelineTask;
 
-    GeoCoderTaskType(GeoCoderTask geoCoderTask) {
-        this.geoCoderTask = geoCoderTask;
+    PipelineTaskType(PipelineTask pipelineTask) {
+        this.pipelineTask = pipelineTask;
     }
 
-    public GeoCoderTask getGeoCoderTask() {
-        return geoCoderTask;
+    public PipelineTask getPipelineTask() {
+        return pipelineTask;
     }
 }

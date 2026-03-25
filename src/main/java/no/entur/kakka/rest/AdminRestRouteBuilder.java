@@ -36,7 +36,7 @@ import java.util.List;
 import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
- * API endpoint for managing the geocoder data import pipeline.
+ * API endpoint for managing the tiamat data export/import pipeline.
  */
 @Component
 public class AdminRestRouteBuilder extends BaseRouteBuilder {

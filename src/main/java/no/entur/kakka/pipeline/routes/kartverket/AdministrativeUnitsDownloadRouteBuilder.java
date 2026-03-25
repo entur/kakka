@@ -19,8 +19,8 @@ package no.entur.kakka.pipeline.routes.kartverket;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.pipeline.BaseRouteBuilder;
-import no.entur.kakka.pipeline.GeoCoderConstants;
-import no.entur.kakka.pipeline.routes.control.GeoCoderTaskType;
+import no.entur.kakka.pipeline.PipelineTasks;
+import no.entur.kakka.pipeline.routes.control.PipelineTaskType;
 import no.entur.kakka.routes.status.JobEvent;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
@@ -55,18 +55,18 @@ public class AdministrativeUnitsDownloadRouteBuilder extends BaseRouteBuilder {
                 .autoStartup("{{kartverket.administrative.units.download.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers download of administrative units.")
-                .to(ExchangePattern.InOnly, GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
+                .to(ExchangePattern.InOnly, PipelineTasks.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
                 .routeId("admin-units-download-quartz");
 
-        from(GeoCoderConstants.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
+        from(PipelineTasks.KARTVERKET_ADMINISTRATIVE_UNITS_DOWNLOAD.getEndpoint())
                 .log(LoggingLevel.INFO, "Start downloading administrative units")
-                .process(e -> JobEvent.systemJobBuilder(e).startGeocoder(GeoCoderTaskType.ADMINISTRATIVE_UNITS_DOWNLOAD).build()).to("direct:updateStatus")
+                .process(e -> JobEvent.systemJobBuilder(e).startPipeline(PipelineTaskType.ADMINISTRATIVE_UNITS_DOWNLOAD).build()).to("direct:updateStatus")
                 .to("direct:transferCountyFile")
                 .to("direct:transferMunicipalityFile")
                 .choice()
                 .when(simple("${header." + Constants.CONTENT_CHANGED + "}"))
                 .log(LoggingLevel.INFO, "Uploaded updated administrative units from mapping authority. Initiating update of Tiamat")
-                .to(ExchangePattern.InOnly, GeoCoderConstants.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
+                .to(ExchangePattern.InOnly, PipelineTasks.TIAMAT_ADMINISTRATIVE_UNITS_UPDATE_START.getEndpoint())
                 .otherwise()
                 .log(LoggingLevel.INFO, "Finished downloading administrative units from mapping authority with no changes")
                 .end()

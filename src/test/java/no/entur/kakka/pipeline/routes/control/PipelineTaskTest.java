@@ -26,23 +26,23 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class GeoCoderTaskTest {
+public class PipelineTaskTest {
 
     @Test
     public void testSortingByStartedTasksAndThenEarliestPhase() {
 
-        GeoCoderTask phase1 = new GeoCoderTask(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1");
-        GeoCoderTask phase1OtherTarget = new GeoCoderTask(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1Other");
-        GeoCoderTask phase2 = new GeoCoderTask(GeoCoderTask.Phase.TIAMAT_UPDATE, 0, "s2");
-        GeoCoderTask startedTask = new GeoCoderTask(GeoCoderTask.Phase.TIAMAT_UPDATE, 2, "s2");
+        PipelineTask phase1 = new PipelineTask(PipelineTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1");
+        PipelineTask phase1OtherTarget = new PipelineTask(PipelineTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1Other");
+        PipelineTask phase2 = new PipelineTask(PipelineTask.Phase.TIAMAT_UPDATE, 0, "s2");
+        PipelineTask startedTask = new PipelineTask(PipelineTask.Phase.TIAMAT_UPDATE, 2, "s2");
 
-        List<GeoCoderTask> expectedOrder = Arrays.asList(startedTask, phase1, phase1OtherTarget, phase2);
-        Iterator<GeoCoderTask> itrExpected = expectedOrder.iterator();
+        List<PipelineTask> expectedOrder = Arrays.asList(startedTask, phase1, phase1OtherTarget, phase2);
+        Iterator<PipelineTask> itrExpected = expectedOrder.iterator();
 
-        SortedSet<GeoCoderTask> sorted = new TreeSet<>(expectedOrder);
+        SortedSet<PipelineTask> sorted = new TreeSet<>(expectedOrder);
 
         sorted.forEach(s -> Assertions.assertEquals(itrExpected.next(), s));
 
-        Assertions.assertFalse(sorted.add(new GeoCoderTask(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1")), "Duplicates should not be allowed");
+        Assertions.assertFalse(sorted.add(new PipelineTask(PipelineTask.Phase.DOWNLOAD_SOURCE_DATA, 0, "s1")), "Duplicates should not be allowed");
     }
 }

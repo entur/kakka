@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GeoCoderTask implements Comparable<GeoCoderTask> {
+public class PipelineTask implements Comparable<PipelineTask> {
 
     private Phase phase;
     private int subStep;
@@ -33,22 +33,22 @@ public class GeoCoderTask implements Comparable<GeoCoderTask> {
     private Date createdDate;
     private Map<String, Object> headers = new HashMap<>();
 
-    public GeoCoderTask(Phase phase, int subStep, String endpoint) {
+    public PipelineTask(Phase phase, int subStep, String endpoint) {
         this.phase = phase;
         this.subStep = subStep;
         this.endpoint = endpoint;
         createdDate = new Date();
     }
 
-    public GeoCoderTask(Phase phase, String endpoint) {
+    public PipelineTask(Phase phase, String endpoint) {
         this(phase, 0, endpoint);
     }
 
-    private GeoCoderTask() {
+    private PipelineTask() {
     }
 
     @Override
-    public int compareTo(GeoCoderTask o) {
+    public int compareTo(PipelineTask o) {
 
         // Phase in progress should be sorted first (should never be more than one)
         int subStepCmp = o.subStep - subStep;
@@ -77,7 +77,7 @@ public class GeoCoderTask implements Comparable<GeoCoderTask> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GeoCoderTask that = (GeoCoderTask) o;
+        PipelineTask that = (PipelineTask) o;
 
         if (subStep != that.subStep) return false;
         if (phase != that.phase) return false;
@@ -134,7 +134,7 @@ public class GeoCoderTask implements Comparable<GeoCoderTask> {
 
     @Override
     public String toString() {
-        return "GeoCoderTask{" +
+        return "PipelineTask{" +
                 "phase=" + phase +
                 ", subStep=" + subStep +
                 ", endpoint='" + endpoint + '\'' +

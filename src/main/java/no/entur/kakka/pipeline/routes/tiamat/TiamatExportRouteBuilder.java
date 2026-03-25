@@ -23,37 +23,32 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Route for triggering and publishing Tiamat export to be used for populating geocoder.
+ * Route for triggering and publishing Tiamat export.
  */
 @Component
-public class TiamatGeoCoderExportRouteBuilder extends BaseRouteBuilder {
+public class TiamatExportRouteBuilder extends BaseRouteBuilder {
 
-    public static String TIAMAT_EXPORT_LATEST_FILE_NAME = "tiamat_export_geocoder_latest.zip";
-    @Value("${tiamat.geocoder.export.cron.schedule:0+0+23+?+*+MON-FRI}")
+    @Value("${tiamat.export.cron.schedule:0+0+23+?+*+MON-FRI}")
     private String cronSchedule;
-    @Value("${tiamat.geocoder.export.cron.schedule.mid.day:0+0+14+?+*+MON-FRI}")
+    @Value("${tiamat.export.cron.schedule.mid.day:0+0+14+?+*+MON-FRI}")
     private String cronScheduleMidDay;
-    @Value("${tiamat.geocoder.export.blobstore.subdirectory:tiamat/geocoder}")
-    private String blobStoreSubdirectoryForTiamatGeoCoderExport;
-    @Value("${tiamat.geocoder.export.query:topographicPlaceExportMode=ALL&versionValidity=CURRENT_FUTURE}")
-    private String tiamatExportQuery;
 
     @Override
     public void configure() throws Exception {
         super.configure();
 
-        singletonFrom("quartz://kakka/tiamatGeoCoderExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
-                .autoStartup("{{tiamat.geocoder.export.autoStartup:false}}")
+        singletonFrom("quartz://kakka/tiamatExport?cron=" + cronSchedule + "&trigger.timeZone=Europe/Oslo")
+                .autoStartup("{{tiamat.export.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronSchedule))
                 .log(LoggingLevel.INFO, "Quartz triggers netex export.")
                 .to(ExchangePattern.InOnly, "direct:startNetexExport")
-                .routeId("tiamat-geocoder-export-quartz");
+                .routeId("tiamat-export-quartz");
 
-        singletonFrom("quartz://kakka/tiamatGeoCoderExportMidDay?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
-                .autoStartup("{{tiamat.geocoder.export.mid.day.autoStartup:false}}")
+        singletonFrom("quartz://kakka/tiamatExportMidDay?cron=" + cronScheduleMidDay + "&trigger.timeZone=Europe/Oslo")
+                .autoStartup("{{tiamat.export.mid.day.autoStartup:false}}")
                 .filter(e -> shouldQuartzRouteTrigger(e,cronScheduleMidDay))
                 .log(LoggingLevel.INFO, "Quartz triggers mid day netex export.")
                 .to(ExchangePattern.InOnly,"direct:startNetexExport")
-                .routeId("tiamat-geocoder-export-mid-day-quartz");
+                .routeId("tiamat-export-mid-day-quartz");
     }
 }

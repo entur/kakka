@@ -37,7 +37,7 @@
 
         <geotools.version>32.2</geotools.version>
 
-        <geojson-jackson.version>1.14</geojson-jackson.version>
+        <geojson-jackson.version>3.0</geojson-jackson.version>
         <gtfs-lib.version>6.2.0</gtfs-lib.version>
         <beanio.version>2.1.0</beanio.version>
         <osmpbf.version>1.6.1</osmpbf.version>

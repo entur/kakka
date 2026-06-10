@@ -25,7 +25,7 @@ configMap:
   roleAssignmentExtractor: baba
   tiamatExportSchedule: 0+0+23+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
-  geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
+  taskPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
   tiamatExportConfig: env/tiamat-exports-kub-ent-prd.yml
   slackSecret: ror-prod-slack-url
 

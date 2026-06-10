@@ -15,7 +15,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <name>kakka</name>
-    <description>Geocoder builder</description>
+    <description>Tiamat/Kingu NeTEx export pipeline</description>
 
     <scm>
         <connection>scm:git:ssh://git@github.com:entur/kakka.git</connection>

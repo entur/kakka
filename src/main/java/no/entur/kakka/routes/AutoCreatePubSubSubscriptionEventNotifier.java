@@ -48,16 +48,16 @@ public class AutoCreatePubSubSubscriptionEventNotifier extends EventNotifierSupp
     @Autowired
     private PubSubAdmin pubSubAdmin;
 
-    private final String geoCoderQueueTopic;
+    private final String taskQueueTopic;
 
-    private final String geoCoderQueueSubscription;
+    private final String taskQueueSubscription;
 
     public AutoCreatePubSubSubscriptionEventNotifier(EnturGooglePubSubAdmin enturGooglePubSubAdmin,
-                                                     @Value("${pubsub.kakka.outbound.topic.geocoder}") String geoCoderQueueTopic,
-                                                     @Value("${pubsub.kakka.inbound.subscription.geocoder}") String geoCoderQueueSubscription) {
+                                                     @Value("${pubsub.kakka.outbound.topic.geocoder}") String taskQueueTopic,
+                                                     @Value("${pubsub.kakka.inbound.subscription.geocoder}") String taskQueueSubscription) {
         this.enturGooglePubSubAdmin = enturGooglePubSubAdmin;
-        this.geoCoderQueueTopic = getTopicSubscriptionName(geoCoderQueueTopic);
-        this.geoCoderQueueSubscription = getTopicSubscriptionName(geoCoderQueueSubscription);
+        this.taskQueueTopic = getTopicSubscriptionName(taskQueueTopic);
+        this.taskQueueSubscription = getTopicSubscriptionName(taskQueueSubscription);
     }
 
     @Override
@@ -85,8 +85,8 @@ public class AutoCreatePubSubSubscriptionEventNotifier extends EventNotifierSupp
         }
 
         final String destination = gep.getDestinationName();
-        if (destination.equals(geoCoderQueueTopic) || destination.equals(geoCoderQueueSubscription) ) {
-            createSubscriptionTopic(geoCoderQueueTopic,geoCoderQueueSubscription);
+        if (destination.equals(taskQueueTopic) || destination.equals(taskQueueSubscription) ) {
+            createSubscriptionTopic(taskQueueTopic,taskQueueSubscription);
         } else {
             enturGooglePubSubAdmin.createSubscriptionIfMissing(destination);
         }

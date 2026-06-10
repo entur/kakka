@@ -33,10 +33,10 @@ data:
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
 
-    # Geocoder task orchestration (used by Tiamat admin-units/countries updates)
-    geocoder.max.retries=600
-    geocoder.place.type.whitelist={{ .Values.configMap.geocoderPlaceTypeWhitelist }}
-    #geocoder.autoStartup=true
+    # Task orchestration (used by Tiamat admin-units/countries updates)
+    task.max.retries=600
+    task.place.type.whitelist={{ .Values.configMap.taskPlaceTypeWhitelist }}
+    #task.autoStartup=true
 
     # Blob store
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}

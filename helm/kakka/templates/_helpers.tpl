@@ -33,7 +33,7 @@ release: {{ .Release.Name }}
 team: ror
 environment: {{.Values.env }}
 slack: talk-ror
-type: geocoder
+type: task
 namespace: {{ .Release.Namespace }}
 {{- end }}
 

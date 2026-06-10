@@ -27,7 +27,7 @@ configMap:
 
   tiamatExportSchedule: 0+0+02+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
-  geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
+  taskPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
   tiamatExportConfig: env/tiamat-exports-kub-ent-dev.yml
   slackSecret: ror-staging-slack-url
 

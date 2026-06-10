@@ -1,8 +1,7 @@
 # Kakka ![Build](https://github.com/entur/kakka/actions/workflows/push.yml/badge.svg)
 
-Kakka is the build pipeline for the elastic search backing of the Pelias geocoder application. 
- 
-Kakka is also responsible for triggering regular exports from Tiamat (NSR)
+Kakka triggers regular NeTEx exports from Tiamat (NSR) via Kingu, and keeps Tiamat updated with
+administrative units and neighbouring countries sourced from Kartverket and the organisation registry.
 
 
 

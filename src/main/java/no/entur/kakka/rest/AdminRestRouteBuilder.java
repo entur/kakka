@@ -16,8 +16,8 @@
 
 package no.entur.kakka.rest;
 
-import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.task.BaseRouteBuilder;
+import no.entur.kakka.task.routes.control.TaskType;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -117,14 +117,14 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .post("/build_pipeline")
                 .param().name("task")
                 .type(RestParamType.query)
-                .allowableValues(Arrays.stream(GeoCoderTaskType.values()).map(GeoCoderTaskType::name).toList())
+                .allowableValues(Arrays.stream(TaskType.values()).map(TaskType::name).toList())
                 .required(Boolean.TRUE)
                 .description("Tasks to be executed")
                 .endParam()
-                .description("Update geocoder tasks")
+                .description("Update tasks")
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .to("direct:adminGeoCoderStart")
+                .to("direct:adminTaskStart")
 
                 .get(openApiJsonPath)
                 .apiDocs(false)
@@ -179,14 +179,14 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .process(e -> kakkaAuthorizationService.verifyOrganisationAdministratorPrivileges())
                 .routeId("admin-authorize-edit-request");
 
-        from("direct:adminGeoCoderStart")
+        from("direct:adminTaskStart")
                 .to("direct:authorizeAdminRequest")
                 .validate(header("task").isNotNull())
                 .removeHeaders(camelHttpPattern)
-                .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .to(ExchangePattern.InOnly, "direct:geoCoderStartBatch")
+                .process(e -> e.getIn().setBody(taskTypesFromString(e.getIn().getHeader("task", Collection.class))))
+                .to(ExchangePattern.InOnly, "direct:taskStartBatch")
                 .setBody(constant(null))
-                .routeId("admin-geocoder-start-route");
+                .routeId("admin-task-start-route");
 
         from("direct:adminOrgRegImportAdminZones")
                 .to("direct:authorizeEditRequest")
@@ -206,8 +206,8 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     }
 
-    private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {
-        return typeStrings.stream().map(GeoCoderTaskType::valueOf).collect(Collectors.toSet());
+    private Set<TaskType> taskTypesFromString(Collection<String> typeStrings) {
+        return typeStrings.stream().map(TaskType::valueOf).collect(Collectors.toSet());
     }
 
 }

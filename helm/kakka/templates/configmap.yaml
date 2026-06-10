@@ -23,7 +23,6 @@ data:
     tiamat.change.log.download.directory=/tmp/tiamat/changelog
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
-    tiamat.tariffzones.update.directory=/tmp/tiamat/tariffZones/
     tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml
     tiamat.export.autoStartup = false
     kingu.export.autoStartup = true
@@ -74,8 +73,6 @@ data:
     pubsub.kakka.inbound.subscription.kingu.netex.export=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.kingu.netex.export
     pubsub.kakka.outbound.topic.geocoder=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.outbound.topic.geocoder
     pubsub.kakka.inbound.subscription.geocoder=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.geocoder
-    pubsub.kakka.inbound.subscription.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.tariff.zone.file.queue
-    pubsub.kakka.outbound.topic.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.outbound.topic.tariff.zone.file.queue
 
 
 
@@ -90,8 +87,6 @@ data:
     # Other
     quartz.enabled=true
     organisations.api.url= {{ .Values.configMap.babaUrl }}
-    # TariffZone Import valid providers/authority
-    tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
     kakka.slack.end.point=${SLACK_URL}
 
 kind: ConfigMap

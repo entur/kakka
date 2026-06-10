@@ -16,13 +16,11 @@
 
 package no.entur.kakka.rest;
 
-import no.entur.kakka.Constants;
 import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -36,21 +34,17 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-
 /**
- * API endpoint for managing the geocoder data import pipeline.
+ * REST API for triggering Tiamat updates/exports and organisation-registry admin-zone imports.
  */
 @Component
 public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
-    private static final String PROVIDER_ID = "ProviderId";
     @Value("${server.port:8080}")
     private String port;
 
@@ -59,9 +53,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private KakkaAuthorizationService kakkaAuthorizationService;
-
-    @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
-    private List<String> tariffZoneProviders;
 
     @Override
     public void configure() throws Exception {
@@ -162,21 +153,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .to("direct:adminTiamatPublishExportFull");
 
-        rest("/tariff_zone_admin/{providerId}")
-                .post("/files")
-                .description("Upload tariff zone netex file for import into Tiamat")
-                .param().name("providerId").type(RestParamType.path).description("Tariff zone Provider id e.g RUT,AKT,KOL").dataType("string").endParam()
-                .consumes(MULTIPART_FORM_DATA)
-                .produces(PLAIN)
-                .bindingMode(RestBindingMode.off)
-                .responseMessage().code(200).endResponseMessage()
-                .responseMessage().code(500).message("Invalid providerId").endResponseMessage()
-                .to("direct:adminTariffZoneUploadFile");
-
-        from("direct:validateProvider")
-                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
-                .routeId("admin-validate-provider");
-
         from("direct:adminRouteAuthorizeGet")
                 .throwException(new NotFoundException())
                 .routeId("admin-route-authorize-get");
@@ -226,17 +202,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:startNetexExport")
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full-v2");
-
-        from("direct:adminTariffZoneUploadFile")
-                .setBody(simple("${exchange.getIn().getRequest().getParts()}"))
-                .streamCaching()
-                .setHeader(PROVIDER_ID, header("providerId"))
-                .process(e -> kakkaAuthorizationService.verifyRouteDataAdministratorPrivileges())
-                .to("direct:validateProvider")
-                .log(LoggingLevel.INFO, "Upload files and start import pipeline")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
-                .to("direct:uploadFilesAndStartImport")
-                .routeId("admin-tariff-zone-upload-file");
 
 
     }

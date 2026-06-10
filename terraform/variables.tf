@@ -21,13 +21,6 @@ variable "kingu_netex_export_subscription" {
   default = "ror.kakka.inbound.subscription.kingu.netex.export"
 }
 
-variable "kakka_tariff_zone_topic" {
-  default = "ror.kakka.outbound.topic.tariff.zone.file.queue"
-}
-variable "kakka_tariff_zone_subscription" {
-  default = "ror.kakka.inbound.subscription.tariff.zone.file.queue"
-}
-
 variable "kakka_geocoder_subscription" {
   default = "ror.kakka.inbound.subscription.geocoder"
 }

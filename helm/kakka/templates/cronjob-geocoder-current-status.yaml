@@ -51,4 +51,4 @@ spec:
   schedule: '30 7 * ? *'
   timeZone: "Europe/Oslo"
   successfulJobsHistoryLimit: {{ .Values.cronjobTiamatExportStatus.successfulJobsHistoryLimit }}
-  suspend: false
+  suspend: true

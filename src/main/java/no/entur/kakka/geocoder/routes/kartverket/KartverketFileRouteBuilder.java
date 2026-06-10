@@ -18,19 +18,20 @@ package no.entur.kakka.geocoder.routes.kartverket;
 
 import no.entur.kakka.Constants;
 import no.entur.kakka.domain.BlobStoreFiles;
-import no.entur.kakka.domain.FileNameAndDigest;
-import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.exceptions.KakkaException;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import no.entur.kakka.geocoder.routes.util.MarkContentChangedAggregationStrategy;
 import no.entur.kakka.services.BlobStoreService;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
@@ -40,9 +41,7 @@ import java.util.stream.Collectors;
 import static org.apache.camel.Exchange.FILE_PARENT;
 
 @Component
-public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
-    @Autowired
-    private IdempotentRepository idempotentDownloadRepository;
+public class KartverketFileRouteBuilder extends BaseRouteBuilder {
 
     @Value("${kartverket.download.directory:files/kartverket}")
     private String localDownloadDir;
@@ -71,16 +70,44 @@ public class KartverketFileRouteBuilder extends TransactionalBaseRouteBuilder {
 
 
         from("direct:kartverketUploadFileIfUpdated")
-                .setHeader(Exchange.FILE_NAME, simple(("${body.name}")))
+                .setHeader(Exchange.FILE_NAME, simple("${body.name}"))
                 .setHeader(Constants.FILE_HANDLE, simple("${header." + Constants.FOLDER_NAME + "}/${body.name}"))
-                .process(e -> e.getIn().setHeader("file_NameAndDigest", new FileNameAndDigest(e.getIn().getHeader(Constants.FILE_HANDLE, String.class),
-                        DigestUtils.md5Hex(e.getIn().getBody(InputStream.class)))))
-                .idempotentConsumer(header("file_NameAndDigest")).idempotentRepository(idempotentDownloadRepository)
+                .filter(this::contentChanged)
                 .log(LoggingLevel.INFO, "Uploading ${header." + Constants.FILE_HANDLE + "}")
                 .to("direct:uploadBlob")
                 .setHeader(Constants.CONTENT_CHANGED, constant(true))
                 .end()
                 .routeId("upload-file-if-updated");
+    }
+
+    /**
+     * Detect whether a downloaded file differs from the version already stored in the blob store, by
+     * comparing MD5 digests. The previously uploaded blob (at the same file handle) acts as the
+     * reference, so no separate state store is required. A missing reference blob is treated as changed.
+     */
+    private boolean contentChanged(Exchange e) {
+        File file = e.getIn().getBody(File.class);
+        String fileHandle = e.getIn().getHeader(Constants.FILE_HANDLE, String.class);
+        String newDigest = digestOf(file, fileHandle);
+        String existingDigest = existingBlobDigest(fileHandle, e);
+        return !newDigest.equals(existingDigest);
+    }
+
+    private String digestOf(File file, String fileHandle) {
+        try (InputStream in = new FileInputStream(file)) {
+            return DigestUtils.md5Hex(in);
+        } catch (IOException ex) {
+            throw new KakkaException("Failed to compute digest for " + fileHandle, ex);
+        }
+    }
+
+    private String existingBlobDigest(String fileHandle, Exchange e) {
+        try (InputStream existing = blobStoreService.getBlob(fileHandle, e)) {
+            return existing != null ? DigestUtils.md5Hex(existing) : null;
+        } catch (IOException ex) {
+            log.warn("Failed to read existing blob {} for change detection; treating as changed", fileHandle, ex);
+            return null;
+        }
     }
 
     private void deleteNoLongerActiveFiles(Exchange e) {

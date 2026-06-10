@@ -14,7 +14,7 @@
  *
  */
 
-package no.entur.kakka.geocoder.routes.pelias.mapper.kartverket;
+package no.entur.kakka.geocoder.sosi;
 
 
 import java.util.HashMap;

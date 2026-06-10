@@ -142,7 +142,7 @@ public class GeoCoderTask implements Comparable<GeoCoderTask> {
                 '}';
     }
 
-    public enum Phase {DOWNLOAD_SOURCE_DATA, TIAMAT_UPDATE, TIAMAT_EXPORT, PELIAS_UPDATE, COMPLETE}
+    public enum Phase {DOWNLOAD_SOURCE_DATA, TIAMAT_UPDATE, TIAMAT_EXPORT, COMPLETE}
 
 
 }

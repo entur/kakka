@@ -22,13 +22,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
-import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.featurejson.FeatureJSONFilter;
 import no.entur.kakka.geocoder.geojson.GeojsonFeatureWrapperFactory;
 import no.entur.kakka.geocoder.nabu.rest.AdministrativeZone;
-import no.entur.kakka.geocoder.netex.geojson.GeoJsonCollectionTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.geojson.GeoJsonSingleTopographicPlaceReader;
-import no.entur.kakka.geocoder.netex.pbf.PbfTopographicPlaceReader;
 import no.entur.kakka.geocoder.netex.sosi.SosiTopographicPlaceReader;
 import no.entur.kakka.geocoder.sosi.SosiElementWrapperFactory;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.rutebanken.netex.model.IanaCountryTldEnumeration;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Site_VersionFrameStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
@@ -48,7 +43,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.List;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
@@ -56,18 +50,6 @@ import static jakarta.xml.bind.JAXBContext.newInstance;
 public class TopographicPlaceConverterTest {
 
     private final TopographicPlaceConverter converter = new TopographicPlaceConverter("CET");
-
-    @Test
-    public void testFilterConvertAdminUnitsFromGeoJson() throws Exception {
-        String filteredFilePath = "target/filtered-fylker.geojson";
-        new FeatureJSONFilter("src/test/resources/no/entur/kakka/geocoder/geojson/fylker.geojson", filteredFilePath, "fylkesnr", "area").filter();
-
-        String targetPath = "target/adm-units-from-geojson.xml";
-        converter.toNetexFile(new GeoJsonCollectionTopographicPlaceReader
-                (new GeojsonFeatureWrapperFactory(null), new File(filteredFilePath)
-                ), targetPath);
-        validateNetexFile(targetPath);
-    }
 
     @Test
     public void testCovertWOFCountriesToGeoJson() throws Exception {
@@ -80,18 +62,6 @@ public class TopographicPlaceConverterTest {
         final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         mapper.writeValue(new File("target/finland-baba.geojson"), wof);
         Assertions.assertFalse(CollectionUtils.isEmpty(wof));
-    }
-
-    @Test
-    public void testConvertPlaceOfInterestFromOsmPbf() throws Exception {
-        List<OSMPOIFilter> filters = Arrays.asList(createFilter("leisure", "common"), createFilter("naptan:indicator", ""));
-        TopographicPlaceReader reader = new PbfTopographicPlaceReader(filters, IanaCountryTldEnumeration.NO,
-                new File("src/test/resources/no/entur/kakka/geocoder/pbf/sample.pbf"));
-        String targetPath = "target/poi.xml";
-        converter.toNetexFile(reader,
-                targetPath);
-
-        validateNetexFile(targetPath);
     }
 
     @Test
@@ -133,10 +103,6 @@ public class TopographicPlaceConverterTest {
 
         Assertions.assertTrue(containsTopographicPlaces, "Expected publication delivery to contain site frame with topograhpic places");
         return publicationDeliveryStructure;
-    }
-
-    private OSMPOIFilter createFilter(String key, String value) {
-        return OSMPOIFilter.fromKeyAndValue(key, value);
     }
 
     private AdministrativeZone toAdministrativeZone(TopographicPlaceAdapter topographicPlaceAdapter, String source) {

@@ -5,16 +5,7 @@ data:
     spring.profiles.active=gcs-blobstore
     spring.main.sources=no.entur.kakka
     spring.main.allow-bean-definition-overriding=true
-    spring.datasource.url=jdbc:postgresql://localhost:5432/kakka
-    spring.datasource.driver-class-name=org.postgresql.Driver
-    spring.datasource.username=kakka
     spring.jmx.unique-names=true
-    ## Flyway configuration
-    spring.flyway.baseline-description=<< Flyway Baseline >>
-    spring.flyway.baseline-on-migrate=true
-    spring.flyway.baseline-version=1
-    spring.flyway.table=flyway_schema_history
-    #spring.flyway.enabled=true
     server.port=8080
     camel.springboot.name=kakka
     camel.servlet.mapping.context-path=/services/*
@@ -23,22 +14,16 @@ data:
     camel.cluster.kubernetes.config-map-name=kakka-leaders
 
     # Tiamat
-    tiamat.geocoder.export.autoStartup=false
-    tiamat.poi.update.enabled=false
     tiamat.url={{ .Values.configMap.tiamatUrl }}
     tiamat.publish.export.cron.schedule={{.Values.configMap.tiamatExportSchedule}}
     tiamat.publish.export.cron.schedule.mid.day={{.Values.configMap.tiamatExportScheduleMidDay}}
     tiamat.publish.localworkdir=/tmp/tiamat/publish
-    tiamat.geocoder.export.mid.day.autoStartup=false
-    tiamat.geocoder.export.cron.schedule={{.Values.configMap.gecoderExportSchedule}}
-    tiamat.geocoder.export.cron.schedule.mid.day={{.Values.configMap.gecoderExportScheduleMidDay}}
     tiamat.export.max.retries=720
     tiamat.export.retry.delay=25000
     tiamat.change.log.download.directory=/tmp/tiamat/changelog
     tiamat.administrative.units.update.directory=/tmp/tiamat/orgReg/adminUnits
     tiamat.neighbouring.countries.update.directory=/tmp/tiamat/countries
     tiamat.tariffzones.update.directory=/tmp/tiamat/tariffZones/
-    tiamat.poi.update.directory=/tmp/tiamat/poi/update
     tiamat.exports.config.path=/etc/tiamat-config/tiamat-exports.yml
     tiamat.export.autoStartup = false
     kingu.export.autoStartup = true
@@ -48,31 +33,11 @@ data:
     kartverket.download.directory=/tmp/tiamat/files/kartverket
     kartverket.admin.units.archive.filename=county/Basisdata_0000_Norge_25833_Fylker_SOSI.zip
     kartverket.admin.units.filename=Basisdata_0000_Norge_25833_Fylker_SOSI.sos
-    # Downloads of Addresses from Kartverket are disabled because latest dataset does work with geocoder
-    kartverket.address.download.autoStartup=false
-    kartverket.addresses.download.cron.schedule=0+0+11+?+*+MON-FRI
 
-    # Geocoder
+    # Geocoder task orchestration (used by Tiamat admin-units/countries updates)
     geocoder.max.retries=600
-    geocoder.place.type.whitelist={{ .Values.configMap.pelias.geocoderPlaceTypeWhitelist }}
+    geocoder.place.type.whitelist={{ .Values.configMap.geocoderPlaceTypeWhitelist }}
     #geocoder.autoStartup=true
-    elasticsearch.scratch.deployment.name= {{ .Values.configMap.elasticsearchDeploymentName }}
-    elasticsearch.scratch.upload.job.enabled=false
-    elasticsearch.scratch.url={{ .Values.configMap.elasticsearchUrl }}
-    kakka.remote.kubernetes.cronjob=es-data-upload-job
-    kakka.remote.kubernetes.geocoder.cronjob={{ .Values.configMap.geoCoderCronJob }}
-    # Pelias
-    pelias.gtfs.stop.place.enabled= {{ .Values.configMap.pelias.gtfs }}
-    pelias.gos.include=true
-    pelias.place.boost= {{.Values.configMap.pelias.placeBoost}}
-    pelias.stop.place.boost.config={{.Values.configMap.pelias.boostConfig}}
-    pelias.gos.boost.factor= {{.Values.configMap.pelias.boostFactor }}
-    pelias.address.boost={{.Values.configMap.pelias.addressBoost}}
-    pelias.address.street.boost={{.Values.configMap.pelias.streetBoost}}
-    pelias.gtfs.stopplace.boost={{.Values.configMap.pelias.stopPlaceBoost}}
-    pelias.download.directory=/tmp/tiamat/pelias
-    # Include POIs from netex file
-    pelias.poi.include={{.Values.configMap.pelias.poiInclude}}
 
     # Blob store
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
@@ -111,8 +76,6 @@ data:
     pubsub.kakka.inbound.subscription.geocoder=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.geocoder
     pubsub.kakka.inbound.subscription.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.tariff.zone.file.queue
     pubsub.kakka.outbound.topic.tariff.zone.file.queue=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.outbound.topic.tariff.zone.file.queue
-    pubsub.kakka.inbound.subscription.geocoder.smoke.test=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.geocoder.smoke.test
-    pubsub.kakka.inbound.subscription.es.build.job=google-pubsub:${kakka.pubsub.project.id}:ror.kakka.inbound.subscription.es.build.job
 
 
 
@@ -124,24 +87,11 @@ data:
     management.endpoint.prometheus.enabled=true
     management.endpoints.web.exposure.include=info,health,prometheus
 
-    #logging
-    logging.level.com.conveyal=WARN
-
-
-
     # Other
     quartz.enabled=true
     organisations.api.url= {{ .Values.configMap.babaUrl }}
-    osmpoifilter.priority.default={{.Values.configMap.pelias.osmPoiFilterDefaultPriority}}
-    kakka.remote.kubernetes.namespace = {{ .Release.Namespace }}
-    # Convert POIs directly from osm file
-    osm.poi.update.enabled={{.Values.configMap.poiUpdateEnabled}}
     # TariffZone Import valid providers/authority
     tariff.zone.providers=AKT,ATB,BRA,FIN,HED,INN,KOL,MOR,NOR,OPP,OST,RUT,SKY,SOF,TRO,VKT,VOT
-    fetch.osm.cron.schedule=0+0+19+?+*+MON-FRI
-    osm.download.autoStartup=false
-    pelias.update.autoStartup=false
-    fetch.osm.map.url=https://storage.googleapis.com/ror-osmdata-prd/osm-data/norway-latest.osm.pbf
     kakka.slack.end.point=${SLACK_URL}
 
 kind: ConfigMap

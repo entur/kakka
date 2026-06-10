@@ -1,6 +1,6 @@
 package no.entur.kakka.routes.file;
 
-import no.entur.kakka.geocoder.TransactionalBaseRouteBuilder;
+import no.entur.kakka.geocoder.BaseRouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
@@ -18,7 +18,7 @@ import java.util.Map;
 import static no.entur.kakka.Constants.*;
 
 @Component
-public class FileUploadRouteBuilder extends TransactionalBaseRouteBuilder {
+public class FileUploadRouteBuilder extends BaseRouteBuilder {
 
     private static final String FILE_CONTENT_HEADER = "FileContent";
 

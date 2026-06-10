@@ -63,7 +63,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         GeoCoderTask task1 = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
         GeoCoderTask task2 = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
         GeoCoderTask task3 = task(GeoCoderTask.Phase.TIAMAT_EXPORT);
-        GeoCoderTask task4 = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+        GeoCoderTask task4 = task(GeoCoderTask.Phase.COMPLETE);
 
         destination.expectedBodiesReceived(task1, task2, task3, task4);
         destination.setResultWaitTime(120_000);
@@ -78,9 +78,9 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
 
     @Test
     public void testOngoingTasksAreAllowedToComplete() throws Exception {
-        GeoCoderTask ongoingInit = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+        GeoCoderTask ongoingInit = task(GeoCoderTask.Phase.TIAMAT_EXPORT);
         ongoingInit.setSubStep(1);
-        GeoCoderTask ongoingFinalStep = task(GeoCoderTask.Phase.PELIAS_UPDATE);
+        GeoCoderTask ongoingFinalStep = task(GeoCoderTask.Phase.TIAMAT_EXPORT);
         ongoingFinalStep.setSubStep(2);
         GeoCoderTask earlierPhase = task(GeoCoderTask.Phase.TIAMAT_UPDATE);
 
@@ -142,7 +142,7 @@ public class GeoCoderControlRouteIntegrationTest extends KakkaRouteBuilderIntegr
         context.start();
         GeoCoderTask task = task(GeoCoderTask.Phase.DOWNLOAD_SOURCE_DATA);
         task.getHeaders().put(Constants.LOOP_COUNTER, maxRetries);
-        task.getHeaders().put(Constants.SYSTEM_STATUS, JobEvent.builder().startGeocoder(GeoCoderTaskType.ADDRESS_DOWNLOAD).build().toString());
+        task.getHeaders().put(Constants.SYSTEM_STATUS, JobEvent.builder().startGeocoder(GeoCoderTaskType.ADMINISTRATIVE_UNITS_DOWNLOAD).build().toString());
 
         geoCoderQueueTemplate.sendBody(new GeoCoderTaskMessage(task).toString());
 

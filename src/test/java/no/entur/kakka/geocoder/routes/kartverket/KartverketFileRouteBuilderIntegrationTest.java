@@ -16,7 +16,6 @@
 
 package no.entur.kakka.geocoder.routes.kartverket;
 
-import com.amazonaws.util.StringInputStream;
 import no.entur.kakka.Constants;
 import no.entur.kakka.KakkaRouteBuilderIntegrationTestBase;
 import no.entur.kakka.TestApp;
@@ -26,8 +25,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.model.ModelCamelContext;
-import org.apache.camel.spi.IdempotentRepository;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,12 +54,9 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
     private ModelCamelContext context;
     @Autowired
     private InMemoryBlobStoreRepository inMemoryBlobStoreRepository;
-    @Autowired
-    private IdempotentRepository idempotentDownloadRepository;
 
     @Test
     public void testNewFilesAreUploadedToBlobStore() throws Exception {
-        idempotentDownloadRepository.clear();
         String[] fileNames = new String[]{"1", "2", "3"};
         when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files(fileNames));
 
@@ -68,7 +65,7 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 
         assertBlobs(blobFolder, fileNames);
 
-        // Verify that second invocation does nothing if content is unchanged
+        // Verify that second invocation does nothing if content is unchanged (digests match the stored blobs)
         startUpdate(blobFolder, false);
 
 
@@ -84,10 +81,10 @@ public class KartverketFileRouteBuilderIntegrationTest extends KakkaRouteBuilder
 
     @Test
     public void testNoLongerActiveFilesAreDeletedFromBlobStore() throws Exception {
-        idempotentDownloadRepository.clear();
-        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", new StringInputStream("1"), false);
-        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", new StringInputStream("2"), false);
-        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", new StringInputStream("3"), false);
+        // Pre-populate with content that differs from the downloaded files, so the kept file is detected as changed
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/1", IOUtils.toInputStream("stale", StandardCharsets.UTF_8), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/2", IOUtils.toInputStream("stale", StandardCharsets.UTF_8), false);
+        inMemoryBlobStoreRepository.uploadBlob(blobFolder + "/3", IOUtils.toInputStream("stale", StandardCharsets.UTF_8), false);
         when(kartverketService.downloadFiles(anyString(), anyString(), anyString())).thenReturn(files("1"));
 
         context.start();

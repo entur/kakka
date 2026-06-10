@@ -92,9 +92,4 @@ public class BlobStoreService {
         repository.copyKinguBlob(sourceName, targetName, makePublic);
     }
 
-    public void copyGeoCoderBlob(@Header(value = Constants.FILE_HANDLE) String sourceName, @Header(value = Constants.TARGET_FILE_HANDLE) String targetName, @Header(value = Constants.BLOBSTORE_MAKE_BLOB_PUBLIC) boolean makePublic, Exchange exchange) {
-        logger.info("Copying geocoder netex file to kakka bucket");
-        repository.copyGeoCoderBlob(sourceName, targetName, makePublic);
-    }
-
 }

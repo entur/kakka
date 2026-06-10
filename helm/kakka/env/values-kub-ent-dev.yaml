@@ -1,6 +1,4 @@
 env: dev
-sql:
-  instance: ent-kakka-dev:europe-west1:kakka-db=tcp:5432
 
 configMap:
   gcsBlobstore: ror-kakka-dev
@@ -27,26 +25,9 @@ configMap:
   roleAssignmentExtractor: baba
   tiamatExportSchedule: 0+0+02+*+*+?
   tiamatExportScheduleMidDay: 0+0+12+*+*+?
-  gecoderExportSchedule: 0+0+04+*+*+?
-  gecoderExportScheduleMidDay: 0+0+14+*+*+?
-  poiUpdateEnabled: true
+  geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
   tiamatExportConfig: env/tiamat-exports-kub-ent-dev.yml
   slackSecret: ror-dev-slack-url
-  pelias:
-    gtfs: false
-    placeBoost: 40
-    boostConfig: '{"defaultValue":30, "stopTypeFactors":{"busStation":{"*":2},"metroStation":{"*":2},"railStation":{"*":2}}}'
-    boostFactor: 10
-    addressBoost: 20
-    streetBoost: 20
-    stopPlaceBoost: 40
-    osmPoiFilterDefaultPriority: 10
-    poiInclude: true
-    geocoderPlaceTypeWhitelist: tettsteddel,bydel,by,tettsted,tettbebyggelse
-  elasticsearchDeploymentName: es-scratch
-  elasticsearchUploadJobEnabled: true
-  elasticsearchUrl: http://es-scratch:9200
-  geoCoderCronJob: geocoder-acceptance-tests-predeploy
 ingress:
   domainName: -gcp2.dev.entur.io
 monitoringEnabled: true
@@ -54,7 +35,3 @@ monitoringEnabled: true
 cronjobTiamatExportStatus:
   environmentVar:
     bucketPath: gs://marduk-dev/tiamat/
-
-cronjobGeocoderCurrentStatus:
-  environmentVar:
-    bucketPath: gs://ror-kakka-dev/es-data/

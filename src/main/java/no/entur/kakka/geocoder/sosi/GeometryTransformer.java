@@ -14,7 +14,7 @@
  *
  */
 
-package no.entur.kakka.geocoder.routes.pelias.mapper.coordinates;
+package no.entur.kakka.geocoder.sosi;
 
 
 import org.geotools.api.referencing.FactoryException;

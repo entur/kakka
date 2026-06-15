@@ -18,52 +18,24 @@ package no.entur.kakka;
 
 public class Constants {
 
-    public static final String WORKING_DIRECTORY = "RutebankenWorkingDirectory";
-
     public static final String FILE_HANDLE = "RutebankenFileHandle";
     public static final String FILE_NAME = "RutebankenFileName";
     public static final String TARGET_FILE_HANDLE = "RutebankenTargetFileHandle";
-    public static final String EXPORT_JOB_NAME = "exportJobName";
-    public static final String ES_BUILD_JOB_STATUS = "STATUS";
-
-    public static final String ES_DATA_PATH = "ES_DATA_PATH";
-    public static final String GEOCODER_SMOKE_TEST_JOB_STATUS = "geoCoderSmokeTestJobStatus";
-
-    public static final String JOB_URL = "RutebankenJobURL";
-    public static final String JOB_ID = "RutebankenJobId";
-    public static final String JOB_STATUS_ROUTING_DESTINATION = "RutebankenobStatusRoutingDestination";
 
     public static final String KARTVERKET_DATASETID = "RutebankenKartverketDataSetId";
     public static final String KARTVERKET_FORMAT = "RutebankenKartverketFormat";
 
     public static final String BLOBSTORE_MAKE_BLOB_PUBLIC = "RutebankenBlobstoreMakeBlobPublic";
 
-    public static final String SINGLETON_ROUTE_DEFINITION_GROUP_NAME = "RutebankenSingletonRouteDefinitionGroup";
-
     public static final String CONTENT_CHANGED = "RutebankenContentChanged";
     public static final String FOLDER_NAME = "RutebankenFolderName";
     public static final String SYSTEM_STATUS = "RutebankenSystemStatus";
 
-    public static final String DEPLOYMENT_NAME= "deploymentName";
-
     public static final String LOOP_COUNTER = "RutebankenLoopCounter";
-
-    public static final String QUERY_STRING = "RutebankenQueryString";
-
-    public static final String TIAMAT_EXPORT_TASKS = "RutebankenTiamatExportTasks";
-    public static final String ETCD_KEY = "RutebankenEtcdKey";
 
     public static final String ET_CLIENT_NAME_HEADER = "ET-Client-Name";
     public static final String ET_CLIENT_ID_HEADER = "ET-Client-ID";
 
-    public static final String FILE_TARGET_MD5 = "RutebankenMd5SumRecordedForTargetFile";
-    public static final String CAMEL_ALL_HTTP_HEADERS = "CamelHttp*";
-
-    public static final String SOURCE_CONTAINER_NAME = "sourceContainerName";
-
-    public static final String XML = "xml";
-
     public static final String NETEX_EXPORT_STATUS_HEADER = "EnturNetexExportStatus";
     public static final String NETEX_EXPORT_STATUS_VALUE = "Initiated";
 }
-

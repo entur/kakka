@@ -16,14 +16,11 @@
 
 package no.entur.kakka.rest;
 
-import no.entur.kakka.Constants;
-import no.entur.kakka.domain.OSMPOIFilter;
-import no.entur.kakka.geocoder.BaseRouteBuilder;
-import no.entur.kakka.geocoder.routes.control.GeoCoderTaskType;
+import no.entur.kakka.task.BaseRouteBuilder;
+import no.entur.kakka.task.routes.control.TaskType;
 import no.entur.kakka.security.KakkaAuthorizationService;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -37,22 +34,17 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-
 /**
- * API endpoint for managing the geocoder data import pipeline.
+ * REST API for triggering Tiamat updates/exports and organisation-registry admin-zone imports.
  */
 @Component
 public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     public static final String FILE_HANDLE = "FileHandle";
     private static final String PLAIN = "text/plain";
-    private static final String PROVIDER_ID = "ProviderId";
-    private static final String JSON = "application/json";
     @Value("${server.port:8080}")
     private String port;
 
@@ -61,9 +53,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
     @Autowired
     private KakkaAuthorizationService kakkaAuthorizationService;
-
-    @Value("#{'${tariff.zone.providers:RUT,AKT,KOL,OST,VOT,TRO}'.split(',')}")
-    private List<String> tariffZoneProviders;
 
     @Override
     public void configure() throws Exception {
@@ -128,35 +117,19 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .post("/build_pipeline")
                 .param().name("task")
                 .type(RestParamType.query)
-                .allowableValues(Arrays.stream(GeoCoderTaskType.values()).map(GeoCoderTaskType::name).toList())
+                .allowableValues(Arrays.stream(TaskType.values()).map(TaskType::name).toList())
                 .required(Boolean.TRUE)
                 .description("Tasks to be executed")
                 .endParam()
-                .description("Update geocoder tasks")
+                .description("Update tasks")
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .to("direct:adminGeoCoderStart")
+                .to("direct:adminTaskStart")
 
                 .get(openApiJsonPath)
                 .apiDocs(false)
                 .bindingMode(RestBindingMode.off)
                 .to(commonApiDocEndpoint);
-
-
-        rest("/osmpoifilter")
-                .description("OSM POI Filters REST service")
-                .consumes(JSON)
-                .produces(JSON)
-
-                .get().description("Get all filters").outType(OSMPOIFilter[].class)
-                .responseMessage().code(200).message("Filters returned successfully").endResponseMessage()
-                .to("bean:osmpoifilterService?method=getFilters")
-
-                .put().description("Update (replace) all filters").type(OSMPOIFilter[].class)
-                .param().name("body").type(RestParamType.body).description("List of filters").endParam()
-                .responseMessage().code(200).message("Filters updated successfully").endResponseMessage()
-                .to("direct:adminUpdateOsmpoifilter");
-
 
 
         rest("/organisation_admin")
@@ -172,15 +145,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to(commonApiDocEndpoint);
 
 
-        rest("/map_admin")
-                .post("/download")
-                .description("Triggers downloading of the latest OSM data")
-                .consumes(PLAIN)
-                .produces(PLAIN)
-                .responseMessage().code(200).message("Command accepted").endResponseMessage()
-                .to("direct:AdminFetchOsm");
-
-
         rest("/export")
                 .post("/stop_places/v2")
                 .description("Trigger export from Kingu(netex exporter) using pub/sub for all existing configurations")
@@ -188,21 +152,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .produces(PLAIN)
                 .responseMessage().code(200).message("Command accepted").endResponseMessage()
                 .to("direct:adminTiamatPublishExportFull");
-
-        rest("/tariff_zone_admin/{providerId}")
-                .post("/files")
-                .description("Upload tariff zone netex file for import into Tiamat")
-                .param().name("providerId").type(RestParamType.path).description("Tariff zone Provider id e.g RUT,AKT,KOL").dataType("string").endParam()
-                .consumes(MULTIPART_FORM_DATA)
-                .produces(PLAIN)
-                .bindingMode(RestBindingMode.off)
-                .responseMessage().code(200).endResponseMessage()
-                .responseMessage().code(500).message("Invalid providerId").endResponseMessage()
-                .to("direct:adminTariffZoneUploadFile");
-
-        from("direct:validateProvider")
-                .validate(e -> tariffZoneProviders.stream().anyMatch(tz -> tz.equals(e.getIn().getHeader(PROVIDER_ID, String.class))))
-                .routeId("admin-validate-provider");
 
         from("direct:adminRouteAuthorizeGet")
                 .throwException(new NotFoundException())
@@ -230,14 +179,14 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .process(e -> kakkaAuthorizationService.verifyOrganisationAdministratorPrivileges())
                 .routeId("admin-authorize-edit-request");
 
-        from("direct:adminGeoCoderStart")
+        from("direct:adminTaskStart")
                 .to("direct:authorizeAdminRequest")
                 .validate(header("task").isNotNull())
                 .removeHeaders(camelHttpPattern)
-                .process(e -> e.getIn().setBody(geoCoderTaskTypesFromString(e.getIn().getHeader("task", Collection.class))))
-                .to(ExchangePattern.InOnly, "direct:geoCoderStartBatch")
+                .process(e -> e.getIn().setBody(taskTypesFromString(e.getIn().getHeader("task", Collection.class))))
+                .to(ExchangePattern.InOnly, "direct:taskStartBatch")
                 .setBody(constant(null))
-                .routeId("admin-geocoder-start-route");
+                .routeId("admin-task-start-route");
 
         from("direct:adminOrgRegImportAdminZones")
                 .to("direct:authorizeEditRequest")
@@ -245,13 +194,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .to("direct:updateAdminUnitsInOrgReg")
                 .setBody(simple("done"))
                 .routeId("admin-org-reg-import-admin-zones");
-
-        from("direct:AdminFetchOsm")
-                .to("direct:authorizeAdminRequest")
-                .log(LoggingLevel.INFO, "OSM update map data")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
-                .to("direct:considerToFetchOsmMapOverNorway")
-                .routeId("admin-fetch-osm");
 
         from("direct:adminTiamatPublishExportFull")
                 .to("direct:authorizeAdminRequest")
@@ -261,27 +203,11 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .setBody(simple("done"))
                 .routeId("admin-tiamat-publish-export-full-v2");
 
-        from("direct:adminTariffZoneUploadFile")
-                .setBody(simple("${exchange.getIn().getRequest().getParts()}"))
-                .streamCaching()
-                .setHeader(PROVIDER_ID, header("providerId"))
-                .process(e -> kakkaAuthorizationService.verifyRouteDataAdministratorPrivileges())
-                .to("direct:validateProvider")
-                .log(LoggingLevel.INFO, "Upload files and start import pipeline")
-                .removeHeaders(Constants.CAMEL_ALL_HTTP_HEADERS)
-                .to("direct:uploadFilesAndStartImport")
-                .routeId("admin-tariff-zone-upload-file");
-
-        from("direct:adminUpdateOsmpoifilter")
-                .to("direct:authorizeAdminRequest")
-                .to("bean:osmpoifilterService?method=updateFilters")
-                .routeId("admin-updateosm-poi-filter");
-
 
     }
 
-    private Set<GeoCoderTaskType> geoCoderTaskTypesFromString(Collection<String> typeStrings) {
-        return typeStrings.stream().map(GeoCoderTaskType::valueOf).collect(Collectors.toSet());
+    private Set<TaskType> taskTypesFromString(Collection<String> typeStrings) {
+        return typeStrings.stream().map(TaskType::valueOf).collect(Collectors.toSet());
     }
 
 }

@@ -33,7 +33,7 @@ release: {{ .Release.Name }}
 team: ror
 environment: {{.Values.env }}
 slack: talk-ror
-type: geocoder
+type: task
 namespace: {{ .Release.Namespace }}
 {{- end }}
 
@@ -41,18 +41,6 @@ namespace: {{ .Release.Namespace }}
 {{- define "tiamat-export.labels" }}
 app: cronjob-tiamat-export-status
 release: cronjob-tiamat-export-status
-team: ror
-slack: talk-ror
-type: cronjob
-namespace: {{ .Release.Namespace }}
-{{- end }}
-
-
-
-{{/* Generate basic labels */}}
-{{- define "geocoder-current.labels" }}
-app: cronjob-geocoder-current-status
-release: cronjob-tgeocoder-current-status
 team: ror
 slack: talk-ror
 type: cronjob

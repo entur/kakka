@@ -1,4 +1,3 @@
-cloudsql_project = "ent-kakka-tst"
 pubsub_project="ent-kakka-tst"
 storage_project="ent-kakka-tst"
 kingu_pub_sub_project ="ent-kingu-tst"

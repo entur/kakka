@@ -46,7 +46,6 @@ public class KakkaWebSecurityConfigurerAdapter{
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/geocoder_admin/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/organisation_admin/openapi.json")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/services/export/openapi.json")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/services/osmpoifilter")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/liveness")).permitAll()

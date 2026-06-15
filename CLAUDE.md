@@ -1,8 +1,11 @@
-# Kakka - Geocoder Build Pipeline
+# Kakka - Tiamat/Kingu Export Pipeline
+
+> **Note:** The Pelias/Elasticsearch geocoder *build* pipeline (and the OSM POI update) was removed.
+> Kakka no longer builds geocoder index data, downloads OSM/addresses, or uses a database.
 
 ## Project Overview
 
-**Kakka** is a Java-based build pipeline for preparing and managing Elasticsearch data for the Pelias geocoder application. It's part of the Entur ecosystem (Norwegian public transport infrastructure) and is responsible for building geocoding data from multiple sources and triggering regular exports from Tiamat (NSR - National Stop Registry).
+**Kakka** is a Java-based pipeline in the Entur ecosystem (Norwegian public transport infrastructure) responsible for triggering regular NeTEx exports from Tiamat (NSR - National Stop Registry) via Kingu, and for keeping Tiamat updated with administrative units, neighbouring countries, and tariff zones sourced from Kartverket (SOSI) and the organisation registry.
 
 - **Organization**: Entur (entur)
 - **Language**: Java 21
@@ -19,30 +22,25 @@
 - **Google Cloud Platform**: 
   - Cloud Storage (GCS) for blob storage
   - Pub/Sub for messaging
-- **PostgreSQL**: Database with Flyway migrations
 - **GeoTools 32.2**: Geospatial data processing
 - **Kubernetes**: Deployment orchestration
 - **Docker**: Containerization
 
 ### Core Components
 
-1. **Geocoder Routes** (`geocoder/routes/`)
-   - **Control**: Main orchestration and task management
-   - **Tiamat**: NSR (National Stop Registry) data export and updates
-   - **Kartverket**: Norwegian mapping authority data processing
-   - **OSM**: OpenStreetMap data processing
-   - **Pelias**: Elasticsearch index building and mapping
+1. **Routes** (`task/routes/`)
+   - **Control**: Task orchestration (`direct:taskStart` → task pub/sub queue) shared by the Tiamat update tasks
+   - **Tiamat**: NSR (National Stop Registry) NeTEx export (via Kingu) and updates for administrative units and neighbouring countries
+   - **Kartverket**: Norwegian mapping authority data download + GCS upload (change detected via MD5 against the previously stored blob)
 
 2. **Data Sources**
-   - **Tiamat**: Stop places, administrative units, tariff zones, POIs, countries
-   - **Kartverket**: Norwegian place names and SOSI format data
-   - **OpenStreetMap**: Street and location data in PBF format
-   - **GTFS**: Public transport stop data
+   - **Tiamat**: Stop places, administrative units, tariff zones, countries
+   - **Kartverket**: Norwegian SOSI format administrative-unit data
    - **NeTEx**: Public transport network exchange format
 
 3. **Output**
-   - Elasticsearch bulk commands for Pelias geocoder
-   - Exported NeTEx files from Tiamat
+   - NeTEx exports from Tiamat published to Kingu
+   - Tiamat updated with administrative units / countries / tariff zones
 
 ### Key Design Patterns
 
@@ -50,7 +48,7 @@
 - **Kubernetes CronJobs**: Scheduled data processing tasks
 - **Blob Storage**: Intermediate file storage on GCS
 - **Pub/Sub Messaging**: Asynchronous task coordination
-- **Idempotent Repository**: Prevents duplicate processing
+- **GCS MD5 change detection**: `KartverketFileRouteBuilder` skips re-upload when a file's MD5 matches the stored blob
 
 ## Project Structure
 
@@ -64,29 +62,22 @@ kakka/
 │   │   ├── OAuth2Config.java        # Authentication
 │   │   └── AuthorizationConfig.java # Authorization
 │   ├── domain/                       # Domain models
-│   ├── geocoder/                     # Geocoding business logic
+│   ├── task/                         # Tiamat export/update business logic
 │   │   └── routes/                   # Camel route definitions
 │   │       ├── control/              # Task orchestration
-│   │       ├── tiamat/               # NSR data export
-│   │       ├── kartverket/           # Norwegian mapping data
-│   │       ├── osm/                  # OpenStreetMap processing
-│   │       └── pelias/               # Elasticsearch indexing
-│   ├── openstreetmap/                # OSM data models
-│   ├── repository/                   # Data access layer
+│   │       ├── tiamat/               # NSR data export + updates
+│   │       └── kartverket/           # Norwegian mapping data download
+│   ├── repository/                   # Data access layer (GCS blob store)
 │   ├── rest/                         # REST API endpoints
 │   ├── routes/                       # General Camel routes
-│   │   ├── file/                     # File upload/download
+│   │   ├── file/                     # File utilities
 │   │   ├── status/                   # Health and status
 │   │   └── blobstore/                # Cloud storage operations
 │   └── security/                     # Security configuration
 ├── src/main/resources/
-│   ├── db/                           # Flyway database migrations
-│   ├── logback.xml                   # Logging configuration
-│   └── schema.sql                    # Database schema
+│   └── logback.xml                   # Logging configuration
 ├── api/                              # API definitions
-│   ├── export/                       # Export API specs
-│   ├── geocoder-admin/               # Admin API
-│   └── poi-filter/                   # POI filtering
+│   └── export/                       # Export API specs
 ├── helm/                             # Kubernetes Helm charts
 ├── terraform/                        # Infrastructure as code
 ├── Dockerfile                        # Multi-stage Docker build
@@ -199,9 +190,9 @@ mvn test jacoco:report
 ### Admin Operations
 
 The application exposes REST endpoints for:
-- File upload/download
-- Geocoder task management
+- Task management (admin-unit / neighbouring-country update tasks)
 - Tiamat export triggering
+- Organisation-registry admin-zone import
 - Status monitoring
 
 ## Data Processing Pipeline
@@ -236,7 +227,6 @@ The application exposes REST endpoints for:
 ### CronJobs
 
 Scheduled tasks managed via Kubernetes CronJobs:
-- Geocoder data refresh
 - Tiamat export status checks
 - Regular data synchronization
 
@@ -295,8 +285,8 @@ Workflow: `.github/workflows/push.yml`
 
 ## Related Projects
 
-- **Pelias**: The geocoder that consumes Kakka's output
-- **Tiamat**: National Stop Registry (NSR)
+- **Tiamat**: National Stop Registry (NSR) — Kakka triggers its NeTEx exports and updates its data
+- **Kingu**: NeTEx exporter that Kakka triggers via pub/sub
 - **Marduk**: Route data processing pipeline (shares blob storage)
 
 ## Contributing

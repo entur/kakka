@@ -3,6 +3,8 @@ kind: CronJob
 metadata:
   labels:
     {{- include "tiamat-export.labels" . | indent 4 }}
+  annotations:
+    {{- include "common.annotations" . | indent 4 }}
   name: cronjob-tiamat-export-status
   namespace: {{ .Release.Namespace }}
 spec:

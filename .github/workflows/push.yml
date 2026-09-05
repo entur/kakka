@@ -47,20 +47,20 @@ jobs:
                   -Dsonar.token=${SONAR_TOKEN}
   docker-lint:
     needs: [maven-verify]
-    uses: entur/gha-docker/.github/workflows/lint.yml@v1.11.0
+    uses: entur/gha-docker/.github/workflows/lint.yml@v1.12.0
     with:
      ignore: "DL3018"
 
   docker-build:
     needs: [maven-verify]
-    uses: entur/gha-docker/.github/workflows/build.yml@v1.11.0
+    uses: entur/gha-docker/.github/workflows/build.yml@v1.12.0
     with:
       build_artifact_name: artifact
       build_artifact_path: target
   docker-push:
     if: github.repository_owner == 'entur' && github.event_name == 'push'
     needs: [docker-build]
-    uses: entur/gha-docker/.github/workflows/push.yml@v1.11.0
+    uses: entur/gha-docker/.github/workflows/push.yml@v1.12.0
 
   docker-scan:
     needs: [ docker-build ]
@@ -69,17 +69,17 @@ jobs:
       image_artifact: ${{ needs.docker-build.outputs.image_artifact }}
 
   helm-lint:
-    uses: entur/gha-helm/.github/workflows/lint.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/lint.yml@v1.7.0
     with:
       environment: dev
 
   terraform-lint:
-    uses: entur/gha-terraform/.github/workflows/lint.yml@v2.3.1
+    uses: entur/gha-terraform/.github/workflows/lint.yml@v2.5.0
 
   deploy-dev:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ helm-lint, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.7.0
     with:
       environment: dev
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}
@@ -103,7 +103,7 @@ jobs:
   deploy-tst:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ approval-tst, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.7.0
     with:
       environment: tst
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}
@@ -127,7 +127,7 @@ jobs:
   deploy-prd:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ approval-prd, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.7.0
     with:
       environment: prd
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}

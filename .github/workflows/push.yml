@@ -77,7 +77,7 @@ jobs:
       image_artifact: ${{ needs.docker-build.outputs.image_artifact }}
 
   helm-lint:
-    uses: entur/gha-helm/.github/workflows/lint.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/lint.yml@v2.1.0
     with:
       environment: dev
 
@@ -87,7 +87,7 @@ jobs:
   deploy-dev:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ helm-lint, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v2.1.0
     with:
       environment: dev
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}
@@ -111,7 +111,7 @@ jobs:
   deploy-tst:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ approval-tst, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v2.1.0
     with:
       environment: tst
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}
@@ -135,7 +135,7 @@ jobs:
   deploy-prd:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     needs: [ approval-prd, docker-push, docker-lint ]
-    uses: entur/gha-helm/.github/workflows/deploy.yml@v1.6.1
+    uses: entur/gha-helm/.github/workflows/deploy.yml@v2.1.0
     with:
       environment: prd
       image: ${{ needs.docker-push.outputs.image_name }}:${{ needs.docker-push.outputs.image_tag}}

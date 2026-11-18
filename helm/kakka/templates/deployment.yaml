@@ -27,12 +27,14 @@ spec:
     spec:
       containers:
         - env:
+            # -XX:-UseBASE64Intrinsics: temporary Java4Shell (CVE-2026-114938) mitigation; remove once the base image has a patched JDK
             - name: JDK_JAVA_OPTIONS
               value:
                 -server -Xmx{{ .Values.resources.xmx }} -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
                 -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
                 -Dspring.config.location=/etc/application-config/application.properties
                 -Dfile.encoding=UTF-8
+                -XX:-UseBASE64Intrinsics
                 {{- if .Values.monitoringEnabled}}
                 -Dcom.sun.management.jmxremote.port=9999
                 -Dcom.sun.management.jmxremote.rmi.port=9998 -Dcom.sun.management.jmxremote.authenticate=false

@@ -30,7 +30,7 @@
 
         <netex-java-model.version>2.0.16.2</netex-java-model.version>
         <entur.helpers.version>5.50.0</entur.helpers.version>
-        <guava.version>33.7.2-jre</guava.version>
+        <guava.version>33.8.0-jre</guava.version>
 
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>

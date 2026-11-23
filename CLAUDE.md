@@ -8,7 +8,7 @@
 **Kakka** is a Java-based pipeline in the Entur ecosystem (Norwegian public transport infrastructure) responsible for triggering regular NeTEx exports from Tiamat (NSR - National Stop Registry) via Kingu, and for keeping Tiamat updated with administrative units, neighbouring countries, and tariff zones sourced from Kartverket (SOSI) and the organisation registry.
 
 - **Organization**: Entur (entur)
-- **Language**: Java 21
+- **Language**: Java 25
 - **Framework**: Spring Boot with Apache Camel
 - **Build Tool**: Maven
 - **License**: EUPL v1.2 (European Union Public License)
@@ -18,7 +18,7 @@
 ### Technology Stack
 
 - **Spring Boot**: Application framework and dependency injection
-- **Apache Camel 4.4.5**: Enterprise Integration Patterns and routing
+- **Apache Camel 4.14.9**: Enterprise Integration Patterns and routing
 - **Google Cloud Platform**: 
   - Cloud Storage (GCS) for blob storage
   - Pub/Sub for messaging

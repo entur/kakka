@@ -9,4 +9,5 @@ COPY --from=builder /builder/extracted/dependencies/ ./
 COPY --from=builder /builder/extracted/spring-boot-loader/ ./
 COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder /builder/extracted/application/ ./
-ENTRYPOINT [ "/usr/bin/java", "-jar", "application.jar" ]
+# Netty and grpc still use JNI and sun.misc.Unsafe, which Java 25 warns about
+ENTRYPOINT [ "/usr/bin/java", "--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow", "-jar", "application.jar" ]

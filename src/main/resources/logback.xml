@@ -16,7 +16,11 @@
   -->
 
 <configuration>
-    <if condition='property("env").contains("dev")'>
+    <condition class="ch.qos.logback.core.boolex.PropertyEqualityCondition">
+        <key>env</key>
+        <value>dev</value>
+    </condition>
+    <if>
         <then>
             <include resource="org/springframework/boot/logging/logback/base.xml"/>
         </then>

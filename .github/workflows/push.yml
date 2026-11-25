@@ -91,12 +91,16 @@ jobs:
       release_name: kakka
     secrets: inherit
 
+  supersede-tst:
+    if: ${{ success() && github.ref == 'refs/heads/master' }}
+    needs: [ deploy-dev ]
+    uses: ./.github/workflows/supersede.yml
+    permissions:
+      actions: write
+
   approval-tst:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
-    concurrency:
-      group: approval-tst
-      cancel-in-progress: true
-    needs: [ deploy-dev, helm-lint, docker-push, docker-lint ]
+    needs: [ supersede-tst, deploy-dev, helm-lint, docker-push, docker-lint ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: Approve
@@ -118,12 +122,16 @@ jobs:
       release_name: kakka
     secrets: inherit
 
+  supersede-prd:
+    if: ${{ success() && github.ref == 'refs/heads/master' }}
+    needs: [ deploy-tst ]
+    uses: ./.github/workflows/supersede.yml
+    permissions:
+      actions: write
+
   approval-prd:
     if: ${{ success() && github.ref == 'refs/heads/master' }}
-    concurrency:
-      group: approval-prd
-      cancel-in-progress: true
-    needs: [ deploy-tst, approval-tst, docker-push, docker-lint ]
+    needs: [ supersede-prd, deploy-tst, approval-tst, docker-push, docker-lint ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: Approve

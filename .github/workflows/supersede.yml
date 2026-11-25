@@ -1,0 +1,27 @@
+name: Cancel superseded runs
+on:
+  workflow_call:
+
+jobs:
+  supersede:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Cancel this run if a newer one exists, else cancel older runs waiting for approval
+        # A broken check must not block deploys
+        continue-on-error: true
+        run: |
+          runs=$(gh run list --workflow push.yml --branch master --event push --limit 20 --json databaseId,status,conclusion)
+          newer=$(jq "[.[] | select(.databaseId > $GITHUB_RUN_ID and (.status != \"completed\" or .conclusion == \"success\"))] | length" <<< "$runs")
+          if [ "$newer" -gt 0 ]; then
+            gh run cancel "$GITHUB_RUN_ID"
+            exit 0
+          fi
+          gh run list --workflow push.yml --branch master --event push --status waiting --limit 100 --json databaseId \
+            --jq ".[] | select(.databaseId < $GITHUB_RUN_ID) | .databaseId" |
+            xargs -r -n1 gh run cancel

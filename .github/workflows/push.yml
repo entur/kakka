@@ -93,6 +93,9 @@ jobs:
 
   approval-tst:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
+    concurrency:
+      group: approval-tst
+      cancel-in-progress: true
     needs: [ deploy-dev, helm-lint, docker-push, docker-lint ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -103,7 +106,7 @@ jobs:
         run: echo "Approve TST deployment"
 
   deploy-tst:
-    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
+    if: ${{ success() && github.ref == 'refs/heads/master' }}
     needs: [ approval-tst, docker-push, docker-lint ]
     uses: entur/gha-helm/.github/workflows/deploy.yml@v2
     with:
@@ -116,7 +119,10 @@ jobs:
     secrets: inherit
 
   approval-prd:
-    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
+    if: ${{ success() && github.ref == 'refs/heads/master' }}
+    concurrency:
+      group: approval-prd
+      cancel-in-progress: true
     needs: [ deploy-tst, approval-tst, docker-push, docker-lint ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -127,7 +133,7 @@ jobs:
         run: echo "Approve PRD deployment"
 
   deploy-prd:
-    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
+    if: ${{ success() && github.ref == 'refs/heads/master' }}
     needs: [ approval-prd, docker-push, docker-lint ]
     uses: entur/gha-helm/.github/workflows/deploy.yml@v2
     with:

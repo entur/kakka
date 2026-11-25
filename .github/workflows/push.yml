@@ -94,7 +94,7 @@ jobs:
   approval-tst:
     if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/master' }}
     concurrency:
-      group: approval
+      group: approval-tst
       cancel-in-progress: true
     needs: [ deploy-dev, helm-lint, docker-push, docker-lint ]
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
   approval-prd:
     if: ${{ success() && github.ref == 'refs/heads/master' }}
     concurrency:
-      group: approval
+      group: approval-prd
       cancel-in-progress: true
     needs: [ deploy-tst, approval-tst, docker-push, docker-lint ]
     runs-on: ubuntu-latest

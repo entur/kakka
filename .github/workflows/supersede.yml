@@ -22,5 +22,6 @@ jobs:
             gh run cancel "$GITHUB_RUN_ID"
             exit 0
           fi
-          jq -r ".[] | select(.databaseId < $GITHUB_RUN_ID and .status == \"waiting\") | .databaseId" <<< "$runs" |
+          gh run list --workflow push.yml --branch master --event push --status waiting --limit 100 --json databaseId \
+            --jq ".[] | select(.databaseId < $GITHUB_RUN_ID) | .databaseId" |
             xargs -r -n1 gh run cancel

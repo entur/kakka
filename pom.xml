@@ -23,7 +23,7 @@
     </scm>
     <properties>
         <java.version>25</java.version>
-        <camel.version>4.14.9</camel.version>
+        <camel.version>4.23.0</camel.version>
 
         <wololo.version>0.18.1</wololo.version>
         <jskdata.version>1.0.20</jskdata.version>
